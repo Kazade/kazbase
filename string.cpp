@@ -54,7 +54,7 @@ std::string join(std::vector<std::string> parts, std::string joiner) {
     return std::string(final_string.begin(), final_string.begin() + (final_string.length() - joiner.length()));
 }
 
-std::string splice(const std::string& s, const int start_index, const int end_index) {
+std::string slice(const std::string& s, const int start_index, const int end_index) {
     int si = start_index;
     if(si < 0) {
         si = s.length() + si; //Negate si
@@ -66,8 +66,8 @@ std::string splice(const std::string& s, const int start_index, const int end_in
     }
 
     assert(si < ei && "Start index is not less than end index");
-    assert(si < s.length() && si >= 0);
-    assert(ei < s.length() && ei >= 0);
+    assert(si < (int) s.length() && si >= 0);
+    assert(ei < (int) s.length() && ei >= 0);
 
     return std::string(s.begin() + si, s.begin() + ei);
 }
