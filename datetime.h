@@ -12,6 +12,7 @@ DateTime strptime(const std::string& date_string, const std::string& format);
 std::string strftime(const DateTime& t, const std::string& format);
 DateTime now(void);
 float timedelta_in_seconds(TimeDelta d);
+float timedelta_in_mins(TimeDelta d);
 
 }
 

@@ -33,4 +33,8 @@ float timedelta_in_seconds(TimeDelta d) {
     return float(d.total_seconds()) + (float(d.total_milliseconds()) / 1000.0f);
 }
 
+float timedelta_in_mins(TimeDelta d) {
+    return timedelta_in_seconds(d) / 60.0f;
+}
+
 }
