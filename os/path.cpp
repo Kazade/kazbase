@@ -57,8 +57,10 @@ bool is_link(const std::string& path) {
 }
 
 std::pair<std::string, std::string> split_ext(const std::string& path) {
-    assert(0);
-//    return std::make_pair()
+    boost::filesystem::path bp(path);
+    std::string name = bp.stem().string();
+    std::string ext = bp.extension().string();
+    return std::make_pair(name, ext);
 }
 
 std::string rel_path(const std::string& path, const std::string& start) {
