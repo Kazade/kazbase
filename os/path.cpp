@@ -48,8 +48,7 @@ bool is_dir(const std::string& path) {
 }
 
 bool is_file(const std::string& path) {
-//    return boost::filesystem::is_file(path);
-    assert(0);
+    return boost::filesystem::is_regular_file(path);
 }
 
 bool is_link(const std::string& path) {
