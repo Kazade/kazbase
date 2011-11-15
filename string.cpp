@@ -85,8 +85,8 @@ bool contains(const std::string& s, const std::string& what) {
 }
 
 std::string replace(const std::string& s, const std::string& to_find, const std::string& to_replace) {
-    std::string final_s = s;
-    boost::replace_all(final_s, to_find, to_replace);
+    std::string final_s(s);
+    boost::replace_all(final_s, std::string(to_find), std::string(to_replace));
     return final_s;
 }
 

@@ -5,6 +5,7 @@
 #include <set>
 #include <algorithm>
 #include <map>
+#include <tr1/unordered_map>
 
 namespace container {
 
@@ -24,6 +25,15 @@ template<typename T, typename U>
 bool contains(const std::map<T, U>& haystack, const T& needle) {
     typename std::map<T, U>::const_iterator it = haystack.find(needle);
     return it != haystack.end();
+}
+
+template<typename T, typename U>
+std::set<T> keys(const std::tr1::unordered_map<T, U>& container) {
+    std::set<T> result;
+    for(std::pair<T, U> i: container) {
+        result.insert(i.first);
+    }
+    return result;
 }
 
 template<typename T, typename U>
