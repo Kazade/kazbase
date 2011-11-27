@@ -45,6 +45,16 @@ std::set<T> keys(const std::map<T, U>& container) {
     return result;
 }
 
+template<typename T, typename U>
+U const_get(const std::map<T, U>& container, const T& key) {
+    typename std::map<T, U>::const_iterator it = container.find(key);
+    if(it == container.end()) {
+        throw DoesNotExist<U>();
+    }
+
+    return (*it).second;
+}
+
 }
 
 #endif

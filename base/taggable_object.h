@@ -14,7 +14,7 @@ public:
     virtual ~TaggableObject() {}
 
     bool has_tag(const Tag& tag) const {
-        return container::contains(tags_, str::lower(tag));
+        return container::contains(tags_, str::lower(str::strip(tag)));
     }
 
     bool has_any_tags(const TagList& tags) const {
@@ -27,7 +27,7 @@ public:
     }
 
     void tag(const Tag& tag) {
-        tags_.insert(str::lower(tag));
+        tags_.insert(str::lower(str::strip(tag)));
     }
 
     void tag(const TagList& tags) {

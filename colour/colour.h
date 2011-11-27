@@ -13,7 +13,7 @@ public:
         v_ = c.v_;
     }
 
-    const HSVColour& operator=(const HSVColour& rhs) {
+    HSVColour& operator=(const HSVColour& rhs) {
         h_ = rhs.h_;
         s_ = rhs.s_;
         v_ = rhs.v_;
@@ -44,7 +44,7 @@ public:
         b_ = c.b_;
     }
 
-    const RGBColour& operator=(const RGBColour& rhs) {
+    RGBColour& operator=(const RGBColour& rhs) {
         r_ = rhs.r_;
         g_ = rhs.g_;
         b_ = rhs.b_;

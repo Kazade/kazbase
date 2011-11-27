@@ -63,6 +63,10 @@ public:
     status::Code get_status_code() const { return status_code_; }
     long get_connect_code() const { return connect_code_; }
 
+    Response():
+        content_(""),
+        status_code_(status::OK),
+        connect_code_(0) {}
 private:
     void set_content(const std::string& content) { content_ = content; }
     void set_status_code(const status::Code code) { status_code_ = code; }

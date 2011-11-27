@@ -40,6 +40,20 @@ std::vector<std::string> split(const std::string& s, const std::string& delims, 
     return r2;
 }
 
+std::string join(std::set<std::string> parts, std::string joiner) {
+    if(parts.empty()) {
+        return "";
+    }
+
+    std::string final_string = "";
+    for(std::string p: parts) {
+        final_string += p;
+        final_string += joiner;
+    }
+
+    return std::string(final_string.begin(), final_string.begin() + (final_string.length() - joiner.length()));
+}
+
 std::string join(std::vector<std::string> parts, std::string joiner) {
     if(parts.empty()) {
         return "";
