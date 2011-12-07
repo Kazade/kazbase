@@ -65,6 +65,10 @@ public:
     T first() const { return first_; }
     U second() const { return second_; }
 
+    std::string to_string() {
+        return to_string(*this);
+    }
+
     static std::string to_string(const CompositeID& c) {
         if(c.is_null_) {
             throw ValueError("Attempted to convert a NULL composite ID to a string");
