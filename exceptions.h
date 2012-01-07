@@ -3,6 +3,14 @@
 
 #include <typeinfo>
 #include <stdexcept>
+#include <string>
+#include <boost/lexical_cast.hpp>
+
+class NotImplementedError : public std::runtime_error {
+public:
+    NotImplementedError(const std::string& file, const int line):
+        std::runtime_error("Not implemented error at: " + file + ":" + boost::lexical_cast<std::string>(line)) {}
+};
 
 class IOError : public std::runtime_error {
 public:

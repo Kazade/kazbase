@@ -1,0 +1,139 @@
+#ifndef JSON_H_INCLUDED
+#define JSON_H_INCLUDED
+
+#include <stdexcept>
+#include <string>
+#include <vector>
+#include <cassert>
+#include <set>
+#include <map>
+#include <tr1/memory>
+
+namespace json {
+
+/*
+    Syntax:
+
+    JSON data = json::loads(some_json_string);
+    data["value"][0];
+    data["value2"]["value3"]
+
+    JSON data;
+    data.insert_value("key").set("value");
+    data.insert_dict("key2").insert_value("key").set("value");
+    data.insert_array("key3").append_value().set("value");
+
+    std::string value = data["key"];
+    value = data["key2"]["key"];
+    value = data["key3"][0];
+*/
+
+enum NodeType {
+    NODE_TYPE_VALUE,
+    NODE_TYPE_ARRAY,
+    NODE_TYPE_DICT
+};
+
+class KeyError : public std::logic_error {
+public:
+    KeyError(const std::string& what):
+        std::logic_error(what){}
+};
+
+class ParseError : public std::runtime_error {
+public:
+    ParseError(const std::string& what):
+        std::runtime_error(what) {}
+};
+
+class Node {
+public:
+    typedef std::tr1::shared_ptr<Node> ptr;
+
+private:
+    std::map<std::string, Node::ptr> dict_;
+    std::vector<Node::ptr> array_;
+    std::string value_;
+    NodeType type_;
+
+    Node(NodeType type, Node* parent):
+        type_(type),
+        parent_(parent) {}
+
+    Node* parent_;
+
+public:
+    Node(NodeType type):
+        type_(type),
+        parent_(nullptr) {}
+
+    Node():
+        type_(NODE_TYPE_DICT),
+        parent_(nullptr) {}
+
+
+    std::string value() const;
+    Node& array_value(uint64_t index) const;
+    Node& dict_value(const std::string& key) const;
+    NodeType type() const;
+
+    void set(const std::string& value);
+
+    Node& append_dict();
+    Node& append_array();
+    Node& append_value(const std::string& value);
+
+    Node& insert_dict(const std::string& key);
+    Node& insert_array(const std::string& key);
+    Node& insert_value(const std::string& key, const std::string& value);
+
+    bool has_key(const std::string& key) const;
+    std::set<std::string> keys() const;
+
+    Node& operator[](const int64_t index) {
+        return array_value(index);
+    }
+
+    Node& operator[](const std::string& key) {
+        return dict_value(key);
+    }
+
+    operator std::string() const {
+        return value();
+    }
+
+    uint64_t length() const {
+        switch(type_) {
+            case NODE_TYPE_ARRAY: return array_.size();
+            case NODE_TYPE_DICT: return dict_.size();
+            default:
+                throw std::logic_error("It doesn't make sense to call length on a value node. Did you mean value().length()?");
+        }
+    }
+
+    Node* parent() const { return parent_; }
+
+
+    /**
+        FIXME! These should return Node& not Node::ptr
+    */
+    std::vector<Node::ptr>::iterator begin() {
+        assert(type_ == NODE_TYPE_ARRAY);
+        return array_.begin();
+    }
+
+    std::vector<Node::ptr>::iterator end() {
+        assert(type_ == NODE_TYPE_ARRAY);
+        return array_.end();
+    }
+
+};
+
+typedef Node JSON;
+
+JSON loads(const std::string& json_string);
+std::string dumps(const JSON& json);
+
+}
+
+#endif // JSON_H_INCLUDED

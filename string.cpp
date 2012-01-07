@@ -4,9 +4,9 @@
 
 namespace str {
 
-std::string strip(const std::string& s) {
+std::string strip(const std::string& s, const std::string& what) {
     std::string result = s;
-    boost::trim(result);
+    boost::trim_if(result, boost::is_any_of(what));
     return result;
 }
 

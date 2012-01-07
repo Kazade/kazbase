@@ -26,6 +26,15 @@ public:
         return false;
     }
 
+    bool has_all_tags(const TagList& tags) const {
+        for(Tag t: tags) {
+            if(!has_tag(t)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     void tag(const Tag& tag) {
         tags_.insert(str::lower(str::strip(tag)));
     }

@@ -12,7 +12,7 @@
 
 namespace str {
 
-std::string strip(const std::string& s);
+std::string strip(const std::string& s, const std::string& what=" ");
 std::string lower(const std::string& s);
 std::string upper(const std::string& s);
 

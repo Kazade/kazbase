@@ -3,6 +3,7 @@
 #define USE_FILESYSTEM_THREE
 
 #include <boost/filesystem.hpp>
+#include <fstream>
 #include "path.h"
 
 #include "kazbase/string.h"
@@ -116,6 +117,14 @@ std::vector<std::string> list_dir(const std::string& path) {
     }
 
     return results;
+}
+
+std::string read_file_contents(const std::string& path) {
+    std::ifstream t(path);
+    std::string str((std::istreambuf_iterator<char>(t)),
+                 std::istreambuf_iterator<char>());
+
+    return str;
 }
 
 }

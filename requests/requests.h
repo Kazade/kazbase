@@ -84,27 +84,27 @@ public:
     Response get(const std::string& path,
         const type::MultiValueDict& data=type::MultiValueDict(),
         const Dict& headers=Dict(),
-        const int timeout=15
+        const int timeout=45
     );
 
     Response get_to_file(const std::string& path,
         const std::string& output_filename,
         const type::MultiValueDict& data=type::MultiValueDict(),
         const Dict& headers=Dict(),
-        const int timeout=15
+        const int timeout=45
     );
 
     boost::shared_future<Response> get_async(const std::string& path,
         const type::MultiValueDict& data=type::MultiValueDict(),
         const Dict& headers=Dict(),
-        const int timeout=15
+        const int timeout=45
     );
 
     boost::shared_future<Response> get_to_file_async(const std::string& path,
         const std::string& output_filename,
         const type::MultiValueDict& data=type::MultiValueDict(),
         const Dict& headers=Dict(),
-        const int timeout=15
+        const int timeout=45
     );
 
     Response post(const std::string& path,

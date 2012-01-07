@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <map>
 #include <tr1/unordered_map>
+#include "exceptions.h"
 
 namespace container {
 
