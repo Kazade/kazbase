@@ -62,6 +62,7 @@ public:
     std::string get_content() const { return content_; }
     status::Code get_status_code() const { return status_code_; }
     long get_connect_code() const { return connect_code_; }
+    std::string get_final_url() const { return final_url_; }
 
     Response():
         content_(""),
@@ -71,10 +72,12 @@ private:
     void set_content(const std::string& content) { content_ = content; }
     void set_status_code(const status::Code code) { status_code_ = code; }
     void set_connect_code(const long code) { connect_code_ = code; }
+    void set_final_url(const std::string& final_url) { final_url_ = final_url; }
 
     std::string content_;
     status::Code status_code_;
     long connect_code_;
+    std::string final_url_;
 
     friend class Client;
 };

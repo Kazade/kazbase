@@ -40,17 +40,17 @@ std::set<T> keys(const std::tr1::unordered_map<T, U>& container) {
 template<typename T, typename U>
 std::set<T> keys(const std::map<T, U>& container) {
     std::set<T> result;
-    for(std::pair<T, U> i: container) {
-        result.insert(i.first);
+    for(typename std::map<T, U>::const_iterator it = container.begin(); it != container.end(); ++it) {
+        result.insert((*it).first);
     }
     return result;
 }
 
 template<typename T, typename U>
-U const_get(const std::map<T, U>& container, const T& key) {
+U const_get(const std::map<T, U>& container, const T& key, const U& default_value=U()) {
     typename std::map<T, U>::const_iterator it = container.find(key);
     if(it == container.end()) {
-        throw DoesNotExist<U>();
+        return default_value;
     }
 
     return (*it).second;

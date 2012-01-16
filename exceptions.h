@@ -6,6 +6,8 @@
 #include <string>
 #include <boost/lexical_cast.hpp>
 
+#include "kazbase/logging/logging.h"
+
 class NotImplementedError : public std::runtime_error {
 public:
     NotImplementedError(const std::string& file, const int line):
@@ -59,7 +61,12 @@ class DoesNotExist : public std::runtime_error {
 public:
     DoesNotExist():
         std::runtime_error(std::string(typeid(T).name()) + " instance does not exist") {
+        L_ERROR(std::string(typeid(T).name()) + " instance does not exist");
+    }
 
+    DoesNotExist(const T& what):
+        std::runtime_error(std::string(typeid(T).name()) + " instance does not exist: " + boost::lexical_cast<std::string>(what)) {
+        L_ERROR(std::string(typeid(T).name()) + " instance does not exist: " + boost::lexical_cast<std::string>(what));
     }
 };
 

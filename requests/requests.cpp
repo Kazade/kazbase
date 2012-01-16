@@ -286,14 +286,17 @@ Response Client::get(const std::string& path, const MultiValueDict& data, const 
 
     int status_code = 0;
     long connect_code = 0;
+    char* final_url = NULL;
 
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &status_code);
     curl_easy_getinfo(curl, CURLINFO_HTTP_CONNECTCODE, &connect_code);
+    curl_easy_getinfo(curl, CURLINFO_EFFECTIVE_URL, &final_url);
 
     Response resp;
     resp.set_content(reader_.data);
     resp.set_status_code(status_code);
     resp.set_connect_code(connect_code);
+    resp.set_final_url(std::string(final_url));
 
     if(header_list) {
         curl_slist_free_all(header_list);
