@@ -6,6 +6,7 @@
 #include <fstream>
 #include "path.h"
 
+#include "kazbase/exceptions.h"
 #include "kazbase/string.h"
 
 namespace os {
@@ -125,6 +126,22 @@ std::string read_file_contents(const std::string& path) {
                  std::istreambuf_iterator<char>());
 
     return str;
+}
+
+std::string exe_path() {
+#ifdef WIN32
+    assert(0 && "Not implemented");
+#else
+    char buff[1024];
+    ssize_t len = ::readlink("/proc/self/exe", buff, sizeof(buff)-1);
+    if (len != -1) {
+        buff[len] = '\0';
+        return os::path::dir_name(std::string(buff));
+    } else {
+        throw RuntimeError("Unable to work out the program path");
+    }
+   
+#endif 
 }
 
 }

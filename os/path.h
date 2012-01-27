@@ -31,6 +31,7 @@ std::string expand_user(const std::string& path);
 std::vector<std::string> list_dir(const std::string& path);
 
 std::string read_file_contents(const std::string& path);
+std::string exe_path();
 
 }
 }

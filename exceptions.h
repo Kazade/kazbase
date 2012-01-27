@@ -14,6 +14,12 @@ public:
         std::runtime_error("Not implemented error at: " + file + ":" + boost::lexical_cast<std::string>(line)) {}
 };
 
+class RuntimeError : public std::runtime_error {
+public:
+    RuntimeError(const std::string& what):
+        std::runtime_error(what) {}
+};
+
 class IOError : public std::runtime_error {
 public:
     IOError(const std::string& what):
