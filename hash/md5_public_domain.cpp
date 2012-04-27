@@ -37,7 +37,7 @@
 
 #ifndef HAVE_OPENSSL
 
-#include <string.h>
+#include <cstring>
 
 #include "md5_public_domain.h"
 
