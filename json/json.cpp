@@ -36,6 +36,7 @@ NodeType Node::type() const {
 void Node::set(const std::string& value) {
     assert(type_ == NODE_TYPE_VALUE);
     value_ = value;
+    value_type_ = VALUE_TYPE_STRING;
 }
 
 Node& Node::append_dict() {
@@ -159,6 +160,54 @@ std::string codepoint_to_utf8(unsigned int cp) {
    }
 
    return result;
+}
+
+void Node::dump_to(std::string& s, int indent) const {
+    std::stringstream stream;
+    if(type_ == NODE_TYPE_DICT) {
+        stream << std::setw(indent * 4) << "{" << std::endl;
+
+        for(std::pair<std::string, Node::ptr> p: dict_) {
+            std::string new_string;
+            p.second->dump_to(new_string, indent + 1);
+            stream << str::lpad(p.first + " : " + new_string, (indent + 1) * 4) << std::endl;
+        }
+
+        stream << std::setw(indent * 4) << "}" << std::endl;
+    } else if (type_ == NODE_TYPE_ARRAY) {
+        stream << "[" << std::endl;
+
+        std::vector<std::string> outputs;
+        for(Node::ptr p: array_) {
+            std::string new_string;
+            p->dump_to(new_string, indent + 1);
+            outputs.push_back(str::lpad(new_string, (indent + 1) * 4));
+        }
+        stream << str::join(outputs, ",\n") << std::endl;
+        stream << str::lpad("]", indent * 4) << std::endl;
+    } else {
+        if(value_type_ == VALUE_TYPE_NULL) {
+            stream << "null";
+        } else if (value_type_ == VALUE_TYPE_BOOL) {
+            if(value_bool_) {
+                stream << "true";
+            } else {
+                stream << "false";
+            }
+        } else if (value_type_ == VALUE_TYPE_NUMBER) {
+            stream << value_number_;
+        } else {
+            stream << "\"" << value_ << "\"";
+        }
+    }
+
+    s.append(stream.str());
+}
+
+std::string dumps(const JSON &json) {
+    std::string result;
+    json.dump_to(result);
+    return result;
 }
 
 JSON loads(const std::string& json_string) {

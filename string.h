@@ -28,6 +28,9 @@ bool contains(const std::string& s, const std::string& what);
 
 std::string replace(const std::string& s, const std::string& old, const std::string& new_s);
 
+std::string lpad(const std::string& s, int32_t indent);
+std::string rpad(const std::string& s, int32_t count);
+
 }
 
 #endif

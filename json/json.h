@@ -34,6 +34,14 @@ enum NodeType {
     NODE_TYPE_DICT
 };
 
+enum ValueType {
+    VALUE_TYPE_NO_VALUE = 0,
+    VALUE_TYPE_STRING,
+    VALUE_TYPE_NULL,
+    VALUE_TYPE_BOOL,
+    VALUE_TYPE_NUMBER
+};
+
 class KeyError : public std::logic_error {
 public:
     KeyError(const std::string& what):
@@ -54,10 +62,15 @@ private:
     std::map<std::string, Node::ptr> dict_;
     std::vector<Node::ptr> array_;
     std::string value_;
+    bool value_bool_;
+    int value_number_;
+
     NodeType type_;
+    ValueType value_type_;
 
     Node(NodeType type, Node* parent):
         type_(type),
+        value_type_(VALUE_TYPE_NO_VALUE),
         parent_(parent) {}
 
     Node* parent_;
@@ -65,19 +78,54 @@ private:
 public:
     Node(NodeType type):
         type_(type),
+        value_type_(VALUE_TYPE_NO_VALUE),
         parent_(nullptr) {}
 
     Node():
         type_(NODE_TYPE_DICT),
+        value_type_(VALUE_TYPE_NO_VALUE),
         parent_(nullptr) {}
 
 
-    std::string value() const;
+    std::string value() const; //Deprecated
+
+    std::string get() const {
+        assert(type_ == NODE_TYPE_VALUE && value_type_ == VALUE_TYPE_STRING);
+        return value_;
+    }
+
+    bool get_bool() const {
+        assert(type_ == NODE_TYPE_VALUE && value_type_ == VALUE_TYPE_BOOL);
+        return value_bool_;
+    }
+
+    int get_number() const {
+        assert(type_ == NODE_TYPE_VALUE && value_type_ == VALUE_TYPE_NUMBER);
+        return value_number_;
+    }
+
+    bool is_null() const {
+        return type_ == NODE_TYPE_VALUE && value_type_ == VALUE_TYPE_NULL;
+    }
+
     Node& array_value(uint64_t index) const;
     Node& dict_value(const std::string& key) const;
     NodeType type() const;
 
     void set(const std::string& value);
+    void set_null() {
+        value_type_ = VALUE_TYPE_NULL;
+    }
+
+    void set_bool(bool value) {
+        value_type_ = VALUE_TYPE_BOOL;
+        value_bool_ = value;
+    }
+
+    void set_number(int number) {
+        value_type_ = VALUE_TYPE_NUMBER;
+        value_number_ = number;
+    }
 
     Node& append_dict();
     Node& append_array();
@@ -113,20 +161,13 @@ public:
 
     Node* parent() const { return parent_; }
 
-
-    /**
-        FIXME! These should return Node& not Node::ptr
-    */
-    std::vector<Node::ptr>::iterator begin() {
+    uint32_t child_count() const { return array_.size(); }
+    Node& child(uint32_t i) {
         assert(type_ == NODE_TYPE_ARRAY);
-        return array_.begin();
+        return *(array_.at(i));
     }
 
-    std::vector<Node::ptr>::iterator end() {
-        assert(type_ == NODE_TYPE_ARRAY);
-        return array_.end();
-    }
-
+    void dump_to(std::string& s, int indent=0) const;
 };
 
 typedef Node JSON;
