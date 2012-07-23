@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 #include <stdexcept>
-#include <boost/shared_ptr.hpp>
+#include <tr1/memory>
 
 #include "kazbase/config/config_reader.h"
 
@@ -21,7 +21,7 @@ public:
     std::string get_file_path() const { return path_; }
 private:
     std::string path_;
-    boost::shared_ptr<config::ConfigReader> config_;
+    std::tr1::shared_ptr<config::ConfigReader> config_;
 };
 
 std::vector<std::string> get_app_names();
