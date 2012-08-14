@@ -53,10 +53,9 @@ Node& Node::append_array() {
     return *new_node;
 }
 
-Node& Node::append_value(const std::string& value) {
+Node& Node::append_value() {
     assert(type_ == NODE_TYPE_ARRAY);
     Node::ptr new_node(new Node(NODE_TYPE_VALUE, this));
-    new_node->set(value);
     array_.push_back(new_node);
     return *new_node;
 }
@@ -75,11 +74,9 @@ Node& Node::insert_array(const std::string& key) {
     return *new_node;
 }
 
-Node& Node::insert_value(const std::string& key, const std::string& value) {
+Node& Node::insert_value(const std::string& key) {
     assert(type_ == NODE_TYPE_DICT);
     Node::ptr new_node(new Node(NODE_TYPE_VALUE, this));
-    new_node->set(value);
-
     dict_[key] = new_node;
     return *new_node;
 }
@@ -162,29 +159,34 @@ std::string codepoint_to_utf8(unsigned int cp) {
    return result;
 }
 
-void Node::dump_to(std::string& s, int indent) const {
+void Node::dump_to(std::string& s) const {
     std::stringstream stream;
     if(type_ == NODE_TYPE_DICT) {
-        stream << std::setw(indent * 4) << "{" << std::endl;
+        stream << "{";
 
+        uint32_t i = 0, size = dict_.size();
         for(std::pair<std::string, Node::ptr> p: dict_) {
             std::string new_string;
-            p.second->dump_to(new_string, indent + 1);
-            stream << str::lpad(p.first + " : " + new_string, (indent + 1) * 4) << std::endl;
+            p.second->dump_to(new_string);
+            stream << p.first + " : " + new_string;
+
+            if(++i != size) {
+                stream << ", ";
+            }
         }
 
-        stream << std::setw(indent * 4) << "}" << std::endl;
+        stream << "}";
     } else if (type_ == NODE_TYPE_ARRAY) {
-        stream << "[" << std::endl;
+        stream << "[";
 
         std::vector<std::string> outputs;
         for(Node::ptr p: array_) {
             std::string new_string;
-            p->dump_to(new_string, indent + 1);
-            outputs.push_back(str::lpad(new_string, (indent + 1) * 4));
+            p->dump_to(new_string);
+            outputs.push_back(new_string);
         }
-        stream << str::join(outputs, ",\n") << std::endl;
-        stream << str::lpad("]", indent * 4) << std::endl;
+        stream << str::join(outputs, ", ");
+        stream << "]";
     } else {
         if(value_type_ == VALUE_TYPE_NULL) {
             stream << "null";
@@ -290,7 +292,7 @@ JSON loads(const std::string& json_string) {
 
                 if(!buffer.empty()) {
                     if(last_token == ':') {
-                        current_node->insert_value(last_key, unescape(buffer));
+                        current_node->insert_value(last_key).set(unescape(buffer));
                     } else {
                         current_node->set(unescape(buffer));
                     }
@@ -331,7 +333,7 @@ JSON loads(const std::string& json_string) {
                 }
 
                 if(!buffer.empty()) {
-                    current_node->append_value(unescape(buffer));
+                    current_node->append_value().set(unescape(buffer));
                     buffer = "";
                 }
 
@@ -347,10 +349,10 @@ JSON loads(const std::string& json_string) {
 
                 if(!buffer.empty()) {
                     if(current_node->type() == NODE_TYPE_DICT) {
-                        current_node->insert_value(last_key, unescape(buffer));
+                        current_node->insert_value(last_key).set(unescape(buffer));
                     }
                     else if(current_node->type() == NODE_TYPE_ARRAY) {
-                        current_node->append_value(unescape(buffer));
+                        current_node->append_value().set(unescape(buffer));
                     } else {
                         current_node->set(unescape(buffer));
                     }

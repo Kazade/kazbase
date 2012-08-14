@@ -129,11 +129,11 @@ public:
 
     Node& append_dict();
     Node& append_array();
-    Node& append_value(const std::string& value);
+    Node& append_value();
 
     Node& insert_dict(const std::string& key);
     Node& insert_array(const std::string& key);
-    Node& insert_value(const std::string& key, const std::string& value);
+    Node& insert_value(const std::string& key);
 
     bool has_key(const std::string& key) const;
     std::set<std::string> keys() const;
@@ -167,7 +167,7 @@ public:
         return *(array_.at(i));
     }
 
-    void dump_to(std::string& s, int indent=0) const;
+    void dump_to(std::string& s) const;
 };
 
 typedef Node JSON;
