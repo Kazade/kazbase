@@ -104,5 +104,15 @@ std::string replace(const std::string& s, const std::string& to_find, const std:
     return final_s;
 }
 
+std::string lpad(const std::string& s, int32_t indent) {
+    std::string prefix(indent, ' ');
+    return prefix + s;
+}
+
+std::string rpad(const std::string& s, int32_t count) {
+    std::string postfix(count, ' ');
+    return s + postfix;
+}
+
 }
 

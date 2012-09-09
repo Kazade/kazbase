@@ -6,12 +6,12 @@
 namespace hashlib {
 
 MD5::MD5():
-    ctx_(boost::shared_ptr<MD5_CTX>(new MD5_CTX())) {
+    ctx_(std::tr1::shared_ptr<MD5_CTX>(new MD5_CTX())) {
     MD5_Init(ctx_.get());
 }
 
 MD5::MD5(const std::string& data):
-    ctx_(boost::shared_ptr<MD5_CTX>(new MD5_CTX())) {
+    ctx_(std::tr1::shared_ptr<MD5_CTX>(new MD5_CTX())) {
 
     MD5_Init(ctx_.get());
     update(data);

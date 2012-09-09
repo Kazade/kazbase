@@ -6,7 +6,7 @@
 #include <string>
 #include <boost/lexical_cast.hpp>
 
-#include "kazbase/logging/logging.h"
+#include "logging/logging.h"
 
 class NotImplementedError : public std::runtime_error {
 public:

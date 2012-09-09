@@ -1,3 +1,4 @@
+#include <cassert>
 
 #include "applications.h"
 #include "kazbase/config/config_reader.h"

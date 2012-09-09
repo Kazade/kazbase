@@ -1,7 +1,7 @@
 #ifndef MD5_H_INCLUDED
 #define MD5_H_INCLUDED
 
-#include <boost/shared_ptr.hpp>
+#include <tr1/memory>
 #include <string>
 
 #include "md5_public_domain.h"
@@ -17,7 +17,7 @@ public:
     std::string hex_digest();
 
 private:
-    boost::shared_ptr<MD5_CTX> ctx_;
+    std::tr1::shared_ptr<MD5_CTX> ctx_;
 };
 
 }
