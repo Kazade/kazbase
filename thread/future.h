@@ -15,7 +15,7 @@ boost::shared_future<typename boost::result_of<Func()>::type> submit_task(Func f
 
     PackagedTaskType task(f);
     boost::shared_future<ResultType> res(task.get_future());
-    boost::thread task_thread(std::move(task));
+    boost::thread task_thread(boost::move(task));
     return res;
 }
 
