@@ -32,6 +32,7 @@ std::vector<std::string> list_dir(const std::string& path);
 
 std::string read_file_contents(const std::string& path);
 std::string exe_path();
+std::string working_directory();
 
 }
 }

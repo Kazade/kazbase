@@ -144,6 +144,14 @@ std::string exe_path() {
 #endif 
 }
 
+std::string working_directory() {
+    char buff[PATH_MAX];
+    getcwd(buff, PATH_MAX);
+    std::string cwd(buff);
+    return cwd;
+}
+
+
 }
 }
 
