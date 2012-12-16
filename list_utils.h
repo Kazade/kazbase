@@ -11,6 +11,13 @@
 namespace container {
 
 template<typename T>
+std::vector<T> slice(const std::vector<T>& container, uint32_t start, uint32_t end=-1) {
+    std::vector<T> result;
+    result.assign(container.begin() + start, container.begin() + end);
+    return result;
+}
+
+template<typename T>
 bool contains(const std::vector<T>& haystack, const T& needle) {
     typename std::vector<T>::const_iterator it = std::find(haystack.begin(), haystack.end(), needle);
     return it != haystack.end();
