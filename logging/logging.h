@@ -2,7 +2,8 @@
 #define LOGGING_H_INCLUDED
 
 #include <string>
-#include <boost/thread.hpp>
+#include <thread>
+
 #include <boost/cstdint.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/lexical_cast.hpp>
@@ -142,7 +143,7 @@ private:
         }
 
         std::stringstream s;
-        s << boost::this_thread::get_id() << ": ";
+        s << std::this_thread::get_id() << ": ";
         s << text << " (" << file_out << ":" << boost::lexical_cast<std::string>(line) << ")";
         for(uint32_t i = 0; i < handlers_.size(); ++i) {
             handlers_[i]->write_message(this, boost::posix_time::ptime(boost::posix_time::second_clock::local_time()), level, s.str());

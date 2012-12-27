@@ -1,7 +1,7 @@
 #ifndef REQUESTS_H_INCLUDED
 #define REQUESTS_H_INCLUDED
 
-#include <boost/thread/future.hpp>
+#include <future>
 #include "kazbase/types.h"
 
 namespace requests {
@@ -97,13 +97,13 @@ public:
         const int timeout=45
     );
 
-    boost::shared_future<Response> get_async(const std::string& path,
+    std::shared_future<Response> get_async(const std::string& path,
         const type::MultiValueDict& data=type::MultiValueDict(),
         const Dict& headers=Dict(),
         const int timeout=45
     );
 
-    boost::shared_future<Response> get_to_file_async(const std::string& path,
+    std::shared_future<Response> get_to_file_async(const std::string& path,
         const std::string& output_filename,
         const type::MultiValueDict& data=type::MultiValueDict(),
         const Dict& headers=Dict(),

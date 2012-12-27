@@ -19,7 +19,7 @@ bool is_connected() {
     return true;
 }
 
-boost::shared_future<bool> is_connected_async() {
+std::shared_future<bool> is_connected_async() {
     return thread::submit_task(&is_connected);
 }
 

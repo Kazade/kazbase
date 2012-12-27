@@ -1,8 +1,6 @@
-#include <boost/shared_ptr.hpp>
-#include <boost/foreach.hpp>
-#include <boost/thread/mutex.hpp>
-#include <boost/thread/thread.hpp>
-#include <boost/algorithm/string.hpp>
+#include <tr1/memory>
+#include <mutex>
+#include <thread>
 #include <openssl/crypto.h>
 #include <curl/curl.h>
 
@@ -17,11 +15,11 @@ using namespace type;
 
 static bool initialized = false;
 
-static std::vector<boost::shared_ptr<boost::mutex> > locks;
+static std::vector<std::tr1::shared_ptr<std::mutex> > locks;
 static unsigned long thread_id = 0;
 static std::map<std::string, unsigned long> thread_ids;
 
-static boost::mutex thread_id_mutex;
+static std::mutex thread_id_mutex;
 
 static unsigned long openssl_thread_id() {
     /*
@@ -31,10 +29,10 @@ static unsigned long openssl_thread_id() {
         we cast the thread id to a string, and use that as a lookup. We need
         to lock the call because it is going to be called from a number of threads.
     */
-    boost::mutex::scoped_lock lock(thread_id_mutex);
+    std::lock_guard<std::mutex> lock(thread_id_mutex);
 
     std::stringstream ios;
-    ios << boost::this_thread::get_id();
+    ios << std::this_thread::get_id();
     std::string idx = ios.str();
 
     std::map<std::string, unsigned long>::iterator it = thread_ids.find(idx);
@@ -65,7 +63,7 @@ void init() {
 
 	int num_thread_locks = CRYPTO_num_locks();
 	for(int i = 0; i < num_thread_locks; ++i) {
-        locks.push_back(boost::shared_ptr<boost::mutex>(new boost::mutex));
+        locks.push_back(std::tr1::shared_ptr<std::mutex>(new std::mutex));
 	}
 
 	CRYPTO_set_locking_callback(&openssl_thread_lock);
@@ -120,13 +118,13 @@ std::string url_encode(const MultiValueDict& data) {
 
     for(MultiValueDict::const_iterator it = data.begin(); it != data.end(); ++it) {
         std::vector<std::string> items = (*it).second;
-        BOOST_FOREACH(std::string s, items) {
+        for(std::string s: items) {
             std::string k = url_quote((*it).first);
             std::string v = url_quote(s);
             params.push_back(k + "=" + v);
         }
     }
-    return boost::algorithm::join(params, "&");
+    return str::join(params, "&");
 }
 
 MultiValueDict url_decode(const std::string& query) {
@@ -137,7 +135,7 @@ MultiValueDict url_decode(const std::string& query) {
     std::vector<std::string> params = str::split(query, "&");
 
     MultiValueDict result;
-    BOOST_FOREACH(std::string s, params) {
+    for(std::string s: params) {
         std::vector<std::string> values = str::split(s, "=");
 
         if(values.size() == 2) {
@@ -183,7 +181,7 @@ std::map<std::string, std::string> url_split(const std::string& url) {
         work = std::string(work.begin() + it + 1, work.end());
     }
 
-    if(boost::starts_with(work, "//")) {
+    if(str::starts_with(work, "//")) {
         std::pair<std::string, std::string> parts = split_netloc(work, 2);
         netloc = parts.first;
         work = parts.second;
@@ -263,7 +261,7 @@ Response Client::get(const std::string& path, const MultiValueDict& data, const 
 
     if(!headers.empty()) {
         typedef std::pair<std::string, std::string> HeaderPair;
-        BOOST_FOREACH(HeaderPair item, headers) {
+        for(HeaderPair item: headers) {
             std::string header = item.first + ": " + item.second;
             header_list = curl_slist_append(header_list, header.c_str());
         }
@@ -326,15 +324,15 @@ Response Client::get_to_file(const std::string& path,
     return resp;
 }
 
-boost::shared_future<Response> Client::get_async(const std::string& path, const MultiValueDict& data, const Dict& headers, const int timeout) {
-    boost::shared_future<Response> res = thread::submit_task(boost::bind(&Client::get, this, path, data, headers, timeout));
+std::shared_future<Response> Client::get_async(const std::string& path, const MultiValueDict& data, const Dict& headers, const int timeout) {
+    std::shared_future<Response> res = thread::submit_task(std::bind(&Client::get, this, path, data, headers, timeout));
     return res;
 }
 
-boost::shared_future<Response> Client::get_to_file_async(const std::string& path, const std::string& output_filename,
+std::shared_future<Response> Client::get_to_file_async(const std::string& path, const std::string& output_filename,
         const MultiValueDict& data, const Dict& headers, const int timeout) {
 
-    boost::shared_future<Response> res = thread::submit_task(boost::bind(&Client::get_to_file, this, path, output_filename, data, headers, timeout));
+    std::shared_future<Response> res = thread::submit_task(std::bind(&Client::get_to_file, this, path, output_filename, data, headers, timeout));
     return res;
 }
 

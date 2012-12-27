@@ -47,6 +47,9 @@ std::string join(std::set<std::string> parts, std::string joiner) {
 
     std::string final_string = "";
     for(std::string p: parts) {
+        if(p.empty()) {
+            continue;
+        }
         final_string += p;
         final_string += joiner;
     }
@@ -61,6 +64,9 @@ std::string join(std::vector<std::string> parts, std::string joiner) {
 
     std::string final_string = "";
     for(std::string p: parts) {
+        if(p.empty()) {
+            continue;
+        }
         final_string += p;
         final_string += joiner;
     }
