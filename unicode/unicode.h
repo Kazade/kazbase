@@ -53,10 +53,16 @@ public:
     std::vector<unicode> split() const;
     unicode join(const std::vector<unicode>& parts) const;
 
+    template<typename T>
+    unicode format(T value, uint16_t counter=0) {
+        unicode token = unicode(std::string("{") + boost::lexical_cast<std::string>(counter) + std::string("}"));
+        return this->replace(token, boost::lexical_cast<std::string>(value));
+    }
+
     template<typename T, typename... Args>
     unicode format(T value, Args... args, uint16_t counter=0) {
         unicode token = unicode("{" + boost::lexical_cast<std::string>(counter) + "}");
-        unicode result = this->replace(token, value);
+        unicode result = this->replace(token, boost::lexical_cast<std::string>(value));
         return result.format(args..., counter + 1);
     }
 
