@@ -54,16 +54,18 @@ public:
     unicode join(const std::vector<unicode>& parts) const;
 
     template<typename T>
-    unicode format(T value, uint16_t counter=0) {
-        unicode token = unicode(std::string("{") + boost::lexical_cast<std::string>(counter) + std::string("}"));
+    unicode format(T value) {
+        unicode token = unicode(std::string("{0}"));
         return this->replace(token, boost::lexical_cast<std::string>(value));
     }
 
-    template<typename T, typename... Args>
-    unicode format(T value, Args... args, uint16_t counter=0) {
-        unicode token = unicode("{" + boost::lexical_cast<std::string>(counter) + "}");
-        unicode result = this->replace(token, boost::lexical_cast<std::string>(value));
-        return result.format(args..., counter + 1);
+    template<typename T, typename U>
+    unicode format(T v1, U v2) {
+        unicode token = unicode(std::string("{0}"));
+        unicode result = this->replace(token, boost::lexical_cast<std::string>(v1));
+
+        token = unicode(std::string("{1}"));
+        return result.replace(token, boost::lexical_cast<std::string>(v2));
     }
 
     bool operator==(const unicode& rhs) const {
