@@ -17,11 +17,7 @@ std::string join(const std::string& p1, const std::string& p2) {
 }
 
 std::string abs_path(const std::string& p) {
-#ifdef USE_FILESYSTEM_THREE
-    return boost::filesystem3::complete(p).normalize().string();
-#else
     return boost::filesystem::complete(p).normalize().string();
-#endif
 }
 
 std::pair<std::string, std::string> split(const std::string& path) {
