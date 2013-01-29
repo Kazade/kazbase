@@ -1,8 +1,8 @@
 #include <cassert>
 
-#include "kazbase/list_utils.h"
-#include "kazbase/string.h"
-#include "kazbase/logging/logging.h"
+#include "../list_utils.h"
+#include "../string.h"
+#include "../logging.h"
 #include "json.h"
 
 namespace json {

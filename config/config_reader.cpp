@@ -3,7 +3,7 @@
 
 #include <boost/lexical_cast.hpp>
 
-#include "kazbase/string.h"
+#include "../string.h"
 
 #include "config_reader.h"
 

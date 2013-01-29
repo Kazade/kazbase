@@ -1,5 +1,5 @@
-#include "kazbase/logging/logging.h"
-#include "kazbase/thread/future.h"
+#include "../logging.h"
+#include "../thread/future.h"
 
 namespace network {
 namespace net {

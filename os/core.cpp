@@ -2,8 +2,8 @@
 #include <fstream>
 
 #include "core.h"
-#include "kazbase/exceptions.h"
-#include "kazbase/os/path.h"
+#include "../exceptions.h"
+#include "path.h"
 
 namespace os {
 

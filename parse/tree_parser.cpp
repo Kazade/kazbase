@@ -1,6 +1,6 @@
 #include <iostream>
 #include "tree_parser.h"
-#include "kazbase/logging/logging.h"
+#include "../logging.h"
 
 namespace parse {
 

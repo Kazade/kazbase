@@ -6,8 +6,8 @@
 #include <fstream>
 #include "path.h"
 
-#include "kazbase/exceptions.h"
-#include "kazbase/string.h"
+#include "../exceptions.h"
+#include "../string.h"
 
 namespace os {
 namespace path {

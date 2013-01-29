@@ -1,7 +1,7 @@
 #ifndef KAZBASE_STAT_H
 #define KAZBASE_STAT_H
 
-#include "kazbase/datetime.h"
+#include "../datetime.h"
 
 namespace os {
 namespace stat {

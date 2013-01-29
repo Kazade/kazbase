@@ -1,9 +1,9 @@
 #include <cassert>
 
 #include "applications.h"
-#include "kazbase/config/config_reader.h"
-#include "kazbase/fdo/base_directory.h"
-#include "kazbase/os/path.h"
+#include "../config/config_reader.h"
+#include "base_directory.h"
+#include "../os/path.h"
 
 namespace fdo {
 namespace apps {

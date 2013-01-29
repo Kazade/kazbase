@@ -2,7 +2,7 @@
 #define REQUESTS_H_INCLUDED
 
 #include <future>
-#include "kazbase/types.h"
+#include "../types.h"
 
 namespace requests {
 

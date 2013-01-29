@@ -1,9 +1,9 @@
 #include <iostream>
 #include "autostart.h"
-#include "kazbase/os/path.h"
-#include "kazbase/fdo/base_directory.h"
-#include "kazbase/exceptions.h"
-#include "kazbase/fdo/applications.h"
+#include "../os/path.h"
+#include "base_directory.h"
+#include "../exceptions.h"
+#include "applications.h"
 
 ApplicationAutostart::ApplicationAutostart(const std::string& name):
     desktop_file_(fdo::apps::find_desktop_file(name)) {

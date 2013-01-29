@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <string>
 
-#include "kazbase/fdo/applications.h"
+#include "applications.h"
 
 class ApplicationAutostart {
 public:

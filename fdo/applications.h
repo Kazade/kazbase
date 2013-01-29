@@ -6,7 +6,7 @@
 #include <stdexcept>
 #include <tr1/memory>
 
-#include "kazbase/config/config_reader.h"
+#include "../config/config_reader.h"
 
 namespace fdo {
 namespace apps {

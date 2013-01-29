@@ -1,9 +1,9 @@
 #include <cstdlib>
 #include "base_directory.h"
-#include "kazbase/os/core.h"
-#include "kazbase/os/path.h"
-#include "kazbase/exceptions.h"
-#include "kazbase/string.h"
+#include "../os/core.h"
+#include "../os/path.h"
+#include "../exceptions.h"
+#include "../string.h"
 
 namespace fdo {
 namespace xdg {

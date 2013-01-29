@@ -1,5 +1,5 @@
 #include <boost/regex.hpp>
-#include "kazbase/logging/logging.h"
+#include "logging.h"
 #include "regex.h"
 
 namespace regex {

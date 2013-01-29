@@ -5,7 +5,7 @@
 #include <vector>
 #include <utility>
 
-#include "kazbase/regex/regex.h"
+#include "../regex.h"
 
 namespace parse {
 

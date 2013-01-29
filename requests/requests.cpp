@@ -4,10 +4,10 @@
 #include <openssl/crypto.h>
 #include <curl/curl.h>
 
-#include "kazbase/requests/requests.h"
-#include "kazbase/string.h"
-#include "kazbase/logging/logging.h"
-#include "kazbase/thread/future.h"
+#include "requests.h"
+#include "../string.h"
+#include "../logging.h"
+#include "../thread/future.h"
 
 namespace requests {
 
