@@ -1,7 +1,12 @@
 #include "utf8.h"
 #include "unicode.h"
+#include "string.h"
 
 #include <boost/algorithm/string.hpp>
+
+unicode::unicode(const char* utf8_string):
+    unicode(std::string(utf8_string)) {
+}
 
 unicode::unicode(const std::string& utf8_string) {
     utf8::utf8to32(utf8_string.begin(), utf8_string.end(), std::back_inserter(string_));
@@ -22,6 +27,24 @@ unicode unicode::replace(const unicode& to_find, const unicode& to_replace) {
     std::string final_s(encode());
     boost::replace_all(final_s, std::string(to_find.encode()), std::string(to_replace.encode()));
     return unicode(final_s);
+}
+
+unicode unicode::lower() const {
+    //FIXME: WORK WITH UNICODE
+    std::string final_s(encode());
+    final_s = str::lower(final_s);
+    return unicode(final_s);
+}
+
+std::vector<unicode> unicode::split(const unicode &on) const {
+    //FIXME: WORK WITH UNICODE
+    std::string final_s(encode());
+
+    std::vector<unicode> result;
+    for(std::string part: str::split(final_s, on.encode())) {
+        result.push_back(unicode(part));
+    }
+    return result;
 }
 
 unicode unicode::join(const std::vector<unicode>& parts) const {

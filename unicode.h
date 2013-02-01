@@ -20,6 +20,7 @@ public:
         return *this;
     }
 
+    unicode(const char* utf8_string);
     unicode(const std::string& utf8_string);
     unicode(char32_t* unicode_string);
 
@@ -50,9 +51,10 @@ public:
     bool starts_with(const unicode& thing);
     bool ends_with(const unicode& thing);
 
-    std::vector<unicode> split() const;
+    std::vector<unicode> split(const unicode& on) const;
     unicode join(const std::vector<unicode>& parts) const;
 
+    //FIXME: VARIADIC TEMPLATES!
     template<typename T>
     unicode format(T value) {
         unicode token = unicode(std::string("{0}"));
@@ -66,6 +68,29 @@ public:
 
         token = unicode(std::string("{1}"));
         return result.replace(token, boost::lexical_cast<std::string>(v2));
+    }
+
+    template<typename T, typename U, typename V>
+    unicode format(T v1, U v2, V v3) {
+        unicode token = unicode(std::string("{0}"));
+        unicode result = this->replace(token, boost::lexical_cast<std::string>(v1));
+
+        token = unicode(std::string("{1}"));
+        result = result.replace(token, boost::lexical_cast<std::string>(v2));
+
+        token = unicode(std::string("{2}"));
+        result = result.replace(token, boost::lexical_cast<std::string>(v3));
+
+        return result;
+    }
+
+    //fixme: make unicode work with lexical_cast rather than overloading
+    unicode format(unicode v1, unicode v2) {
+        return format(v1.encode(), v2.encode());
+    }
+
+    unicode format(unicode value) {
+        return format(value.encode());
     }
 
     bool operator==(const unicode& rhs) const {
