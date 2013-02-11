@@ -70,7 +70,8 @@ public:
         L_ERROR(std::string(typeid(T).name()) + " instance does not exist");
     }
 
-    DoesNotExist(const T& what):
+    template<typename U>
+    DoesNotExist(const U& what):
         std::runtime_error(std::string(typeid(T).name()) + " instance does not exist: " + boost::lexical_cast<std::string>(what)) {
         L_ERROR(std::string(typeid(T).name()) + " instance does not exist: " + boost::lexical_cast<std::string>(what));
     }
