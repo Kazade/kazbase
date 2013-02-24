@@ -17,6 +17,12 @@ std::vector<T> slice(const std::vector<T>& container, uint32_t start, uint32_t e
     return result;
 }
 
+template<typename T, typename U>
+bool contains(const std::tr1::unordered_map<T, U>& haystack, const T& needle) {
+    typename std::tr1::unordered_map<T, U>::const_iterator it = haystack.find(needle);
+    return it != haystack.end();
+}
+
 template<typename T>
 bool contains(const std::vector<T>& haystack, const T& needle) {
     typename std::vector<T>::const_iterator it = std::find(haystack.begin(), haystack.end(), needle);
