@@ -77,12 +77,13 @@ public:
             try {
                 std::cout << "\t" << names_[ran] << std::endl;
                 test();
-                ++ran;
             } catch(AssertionError& e) {
+                std::cout << "\t\t" << e.what() << std::endl;
                 ++failed;
             } catch(...) {
                 ++failed;
             }
+            ++ran;
         }
 
         if(!failed) {
