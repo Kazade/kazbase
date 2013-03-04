@@ -72,6 +72,7 @@ public:
     int32_t run() {
         int failed = 0;
         int ran = 0;
+        int crashed = 0;
         std::cout << std::endl << "Running " << tests_.size() << " tests" << std::endl << std::endl;
         for(std::tr1::function<void ()> test: tests_) {
             try {
@@ -85,22 +86,31 @@ public:
                 test();
                 std::cout << "\033[32m" << "   OK   " << std::endl;
             } catch(AssertionError& e) {
-                std::cout << "\033[31m" << " FAILED " << std::endl;
+                std::cout << "\033[33m" << " FAILED " << std::endl;
                 std::cout << "        " << e.what() << std::endl;
                 ++failed;
             } catch(...) {
-                std::cout << "\033[31m" << " FAILED " << std::endl;
-                ++failed;
+                std::cout << "\033[31m" << " EXCEPT " << std::endl;
+                ++crashed;
             }
             std::cout << "\033[37m";
             ++ran;
         }
 
         std::cout << "-----------------------" << std::endl;
-        if(!failed) {
+        if(!failed && !crashed) {
             std::cout << "All tests passed" << std::endl << std::endl;
         } else {
-            std::cout << failed << " tests failed" << std::endl << std::endl;
+            if(failed) {
+                std::cout << failed << " tests failed";
+            }
+            if(crashed) {
+                if(failed) {
+                    std::cout << ", ";
+                }
+                std::cout << crashed << " tests crashed";
+            }
+            std::cout << std::endl << std::endl;
         }
 
         return failed;
