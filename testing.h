@@ -45,6 +45,20 @@ public:
             throw AssertionError(unicode("{0} is not close enough to {1}").format(actual, expected).encode());
         }
     }
+
+    template<typename T>
+    void assert_is_null(T* thing) {
+        if(thing != nullptr) {
+            throw AssertionError("Pointer was not NULL");
+        }
+    }
+
+    template<typename T>
+    void assert_is_not_null(T* thing) {
+        if(thing == nullptr) {
+            throw AssertionError("Pointer was unexpectedly NULL");
+        }
+    }
 };
 
 class TestRunner {
