@@ -103,8 +103,9 @@ public:
                 std::cout << "\033[33m" << " FAILED " << std::endl;
                 std::cout << "        " << e.what() << std::endl;
                 ++failed;
-            } catch(...) {
+            } catch(std::exception& e) {
                 std::cout << "\033[31m" << " EXCEPT " << std::endl;
+                std::cout << "        " << e.what() << std::endl;
                 ++crashed;
             }
             std::cout << "\033[37m";
