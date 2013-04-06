@@ -3,20 +3,19 @@
 
 namespace logging {
 
-
-void debug(const std::string& text, const std::string& file, int32_t line) {
+void debug(const unicode& text, const std::string& file, int32_t line) {
     get_logger("/")->debug(text, file, line);
 }
 
-void info(const std::string& text, const std::string& file, int32_t line) {
+void info(const unicode& text, const std::string& file, int32_t line) {
     get_logger("/")->info(text, file, line);
 }
 
-void warn(const std::string& text, const std::string& file, int32_t line) {
+void warn(const unicode& text, const std::string& file, int32_t line) {
     get_logger("/")->warn(text, file, line);
 }
 
-void error(const std::string& text, const std::string& file, int32_t line) {
+void error(const unicode& text, const std::string& file, int32_t line) {
     get_logger("/")->error(text, file, line);
 }
 

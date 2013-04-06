@@ -54,43 +54,37 @@ public:
     std::vector<unicode> split(const unicode& on) const;
     unicode join(const std::vector<unicode>& parts) const;
 
-    //FIXME: VARIADIC TEMPLATES!
+    struct Counter {
+        Counter(uint32_t c): c(c) {}
+        uint32_t c;
+    };
+
     template<typename T>
     unicode format(T value) {
-        unicode token = unicode(std::string("{0}"));
-        return this->replace(token, boost::lexical_cast<std::string>(value));
-    }
-
-    template<typename T, typename U>
-    unicode format(T v1, U v2) {
-        unicode token = unicode(std::string("{0}"));
-        unicode result = this->replace(token, boost::lexical_cast<std::string>(v1));
-
-        token = unicode(std::string("{1}"));
-        return result.replace(token, boost::lexical_cast<std::string>(v2));
-    }
-
-    template<typename T, typename U, typename V>
-    unicode format(T v1, U v2, V v3) {
-        unicode token = unicode(std::string("{0}"));
-        unicode result = this->replace(token, boost::lexical_cast<std::string>(v1));
-
-        token = unicode(std::string("{1}"));
-        result = result.replace(token, boost::lexical_cast<std::string>(v2));
-
-        token = unicode(std::string("{2}"));
-        result = result.replace(token, boost::lexical_cast<std::string>(v3));
-
+        unicode token = unicode("{" + boost::lexical_cast<std::string>(0) + "}");
+        unicode result = this->replace(token, boost::lexical_cast<std::string>(value));
         return result;
     }
 
-    //fixme: make unicode work with lexical_cast rather than overloading
-    unicode format(unicode v1, unicode v2) {
-        return format(v1.encode(), v2.encode());
+    template<typename T>
+    unicode format(Counter count, T value) {
+        unicode token = unicode("{" + boost::lexical_cast<std::string>(count.c) + "}");
+        unicode result = this->replace(token, boost::lexical_cast<std::string>(value));
+        return result;
     }
 
-    unicode format(unicode value) {
-        return format(value.encode());
+    template<typename T, typename... Args>
+    unicode format(T value, Args&... args) {
+        unicode token = unicode("{" + boost::lexical_cast<std::string>(0) + "}");
+        unicode result = this->replace(token, boost::lexical_cast<std::string>(value));
+        return result.format(Counter(0), args...);
+    }
+
+    template<typename T, typename... Args>
+    unicode format(Counter count, T value, Args&... args) {
+        unicode token = unicode("{" + boost::lexical_cast<std::string>(count.c) + "}");
+        unicode result = this->replace(token, boost::lexical_cast<std::string>(value));
+        return result.format(Counter(count.c + 1), args...);
     }
 
     bool operator==(const unicode& rhs) const {
@@ -134,5 +128,7 @@ public:
 private:
     ustring string_;
 };
+
+using _u = unicode;
 
 #endif // UNICODE_H

@@ -10,6 +10,8 @@
 #include <boost/date_time.hpp>
 #include <boost/filesystem.hpp>
 
+#include "unicode.h"
+
 namespace logging {
 
 enum LOG_LEVEL {
@@ -110,11 +112,19 @@ public:
         write_message("DEBUG", text, file, line);
     }
 
+    void debug(const unicode& text, const std::string& file="None", int32_t line=-1) {
+        debug(text.encode(), file, line);
+    }
+
     void info(const std::string& text, const std::string& file="None", int32_t line=-1) {
         if(level_ == LOG_LEVEL_NONE) return;
         if(level_ == LOG_LEVEL_WARN || level_ == LOG_LEVEL_ERROR) return;
 
         write_message("INFO", text, file, line);
+    }
+
+    void info(const unicode& text, const std::string& file="None", int32_t line=-1) {
+        info(text.encode(), file, line);
     }
 
     void warn(const std::string& text, const std::string& file="None", int32_t line=-1) {
@@ -124,10 +134,18 @@ public:
         write_message("WARN", text, file, line);
     }
 
+    void warn(const unicode& text, const std::string& file="None", int32_t line=-1) {
+        warn(text.encode(), file, line);
+    }
+
     void error(const std::string& text, const std::string& file="None", int32_t line=-1) {
         if(level_ == LOG_LEVEL_NONE) return;
 
         write_message("ERROR", text, file, line);
+    }
+
+    void error(const unicode& text, const std::string& file="None", int32_t line=-1) {
+        error(text.encode(), file, line);
     }
 
     void set_level(LOG_LEVEL level) {
@@ -160,10 +178,10 @@ private:
 
 Logger* get_logger(const std::string& name);
 
-void debug(const std::string& text, const std::string& file="None", int32_t line=-1);
-void info(const std::string& text, const std::string& file="None", int32_t line=-1);
-void warn(const std::string& text, const std::string& file="None", int32_t line=-1);
-void error(const std::string& text, const std::string& file="None", int32_t line=-1);
+void debug(const unicode& text, const std::string& file="None", int32_t line=-1);
+void info(const unicode& text, const std::string& file="None", int32_t line=-1);
+void warn(const unicode& text, const std::string& file="None", int32_t line=-1);
+void error(const unicode& text, const std::string& file="None", int32_t line=-1);
 
 }
 
