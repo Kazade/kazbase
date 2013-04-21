@@ -21,6 +21,8 @@ public:
     }
 
     unicode(const char* utf8_string);
+    unicode(const char16_t* utf16_string);
+
     unicode(const std::string& utf8_string);
     unicode(char32_t* unicode_string);
 

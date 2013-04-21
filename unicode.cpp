@@ -12,6 +12,14 @@ unicode::unicode(const std::string& utf8_string) {
     utf8::utf8to32(utf8_string.begin(), utf8_string.end(), std::back_inserter(string_));
 }
 
+unicode::unicode(const char16_t* utf16_string) {
+    std::string tmp;
+
+    std::basic_string<char16_t> s16(utf16_string);
+    utf8::utf16to8(s16.begin(), s16.end(), std::back_inserter(tmp));
+    utf8::utf8to32(tmp.begin(), tmp.end(), std::back_inserter(string_));
+}
+
 unicode::unicode(char32_t* utf32_string) {
     string_ = ustring(utf32_string);
 }
