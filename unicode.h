@@ -48,13 +48,16 @@ public:
     unicode rstrip() const;
     unicode swap_case() const;
     unicode replace(const unicode& thing, const unicode& replacement);
+    unicode slice(int32_t beg, int32_t end);
 
     bool empty() const { return string_.empty(); }
     bool starts_with(const unicode& thing);
     bool ends_with(const unicode& thing);
 
     std::vector<unicode> split(const unicode& on) const;
+
     unicode join(const std::vector<unicode>& parts) const;
+    unicode join(const std::vector<std::string>& parts) const;
 
     struct Counter {
         Counter(uint32_t c): c(c) {}

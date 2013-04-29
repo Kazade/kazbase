@@ -55,6 +55,15 @@ std::vector<unicode> unicode::split(const unicode &on) const {
     return result;
 }
 
+unicode unicode::join(const std::vector<std::string>& parts) const {
+    std::vector<unicode> tmp_parts;
+    for(std::string p: parts) {
+        tmp_parts.push_back(unicode(p));
+    }
+
+    return join(tmp_parts);
+}
+
 unicode unicode::join(const std::vector<unicode>& parts) const {
     if(parts.empty()) {
         return unicode("");
@@ -70,4 +79,26 @@ unicode unicode::join(const std::vector<unicode>& parts) const {
     }
 
     return unicode(final_string.begin(), final_string.begin() + (final_string.length() - string_.length()));
+}
+
+unicode unicode::slice(int32_t beg, int32_t end) {
+    //Handle negative indexing
+    if(beg < 0) {
+        beg = length() - beg;
+    }
+
+    if(end < 0) {
+        end = length() - end;
+    }
+
+    //Keep within range
+    if(beg > length()) {
+        beg = length() - 1;
+    }
+
+    if(end > length()) {
+        end = length() - 1;
+    }
+
+    return unicode(begin() + beg, begin() + end);
 }
