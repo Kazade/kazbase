@@ -4,6 +4,22 @@
 
 #include <boost/algorithm/string.hpp>
 
+unicode::unicode(int32_t n, char32_t c) {
+    string_ = std::basic_string<char32_t>(n, c);
+}
+
+unicode::unicode(int32_t n, char16_t c) {
+    std::basic_string<char16_t> s(n, c);
+
+    *this = unicode(s.c_str());
+}
+
+unicode::unicode(int32_t n, char c) {
+    std::string s(n, c);
+
+    *this = unicode(s.c_str());
+}
+
 unicode::unicode(const char* utf8_string):
     unicode(std::string(utf8_string)) {
 }
@@ -22,6 +38,19 @@ unicode::unicode(const char16_t* utf16_string) {
 
 unicode::unicode(char32_t* utf32_string) {
     string_ = ustring(utf32_string);
+}
+
+bool unicode::contains(const unicode& thing) const {
+    return contains(encode());
+}
+
+bool unicode::contains(const std::string& thing) const {
+    std::string enc = encode();
+    return enc.find(thing) != std::string::npos;
+}
+
+bool unicode::contains(const char *thing) const {
+    return contains(std::string(thing));
 }
 
 std::string unicode::encode() const {
@@ -101,4 +130,14 @@ unicode unicode::slice(int32_t beg, int32_t end) {
     }
 
     return unicode(begin() + beg, begin() + end);
+}
+
+unicode unicode::slice(int32_t beg, void* null) {
+    assert(!null);
+    return slice(beg, length());
+}
+
+unicode unicode::slice(void* null, int32_t end) {
+    assert(!null);
+    return slice(0, end);
 }

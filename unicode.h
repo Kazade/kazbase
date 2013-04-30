@@ -23,6 +23,10 @@ public:
     unicode(const char* utf8_string);
     unicode(const char16_t* utf16_string);
 
+    unicode(int32_t n, char32_t c);
+    unicode(int32_t n, char16_t c);
+    unicode(int32_t n, char c);
+
     unicode(const std::string& utf8_string);
     unicode(char32_t* unicode_string);
 
@@ -48,7 +52,14 @@ public:
     unicode rstrip() const;
     unicode swap_case() const;
     unicode replace(const unicode& thing, const unicode& replacement);
+
+    bool contains(const unicode& thing) const;
+    bool contains(const std::string& thing) const;
+    bool contains(const char* thing) const;
+
     unicode slice(int32_t beg, int32_t end);
+    unicode slice(int32_t beg, void* null);
+    unicode slice(void* null, int32_t end);
 
     bool empty() const { return string_.empty(); }
     bool starts_with(const unicode& thing);
