@@ -6,6 +6,7 @@
 #include <map>
 #include <stdexcept>
 #include <boost/any.hpp>
+#include "../exceptions.h"
 
 namespace config {
 
@@ -25,12 +26,6 @@ class InvalidSettingError : public std::logic_error {
 public:
     InvalidSettingError(const std::string& s):
         std::logic_error(s) {}
-};
-
-class IOError : public std::runtime_error {
-public:
-    IOError(const std::string& s):
-        std::runtime_error(s) {}
 };
 
 class ConfigReader {
