@@ -59,7 +59,7 @@ void ConfigReader::load(const std::string& filename) {
     std::ifstream s(filename.c_str());
 
     if(!s.good()) {
-        throw config::IOError("Could not load the file: " + filename);
+        throw IOError("Could not load the file: " + filename);
     }
 
     std::string current_group;
