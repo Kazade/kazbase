@@ -3,7 +3,7 @@
 
 namespace file_utils {
 
-std::string read_contents(const std::string& filename);
+std::string read(const std::string& filename);
 
 }
 

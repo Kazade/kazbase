@@ -2,6 +2,7 @@
 #include "unicode.h"
 #include "string.h"
 
+#include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
 
 unicode::unicode(int32_t n, char32_t c) {
@@ -140,4 +141,51 @@ unicode unicode::slice(int32_t beg, void* null) {
 unicode unicode::slice(void* null, int32_t end) {
     assert(!null);
     return slice(0, end);
+}
+
+int32_t unicode::to_int() const {
+    return boost::lexical_cast<int32_t>(encode());
+}
+
+float unicode::to_float() const {
+    return boost::lexical_cast<float>(encode());
+}
+
+double unicode::to_double() const {
+    return boost::lexical_cast<double>(encode());
+}
+
+bool unicode::to_boolean() const {
+    return lower() == "yes" || lower() == "true";
+}
+
+uint32_t unicode::count(const unicode& str) const {
+    if(length() == 0) return 0;
+
+    uint32_t count = 0;
+    //FIXME Use this->find when it's implemented
+    for(size_t offset = string_.find(str.string_);
+        offset != std::string::npos;
+        offset = string_.find(str.string_, offset + str.string_.length())) {
+        ++count;
+    }
+
+    return count;
+}
+
+bool unicode::starts_with(const unicode& thing) const {
+    return std::mismatch(thing.begin(), thing.end(), begin()).first == thing.end();
+}
+
+bool unicode::ends_with(const unicode& thing) const {
+    return std::mismatch(thing.rbegin(), thing.rend(), rbegin()).first == thing.rend();
+}
+
+unicode unicode::strip(const unicode& things) const {
+    unicode result = *this;
+
+    result.string_.erase(result.string_.find_last_not_of(things.string_) + 1);
+    result.string_.erase(result.begin(), result.begin() + result.string_.find_first_not_of(things.string_));
+
+    return result;
 }

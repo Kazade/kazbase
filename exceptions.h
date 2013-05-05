@@ -22,6 +22,12 @@ public:
 
 class IOError : public std::runtime_error {
 public:
+    IOError(const char* what):
+        std::runtime_error(what) {}
+
+    IOError(const unicode& what):
+        std::runtime_error(what.encode()) {}
+
     IOError(const std::string& what):
         std::runtime_error(what) { }
 };

@@ -47,7 +47,7 @@ public:
 
     unicode lower() const;
     unicode upper() const;
-    unicode strip() const;
+    unicode strip(const unicode& things=unicode(" \t\r\n")) const;
     unicode lstrip() const;
     unicode rstrip() const;
     unicode swap_case() const;
@@ -62,8 +62,8 @@ public:
     unicode slice(void* null, int32_t end);
 
     bool empty() const { return string_.empty(); }
-    bool starts_with(const unicode& thing);
-    bool ends_with(const unicode& thing);
+    bool starts_with(const unicode& thing) const;
+    bool ends_with(const unicode& thing) const;
 
     std::vector<unicode> split(const unicode& on) const;
 
@@ -93,7 +93,7 @@ public:
     unicode format(T value, Args&... args) {
         unicode token = unicode("{" + boost::lexical_cast<std::string>(0) + "}");
         unicode result = this->replace(token, boost::lexical_cast<std::string>(value));
-        return result.format(Counter(0), args...);
+        return result.format(Counter(1), args...);
     }
 
     template<typename T, typename... Args>
@@ -141,6 +141,19 @@ public:
     ustring::iterator end() { return string_.end(); }
     ustring::const_iterator begin() const { return string_.begin(); }
     ustring::const_iterator end() const { return string_.end(); }
+
+    ustring::reverse_iterator rbegin() { return string_.rbegin(); }
+    ustring::reverse_iterator rend() { return string_.rend(); }
+    ustring::const_reverse_iterator rbegin() const { return string_.rbegin(); }
+    ustring::const_reverse_iterator rend() const { return string_.rend(); }
+
+    uint32_t count(const unicode& str) const;
+
+    //Conversion functions
+    int32_t to_int() const;
+    float to_float() const;
+    double to_double() const;
+    bool to_boolean() const;
 private:
     ustring string_;
 };
