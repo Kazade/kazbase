@@ -21,7 +21,7 @@ public:
     std::string get_file_path() const { return path_; }
 private:
     std::string path_;
-    std::tr1::shared_ptr<config::ConfigReader> config_;
+    std::shared_ptr<config::ConfigReader> config_;
 };
 
 std::vector<std::string> get_app_names();

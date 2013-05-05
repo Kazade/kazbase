@@ -56,7 +56,7 @@ public:
 
 class Node {
 public:
-    typedef std::tr1::shared_ptr<Node> ptr;
+    typedef std::shared_ptr<Node> ptr;
 
 private:
     std::map<std::string, Node::ptr> dict_;

@@ -65,7 +65,7 @@ class TestRunner {
 public:
     template<typename T, typename U>
     void register_case(std::vector<U> methods, std::vector<std::string> names) {
-        std::tr1::shared_ptr<T> instance(new T());
+        std::shared_ptr<T> instance(new T());
 
         instances_.push_back(instance); //Hold on to it
 

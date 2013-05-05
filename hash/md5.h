@@ -17,7 +17,7 @@ public:
     std::string hex_digest();
 
 private:
-    std::tr1::shared_ptr<MD5_CTX> ctx_;
+    std::shared_ptr<MD5_CTX> ctx_;
 };
 
 }

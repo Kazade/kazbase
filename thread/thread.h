@@ -35,7 +35,7 @@ protected:
 			
 private:
 	volatile bool stop_requested_;
-	std::tr1::shared_ptr<boost::thread> worker_;
+	std::shared_ptr<boost::thread> worker_;
 };
 
 #endif
