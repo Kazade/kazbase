@@ -154,9 +154,20 @@ public:
     float to_float() const;
     double to_double() const;
     bool to_boolean() const;
+    ustring to_ustring() const { return string_; }
 private:
     ustring string_;
 };
+
+namespace std {
+    template<>
+    struct hash<unicode> {
+        size_t operator()(const unicode& str) const {
+            hash<ustring> make_hash;
+            return make_hash(str.to_ustring());
+        }
+    };
+}
 
 using _u = unicode;
 

@@ -7,6 +7,10 @@
 
 namespace os {
 
+void touch(const unicode& path) {
+    touch(path.encode());
+}
+
 void touch(const std::string& path) {
     if(!os::path::exists(path)) {
         make_dirs(os::path::dir_name(path));
@@ -21,6 +25,10 @@ void touch(const std::string& path) {
 
 void make_dirs(const std::string& path) {
     boost::filesystem::create_directories(path);
+}
+
+bool delete_path(const unicode& path, bool recursive, bool fail_silently) {
+    return delete_path(path.encode(), recursive, fail_silently);
 }
 
 bool delete_path(const std::string& path, bool recursive, bool fail_silently) {
