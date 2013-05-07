@@ -16,6 +16,10 @@ std::string join(const std::string& p1, const std::string& p2) {
     return p1 + OS_SEP + p2;
 }
 
+unicode abs_path(const unicode& p) {
+    return abs_path(p.encode());
+}
+
 std::string abs_path(const std::string& p) {
     return boost::filesystem::complete(p).normalize().string();
 }

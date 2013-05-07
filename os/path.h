@@ -2,8 +2,8 @@
 #define KAZBASE_PATH_H
 
 #include <vector>
-#include <string>
 #include <utility>
+#include "../unicode.h"
 
 namespace os {
 
@@ -16,7 +16,10 @@ namespace os {
 namespace path {
 
 std::string join(const std::string& p1, const std::string& p2);
+
 std::string abs_path(const std::string& p);
+unicode abs_path(const unicode& p);
+
 std::pair<std::string, std::string> split(const std::string& path);
 bool exists(const std::string& path);
 std::string dir_name(const std::string& path);
