@@ -57,9 +57,9 @@ public:
     bool contains(const std::string& thing) const;
     bool contains(const char* thing) const;
 
-    unicode slice(int32_t beg, int32_t end);
-    unicode slice(int32_t beg, void* null);
-    unicode slice(void* null, int32_t end);
+    unicode slice(int32_t beg, int32_t end) const;
+    unicode slice(int32_t beg, void* null) const;
+    unicode slice(void* null, int32_t end) const;
 
     bool empty() const { return string_.empty(); }
     bool starts_with(const unicode& thing) const;
@@ -119,6 +119,10 @@ public:
         return *this;
     }
 
+    std::size_t rfind(const unicode& what) const {
+        return string_.rfind(what.string_);
+    }
+
     char32_t& operator[](ustring::size_type pos) {
         return string_[pos];
     }
@@ -130,6 +134,13 @@ public:
     unicode& operator+=(const unicode& rhs) {
         string_.append(rhs.string_);
         return *this;
+    }
+
+    unicode operator+(const unicode& rhs) const {
+        unicode result;
+        result += *this;
+        result += rhs;
+        return result;
     }
 
     bool operator<(const unicode& rhs) const {

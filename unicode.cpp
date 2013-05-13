@@ -111,7 +111,7 @@ unicode unicode::join(const std::vector<unicode>& parts) const {
     return unicode(final_string.begin(), final_string.begin() + (final_string.length() - string_.length()));
 }
 
-unicode unicode::slice(int32_t beg, int32_t end) {
+unicode unicode::slice(int32_t beg, int32_t end) const {
     //Handle negative indexing
     if(beg < 0) {
         beg = length() - beg;
@@ -133,12 +133,12 @@ unicode unicode::slice(int32_t beg, int32_t end) {
     return unicode(begin() + beg, begin() + end);
 }
 
-unicode unicode::slice(int32_t beg, void* null) {
+unicode unicode::slice(int32_t beg, void* null) const {
     assert(!null);
     return slice(beg, length());
 }
 
-unicode unicode::slice(void* null, int32_t end) {
+unicode unicode::slice(void* null, int32_t end) const {
     assert(!null);
     return slice(0, end);
 }

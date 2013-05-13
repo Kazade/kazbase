@@ -151,6 +151,24 @@ std::string working_directory() {
     return cwd;
 }
 
+std::pair<unicode, unicode> split_ext(const unicode& path) {
+    size_t sep_index = path.rfind(OS_SEP);
+    size_t dot_index = path.rfind(".");
+
+    if(dot_index > sep_index) {
+        size_t filename_index = sep_index + 1;
+        while(filename_index < dot_index) {
+            if(path[filename_index] != '.') {
+                return std::make_pair(
+                    path.slice(nullptr, dot_index),
+                    path.slice(dot_index, nullptr)
+                );
+            }
+        }
+    }
+
+    return std::make_pair(path, _u(""));
+}
 
 }
 }
