@@ -15,11 +15,7 @@ public:
 
     }
 
-    unicode& operator=(const unicode& rhs) {
-        this->string_ = rhs.string_;
-        return *this;
-    }
-
+    unicode& operator=(const unicode& rhs);
     unicode(const char* utf8_string);
     unicode(const char16_t* utf16_string);
 

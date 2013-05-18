@@ -5,6 +5,14 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
 
+unicode& unicode::operator=(const unicode& rhs) {
+    if(this == &rhs) {
+        return *this;
+    }
+    this->string_ = rhs.string_;
+    return *this;
+}
+
 unicode::unicode(int32_t n, char32_t c) {
     string_ = std::basic_string<char32_t>(n, c);
 }

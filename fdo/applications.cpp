@@ -36,10 +36,10 @@ DesktopFile find_desktop_file(const std::string& app) {
         return DesktopFile(os::path::abs_path("./" + app + ".desktop"));
     }
 
-    std::string rel_path = os::path::join("applications", app + ".desktop");
+    unicode rel_path = os::path::join("applications", app + ".desktop");
 
     //Let FileNotFoundError propagate
-    std::string desktop_file = fdo::xdg::find_data_file(rel_path);
+    std::string desktop_file = fdo::xdg::find_data_file(rel_path.encode());
 
     return DesktopFile(desktop_file);
 }

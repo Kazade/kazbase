@@ -23,8 +23,8 @@ void touch(const std::string& path) {
     boost::filesystem::last_write_time(path, n);
 }
 
-void make_dirs(const std::string& path) {
-    boost::filesystem::create_directories(path);
+void make_dirs(const unicode &path) {
+    boost::filesystem::create_directories(path.encode());
 }
 
 bool delete_path(const unicode& path, bool recursive, bool fail_silently) {

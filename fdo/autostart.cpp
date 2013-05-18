@@ -11,8 +11,8 @@ ApplicationAutostart::ApplicationAutostart(const std::string& name):
 
 static std::string find_user_autostart(fdo::apps::DesktopFile desktop_file) {
     std::string desktop_file_name = os::path::split(desktop_file.get_file_path()).second;
-    std::string rel_path = os::path::join("autostart", desktop_file_name);
-    std::string file_path = fdo::xdg::find_user_config_file(rel_path);
+    unicode rel_path = os::path::join("autostart", desktop_file_name);
+    std::string file_path = fdo::xdg::find_user_config_file(rel_path.encode());
     return file_path;
 }
 
@@ -33,12 +33,12 @@ bool ApplicationAutostart::is_enabled_for_user() const {
 bool ApplicationAutostart::is_enabled() const {
     std::string file_path;
     std::string desktop_file_name = os::path::split(desktop_file_.get_file_path()).second;
-    std::string rel_path = os::path::join("autostart", desktop_file_name);
+    unicode rel_path = os::path::join("autostart", desktop_file_name);
     try {
-        file_path = fdo::xdg::find_config_file(rel_path);
+        file_path = fdo::xdg::find_config_file(rel_path.encode());
     } catch(FileNotFoundError& e) {
         try {
-            file_path = fdo::xdg::find_user_config_file(rel_path);
+            file_path = fdo::xdg::find_user_config_file(rel_path.encode());
         } catch (FileNotFoundError& e) {
             return false;
         }
@@ -59,18 +59,18 @@ void ApplicationAutostart::enable() {
         return;
     }
 
-    std::string user_autostart = os::path::join(fdo::xdg::get_config_home(),
+    unicode user_autostart = os::path::join(fdo::xdg::get_config_home(),
                                                 os::path::join("autostart",
                                                     os::path::split(desktop_file_.get_file_path()).second
                                                 ));
 
     //If the autostart desktop file doesn't exist then copy the existing one
     if(!os::path::exists(user_autostart)) {
-        desktop_file_.save_as(user_autostart);
+        desktop_file_.save_as(user_autostart.encode());
     }
 
     //Read it, and set the Hidden value to false
-    fdo::apps::DesktopFile df(user_autostart);
+    fdo::apps::DesktopFile df(user_autostart.encode());
     df.get_config().set_setting("Desktop Entry", "Hidden", false);
     df.save();
 }
@@ -80,18 +80,18 @@ void ApplicationAutostart::disable() {
         return;
     }
 
-    std::string user_autostart = os::path::join(fdo::xdg::get_config_home(),
+    unicode user_autostart = os::path::join(fdo::xdg::get_config_home(),
                                                 os::path::join("autostart",
                                                     os::path::split(desktop_file_.get_file_path()).second
                                                 ));
 
     //If the autostart desktop file doesn't exist then copy the existing one
     if(!os::path::exists(user_autostart)) {
-        desktop_file_.save_as(user_autostart);
+        desktop_file_.save_as(user_autostart.encode());
     }
 
     //Read it, and set the Hidden value to true
-    fdo::apps::DesktopFile df(user_autostart);
+    fdo::apps::DesktopFile df(user_autostart.encode());
     df.get_config().set_setting("Desktop Entry", "Hidden", true);
     df.save();
 }

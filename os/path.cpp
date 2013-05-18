@@ -12,7 +12,7 @@
 namespace os {
 namespace path {
 
-std::string join(const std::string& p1, const std::string& p2) {
+unicode join(const unicode &p1, const unicode &p2) {
     return p1 + OS_SEP + p2;
 }
 
@@ -33,8 +33,8 @@ std::pair<std::string, std::string> split(const std::string& path) {
 #endif
 }
 
-bool exists(const std::string& path) {
-    return boost::filesystem::exists(path);
+bool exists(const unicode &path) {
+    return boost::filesystem::exists(path.encode());
 }
 
 std::string dir_name(const std::string& path) {
