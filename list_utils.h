@@ -5,7 +5,7 @@
 #include <set>
 #include <algorithm>
 #include <map>
-#include <tr1/unordered_map>
+#include <unordered_map>
 #include "exceptions.h"
 
 namespace container {
@@ -18,8 +18,8 @@ std::vector<T> slice(const std::vector<T>& container, uint32_t start, uint32_t e
 }
 
 template<typename T, typename U>
-bool contains(const std::tr1::unordered_map<T, U>& haystack, const T& needle) {
-    typename std::tr1::unordered_map<T, U>::const_iterator it = haystack.find(needle);
+bool contains(const std::unordered_map<T, U>& haystack, const T& needle) {
+    typename std::unordered_map<T, U>::const_iterator it = haystack.find(needle);
     return it != haystack.end();
 }
 
@@ -42,7 +42,7 @@ bool contains(const std::map<T, U>& haystack, const T& needle) {
 }
 
 template<typename T, typename U>
-std::set<T> keys(const std::tr1::unordered_map<T, U>& container) {
+std::set<T> keys(const std::unordered_map<T, U>& container) {
     std::set<T> result;
     for(std::pair<T, U> i: container) {
         result.insert(i.first);
