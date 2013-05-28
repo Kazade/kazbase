@@ -15,13 +15,13 @@ namespace os {
 
 namespace path {
 
-std::string join(const std::string& p1, const std::string& p2);
+unicode join(const unicode& p1, const unicode& p2);
 
 std::string abs_path(const std::string& p);
 unicode abs_path(const unicode& p);
 
 std::pair<std::string, std::string> split(const std::string& path);
-bool exists(const std::string& path);
+bool exists(const unicode& path);
 std::string dir_name(const std::string& path);
 bool is_absolute(const std::string& path);
 bool is_dir(const std::string& path);
@@ -36,6 +36,7 @@ std::vector<std::string> list_dir(const std::string& path);
 std::string read_file_contents(const std::string& path);
 std::string exe_path();
 std::string working_directory();
+std::pair<unicode, unicode> split_ext(const unicode& path);
 
 }
 }

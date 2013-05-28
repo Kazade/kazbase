@@ -12,7 +12,7 @@
 namespace os {
 namespace path {
 
-std::string join(const std::string& p1, const std::string& p2) {
+unicode join(const unicode &p1, const unicode &p2) {
     return p1 + OS_SEP + p2;
 }
 
@@ -33,8 +33,8 @@ std::pair<std::string, std::string> split(const std::string& path) {
 #endif
 }
 
-bool exists(const std::string& path) {
-    return boost::filesystem::exists(path);
+bool exists(const unicode &path) {
+    return boost::filesystem::exists(path.encode());
 }
 
 std::string dir_name(const std::string& path) {
@@ -151,6 +151,24 @@ std::string working_directory() {
     return cwd;
 }
 
+std::pair<unicode, unicode> split_ext(const unicode& path) {
+    size_t sep_index = path.rfind(OS_SEP);
+    size_t dot_index = path.rfind(".");
+
+    if(dot_index > sep_index) {
+        size_t filename_index = sep_index + 1;
+        while(filename_index < dot_index) {
+            if(path[filename_index] != '.') {
+                return std::make_pair(
+                    path.slice(nullptr, dot_index),
+                    path.slice(dot_index, nullptr)
+                );
+            }
+        }
+    }
+
+    return std::make_pair(path, _u(""));
+}
 
 }
 }

@@ -29,7 +29,7 @@ std::string get_data_home() {
         return os::path::expand_user(home);
     }
 
-    return join(get_user_home(), join(".local", "share"));
+    return join(get_user_home(), join(".local", "share")).encode();
 }
 
 /**
@@ -48,9 +48,9 @@ std::string make_dir_in_data_home(const std::string& folder_name) {
         os::path::hide_dir(dest_path);
     }
 
-    std::string final_path = join(dest_path, folder_name);
+    unicode final_path = join(dest_path, folder_name);
     os::make_dirs(final_path);
-    return final_path;
+    return final_path.encode();
 }
 
 std::string get_config_home() {
@@ -61,7 +61,7 @@ std::string get_config_home() {
         return os::path::expand_user(home);
     }
 
-    return join(get_user_home(), ".config");
+    return join(get_user_home(), ".config").encode();
 }
 
 /**
@@ -80,9 +80,9 @@ std::string make_dir_in_config_home(const std::string& folder_name) {
         os::path::hide_dir(dest_path);
     }
 
-    std::string final_path = join(dest_path, folder_name);
+    unicode final_path = join(dest_path, folder_name);
     os::make_dirs(final_path);
-    return final_path;
+    return final_path.encode();
 }
 
 std::string get_cache_home() {
@@ -93,7 +93,7 @@ std::string get_cache_home() {
         return os::path::expand_user(home);
     }
 
-    return join(get_user_home(), ".cache");
+    return join(get_user_home(), ".cache").encode();
 }
 
 std::vector<std::string> get_data_dirs() {
@@ -124,9 +124,9 @@ std::string find_data_file(const std::string& relative_path) {
     }
 
     for(std::vector<std::string>::iterator it = data_dirs.begin(); it != data_dirs.end(); ++it) {
-        std::string final_path = os::path::join((*it), relative_path);
+        unicode final_path = os::path::join((*it), relative_path);
         if(os::path::exists(final_path)) {
-            return final_path;
+            return final_path.encode();
         }
     }
 
@@ -136,9 +136,9 @@ std::string find_data_file(const std::string& relative_path) {
 std::string find_config_file(const std::string& relative_path) {
     std::vector<std::string> config_dirs = get_config_dirs();
     for(std::vector<std::string>::iterator it = config_dirs.begin(); it != config_dirs.end(); ++it) {
-        std::string final = os::path::join((*it), relative_path);
+        unicode final = os::path::join((*it), relative_path);
         if(os::path::exists(final)) {
-            return final;
+            return final.encode();
         }
     }
 
@@ -148,9 +148,9 @@ std::string find_config_file(const std::string& relative_path) {
 
 std::string find_user_data_file(const std::string& relative_path) {
     std::string data_home = get_data_home();
-    std::string final = os::path::join(data_home, relative_path);
+    unicode final = os::path::join(data_home, relative_path);
     if(os::path::exists(final)) {
-        return final;
+        return final.encode();
     }
 
     throw FileNotFoundError(relative_path);
@@ -158,20 +158,20 @@ std::string find_user_data_file(const std::string& relative_path) {
 
 std::string find_user_config_file(const std::string& relative_path) {
     std::string config_home = get_config_home();
-    std::string final = os::path::join(config_home, relative_path);
+    unicode final = os::path::join(config_home, relative_path);
     if(os::path::exists(final)) {
-        return final;
+        return final.encode();
     }
 
     throw FileNotFoundError(relative_path);
 }
 
 std::string get_or_create_program_cache_path(const std::string& program_name) {
-    std::string path = os::path::join(get_cache_home(), program_name);
+    unicode path = os::path::join(get_cache_home(), program_name);
     if(!os::path::exists(path)) {
         os::make_dirs(path);
     }
-    return path;
+    return path.encode();
 }
 
 }
