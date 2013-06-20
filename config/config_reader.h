@@ -3,45 +3,47 @@
 
 #include <iostream>
 #include <string>
-#include <map>
+#include <unordered_map>
 #include <stdexcept>
 #include <boost/any.hpp>
+
+#include "../unicode.h"
 #include "../exceptions.h"
 
 namespace config {
 
 class TypeError : public std::logic_error {
 public:
-    TypeError(const std::string& s):
-        std::logic_error(s) {}
+    TypeError(const unicode& s):
+        std::logic_error(s.encode()) {}
 };
 
 class InvalidSectionError : public std::logic_error {
 public:
-    InvalidSectionError(const std::string& s):
-        std::logic_error(s) {}
+    InvalidSectionError(const unicode& s):
+        std::logic_error(s.encode()) {}
 };
 
 class InvalidSettingError : public std::logic_error {
 public:
-    InvalidSettingError(const std::string& s):
-        std::logic_error(s) {}
+    InvalidSettingError(const unicode& s):
+        std::logic_error(s.encode()) {}
 };
 
 class ConfigReader {
 public:
     ConfigReader();
-    ConfigReader(const std::string& filename);
+    ConfigReader(const unicode& filename);
 
 
     template<typename T>
-    void set_setting(const std::string& group, const std::string& key, T value) {
+    void set_setting(const unicode& group, const unicode& key, T value) {
         groups_[group][key] = value;
     }
     
     template<typename T>
-    T get_setting(const std::string& group, const std::string& key) {
-        std::map<std::string, Option>::iterator g = groups_.find(group);
+    T get_setting(const unicode& group, const unicode& key) {
+        auto g = groups_.find(group);
 
         if(g == groups_.end()) {
             throw InvalidSectionError(group);
@@ -59,12 +61,12 @@ public:
         }
     }
 
-    void save(const std::string& filename);
-    void load(const std::string& filename);
+    void save(const unicode& filename);
+    void load(const unicode& filename);
 private:
-    typedef std::map<std::string, boost::any> Option;
-    std::map<std::string, Option> groups_;
-    std::string filename_;
+    typedef std::unordered_map<unicode, boost::any> Option;
+    std::unordered_map<unicode, Option> groups_;
+    unicode filename_;
 
 
 };

@@ -8,7 +8,7 @@
 
 class ApplicationAutostart {
 public:
-    ApplicationAutostart(const std::string& name);
+    ApplicationAutostart(const unicode& name);
 
     bool is_enabled_for_user() const;
     bool is_enabled() const;

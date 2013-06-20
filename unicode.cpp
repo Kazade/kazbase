@@ -5,6 +5,11 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
 
+std::ostream& operator<< (std::ostream& os, const unicode& str) {
+    os << str.encode();
+    return os;
+}
+
 unicode& unicode::operator=(const unicode& rhs) {
     if(this == &rhs) {
         return *this;
@@ -82,12 +87,12 @@ unicode unicode::lower() const {
     return unicode(final_s);
 }
 
-std::vector<unicode> unicode::split(const unicode &on) const {
+std::vector<unicode> unicode::split(const unicode &on, int32_t count) const {
     //FIXME: WORK WITH UNICODE
     std::string final_s(encode());
 
     std::vector<unicode> result;
-    for(std::string part: str::split(final_s, on.encode())) {
+    for(std::string part: str::split(final_s, on.encode(), count)) {
         result.push_back(unicode(part));
     }
     return result;
@@ -187,6 +192,22 @@ bool unicode::starts_with(const unicode& thing) const {
 
 bool unicode::ends_with(const unicode& thing) const {
     return std::mismatch(thing.rbegin(), thing.rend(), rbegin()).first == thing.rend();
+}
+
+unicode unicode::rstrip(const unicode& things) const {
+    unicode result = *this;
+
+    result.string_.erase(result.string_.find_last_not_of(things.string_) + 1);
+
+    return result;
+}
+
+unicode unicode::lstrip(const unicode& things) const {
+    unicode result = *this;
+
+    result.string_.erase(result.begin(), result.begin() + result.string_.find_first_not_of(things.string_));
+
+    return result;
 }
 
 unicode unicode::strip(const unicode& things) const {

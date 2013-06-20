@@ -2,29 +2,30 @@
 #define BASE_DIRECTORY_H_INCLUDED
 
 #include <stdexcept>
-#include <string>
 #include <vector>
+
+#include "../unicode.h"
 
 namespace fdo {
 namespace xdg {
 
-std::string get_data_home();
-std::string get_config_home();
-std::string get_cache_home();
+unicode get_data_home();
+unicode get_config_home();
+unicode get_cache_home();
 
-std::vector<std::string> get_data_dirs();
-std::vector<std::string> get_config_dirs();
+std::vector<unicode> get_data_dirs();
+std::vector<unicode> get_config_dirs();
 
-std::string find_data_file(const std::string& relative_path);
-std::string find_config_file(const std::string& relative_path);
-std::string find_user_data_file(const std::string& relative_path);
-std::string find_user_config_file(const std::string& relative_path);
+unicode find_data_file(const unicode& relative_path);
+unicode find_config_file(const unicode& relative_path);
+unicode find_user_data_file(const unicode& relative_path);
+unicode find_user_config_file(const unicode& relative_path);
 
-std::string make_dir_in_data_home(const std::string& folder_name);
-std::string make_dir_in_config_home(const std::string& folder_name);
+unicode make_dir_in_data_home(const unicode& folder_name);
+unicode make_dir_in_config_home(const unicode& folder_name);
 
-std::string get_or_create_program_cache_path(const std::string& program_name);
-std::string get_or_create_program_data_path(const std::string& program_name);
+unicode get_or_create_program_cache_path(const unicode& program_name);
+unicode get_or_create_program_data_path(const unicode& program_name);
 
 }
 }

@@ -58,14 +58,14 @@ public:
 
 class FileNotFoundError : public IOError {
 public:
-    FileNotFoundError(const std::string& path):
-        IOError("Unable to find file: " + path) {}
+    FileNotFoundError(const unicode& path):
+        IOError(_u("Unable to find file: ") + path) {}
 };
 
-class NetworkError : public std::runtime_error {
+class NetworkError : public IOError {
 public:
-    NetworkError(const std::string& what):
-        std::runtime_error(what) {}
+    NetworkError(const unicode& what):
+        IOError(what) {}
 };
 
 template<typename T>

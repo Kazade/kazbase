@@ -13,14 +13,14 @@ ConfigReader::ConfigReader() {
 
 }
 
-ConfigReader::ConfigReader(const std::string& filename) {
+ConfigReader::ConfigReader(const unicode& filename) {
     load(filename);
 }
 
-void ConfigReader::save(const std::string& filename) {
-    std::ofstream s(filename.c_str());
+void ConfigReader::save(const unicode& filename) {
+    std::ofstream s(filename.encode().c_str());
 
-    for(std::map<std::string, Option>::iterator it = groups_.begin();
+    for(auto it = groups_.begin();
         it != groups_.end(); ++it) {
 
         s << "[" << (*it).first << "]" << std::endl;
@@ -45,7 +45,7 @@ void ConfigReader::save(const std::string& filename) {
             } catch(boost::bad_any_cast& e) {}
 
             try {
-                std::string v = boost::any_cast<std::string>((*set).second);
+                unicode v = boost::any_cast<unicode>((*set).second);
                 s << (*set).first << "=" << v << std::endl;
                 continue;
             } catch(boost::bad_any_cast& e) {}
@@ -55,40 +55,42 @@ void ConfigReader::save(const std::string& filename) {
     }
 }
 
-void ConfigReader::load(const std::string& filename) {
-    std::ifstream s(filename.c_str());
+void ConfigReader::load(const unicode& filename) {
+    std::ifstream s(filename.encode());
 
-    if(!s.good()) {
-        throw IOError("Could not load the file: " + filename);
+    if(!s) {
+        throw IOError(_u("Could not load the file: ") + filename);
     }
 
-    std::string current_group;
-    std::string line;
-    while(std::getline(s, line)) {
-        line = str::strip(line);
+    unicode current_group;
+    std::string tmp_line;
+    while(std::getline(s, tmp_line)) {
+        unicode line = unicode(tmp_line).strip();
 
-        if(str::starts_with(line, "#")) continue;
+        if(line.starts_with("#")) {
+            continue;
+        }
 
-        if(str::starts_with(line, "[")) {
-            if(str::ends_with(line, "]")) {
-                current_group = str::slice(line, 1, -1);
+        if(line.starts_with("[")) {
+            if(line.ends_with("]")) {
+                current_group = line.slice(1, -1);
             }
         } else {
-            if(str::contains(line, "=")) {
+            if(line.contains("=")) {
                 if(current_group.empty()) {
                     throw IOError("Bad config file");
                 }
 
-                std::vector<std::string> parts = str::split(line, "=", 1);
+                std::vector<unicode> parts = line.split("=", 1);
 
                 assert(parts.size() == 2);
 
-                std::string key = parts.at(0);
-                std::string value = parts.at(1);
+                unicode key = parts.at(0);
+                unicode value = parts.at(1);
 
-                if(str::lower(value) == "true") {
+                if(value.lower() == "true") {
                     set_setting<bool>(current_group, key, true);
-                } else if (str::lower(value) == "false") {
+                } else if (value.lower() == "false") {
                     set_setting<bool>(current_group, key, false);
                 } else {
                     try {
@@ -99,7 +101,7 @@ void ConfigReader::load(const std::string& filename) {
                             int v = boost::lexical_cast<int>(value);
                             set_setting<int>(current_group, key, v);
                         } catch(boost::bad_lexical_cast& e) {
-                            set_setting<std::string>(current_group, key, value);
+                            set_setting<unicode>(current_group, key, value);
                         }
                     }
                 }
