@@ -12,7 +12,7 @@
 #include "unicode.h"
 #include "exceptions.h"
 #include "logging.h"
-
+#include "file_utils.h"
 
 #define assert_equal(expected, actual) _assert_equal((expected), (actual), __FILE__, __LINE__)
 #define assert_false(actual) _assert_false((actual), __FILE__, __LINE__)
@@ -119,7 +119,17 @@ public:
                 std::cout << "\033[33m" << " FAILED " << std::endl;
                 std::cout << "        " << e.what() << std::endl;
                 if(!e.file.empty()) {
-                    std::cout << "        " << e.file << ":" << e.line << std::endl;
+                    if(os::path::exists(e.file)) {
+                        std::vector<unicode> lines = file_utils::read_lines(e.file);
+
+                        if(e.line <= lines.size()) {
+                            std::cout << lines[e.line - 1].encode() << std::endl << std::endl;
+                        } else {
+                            std::cout << "        " << e.file << ":" << e.line << std::endl;
+                        }
+                    } else {
+                        std::cout << "        " << e.file << ":" << e.line << std::endl;
+                    }
                 }
                 ++failed;
             } catch(std::exception& e) {

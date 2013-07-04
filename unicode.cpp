@@ -88,13 +88,30 @@ unicode unicode::lower() const {
     return unicode(final_s);
 }
 
-std::vector<unicode> unicode::split(const unicode &on, int32_t count) const {
-    //FIXME: WORK WITH UNICODE
-    std::string final_s(encode());
-
+std::vector<unicode> unicode::split(const unicode &delimiter, int32_t count) const {
+    bool keep_empty = true;
     std::vector<unicode> result;
-    for(std::string part: str::split(final_s, on.encode(), count)) {
-        result.push_back(unicode(part));
+
+    if (delimiter.empty()) {
+        result.push_back(*this);
+        return result;
+    }
+
+    ustring::const_iterator substart = begin(), subend;
+
+    while (true) {
+        subend = std::search(substart, end(), delimiter.begin(), delimiter.end());
+        unicode temp(substart, subend);
+        if (keep_empty || !temp.empty()) {
+            result.push_back(temp);
+            if(result.size() == count) {
+                return result;
+            }
+        }
+        if (subend == end()) {
+            break;
+        }
+        substart = subend + delimiter.length();
     }
     return result;
 }

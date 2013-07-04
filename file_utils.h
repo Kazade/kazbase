@@ -1,9 +1,12 @@
 #ifndef KAZBASE_FILE_UTILS_H
 #define KAZBASE_FILE_UTILS_H
 
+#include "unicode.h"
+
 namespace file_utils {
 
-std::string read(const std::string& filename);
+unicode read(const unicode& filename);
+std::vector<unicode> read_lines(const unicode& filename);
 
 }
 
