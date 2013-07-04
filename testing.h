@@ -3,9 +3,8 @@
 
 #define UNW_LOCAL_ONLY
 
-#include <libunwind.h>
 #include <vector>
-#include <tr1/functional>
+#include <functional>
 #include <stdexcept>
 #include <boost/any.hpp>
 #include <iostream>
@@ -14,6 +13,13 @@
 #include "exceptions.h"
 #include "logging.h"
 
+
+#define assert_equal(expected, actual) _assert_equal((expected), (actual), __FILE__, __LINE__)
+#define assert_false(actual) _assert_false((actual), __FILE__, __LINE__)
+#define assert_true(actual) _assert_true((actual), __FILE__, __LINE__)
+#define assert_close(expected, actual, difference) _assert_close((expected), (actual), (difference), __FILE__, __LINE__)
+#define assert_is_null(actual) _assert_is_null((actual), __FILE__, __LINE__)
+
 class TestCase {
 public:
     virtual ~TestCase() {}
@@ -21,85 +27,51 @@ public:
     virtual void set_up() {}
     virtual void tear_down() {}
 
-    std::pair<unicode, int> get_file_and_line() {
-        unw_cursor_t cursor;
-        unw_context_t uc;
-        unw_word_t offp, ip, sp;
-
-        unw_getcontext(&uc);
-        unw_init_local(&cursor, &uc);
-
-        unw_step(&cursor);
-        unw_step(&cursor);
-
-        char name[256];
-        name[0] = '\0';
-        unw_get_proc_name(&cursor, name, 256, &offp);
-        unw_get_reg(&cursor, UNW_REG_IP, &ip);
-        unw_get_reg(&cursor, UNW_REG_SP, &sp);
-
-        unicode command = _u("/usr/bin/addr2line -C -e {0} -f -i {1:x}").format(os::path::exe_path(), (long)ip);
-
-        FILE* f = popen(command.encode().c_str(), "r");
-        if(f) {
-            char buf[256];
-            fgets(buf, 256, f);
-            fgets(buf, 256, f);
-            if(buf[0] != '?') {
-                unicode file = _u(buf).split(":")[0];
-                int line = std::stoi(_u(buf).split(":")[1].encode());
-                return std::make_pair(file, line);
-            }
-        }
-
-        return std::make_pair("", -1);
-    }
-
     template<typename T, typename U>
-    void assert_equal(T expected, U actual) {
+    void _assert_equal(T expected, U actual, unicode file, int line) {
         if(expected != actual) {
-            auto file_and_line = get_file_and_line();
+            auto file_and_line = std::make_pair(file, line);
             throw AssertionError(file_and_line, unicode("{0} does not match {1}").format(actual, expected).encode());
         }
     }
 
     template<typename T>
-    void assert_true(T actual) {
+    void _assert_true(T actual, unicode file, int line) {
         if(!bool(actual)) {
-            auto file_and_line = get_file_and_line();
+            auto file_and_line = std::make_pair(file, line);
             throw AssertionError(file_and_line, unicode("{0} is not true").format(bool(actual) ? "true" : "false").encode());
         }
     }
 
     template<typename T>
-    void assert_false(T actual) {
+    void _assert_false(T actual, unicode file, int line) {
         if(bool(actual)) {
-            auto file_and_line = get_file_and_line();
+            auto file_and_line = std::make_pair(file, line);
             throw AssertionError(file_and_line, unicode("{0} is not false").format(bool(actual) ? "true" : "false").encode());
         }
     }
 
     template<typename T, typename U, typename V>
-    void assert_close(T expected, U actual, V difference) {
+    void _assert_close(T expected, U actual, V difference, unicode file, int line) {
         if(actual < expected - difference ||
            actual > expected + difference) {
-            auto file_and_line = get_file_and_line();
+            auto file_and_line = std::make_pair(file, line);
             throw AssertionError(file_and_line, unicode("{0} is not close enough to {1}").format(actual, expected).encode());
         }
     }
 
     template<typename T>
-    void assert_is_null(T* thing) {
+    void _assert_is_null(T* thing, unicode file, int line) {
         if(thing != nullptr) {
-            auto file_and_line = get_file_and_line();
+            auto file_and_line = std::make_pair(file, line);
             throw AssertionError(file_and_line, "Pointer was not NULL");
         }
     }
 
     template<typename T>
-    void assert_is_not_null(T* thing) {
+    void assert_is_not_null(T* thing, unicode file, int line) {
         if(thing == nullptr) {
-            auto file_and_line = get_file_and_line();
+            auto file_and_line = std::make_pair(file, line);
             throw AssertionError(file_and_line, "Pointer was unexpectedly NULL");
         }
     }
@@ -180,7 +152,7 @@ public:
 
 private:
     std::vector<boost::any> instances_;
-    std::vector<std::tr1::function<void()> > tests_;
+    std::vector<std::function<void()> > tests_;
     std::vector<std::string> names_;
 };
 
