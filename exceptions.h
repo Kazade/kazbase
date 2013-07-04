@@ -53,7 +53,20 @@ public:
 class AssertionError : public LogicError {
 public:
     AssertionError(const std::string& what):
-        LogicError(what) {}
+        LogicError(what),
+        file(""),
+        line(-1) {
+    }
+
+    AssertionError(const std::pair<unicode, int> file_and_line, const std::string& what):
+        LogicError(what),
+        file(file_and_line.first),
+        line(file_and_line.second) {
+
+    }
+
+    unicode file;
+    int line;
 };
 
 class FileNotFoundError : public IOError {

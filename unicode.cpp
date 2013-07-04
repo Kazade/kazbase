@@ -1,6 +1,7 @@
 #include "utf8.h"
 #include "unicode.h"
 #include "string.h"
+#include "exceptions.h"
 
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
@@ -55,12 +56,12 @@ unicode::unicode(char32_t* utf32_string) {
 }
 
 bool unicode::contains(const unicode& thing) const {
-    return contains(encode());
+    return contains(thing.encode());
 }
 
 bool unicode::contains(const std::string& thing) const {
-    std::string enc = encode();
-    return enc.find(thing) != std::string::npos;
+    bool result = string_.find(unicode(thing).string_) != ustring::npos;
+    return result;
 }
 
 bool unicode::contains(const char *thing) const {
@@ -217,4 +218,43 @@ unicode unicode::strip(const unicode& things) const {
     result.string_.erase(result.begin(), result.begin() + result.string_.find_first_not_of(things.string_));
 
     return result;
+}
+
+unicode unicode::_do_format(uint32_t counter, const std::string& value) {
+    std::string counter_as_string = boost::lexical_cast<std::string>(counter);
+
+    std::vector<unicode> possible = {
+        "{" + counter_as_string + "}",
+        "{" + counter_as_string + ":x}",
+        "{" + counter_as_string + ":d}",
+        "{" + counter_as_string + ":b}",
+        "{" + counter_as_string + ":o}"
+    };
+
+    for(auto placeholder: possible) {
+        if(this->contains(placeholder)) {
+            std::string replacement;
+            if(placeholder.contains(":x")) {
+                std::stringstream stream;
+                stream << "0x" << std::hex << std::stoi(value);
+                replacement = stream.str();
+            } else if(placeholder.contains(":o")) {
+                std::stringstream stream;
+                stream << std::oct << std::stoi(value);
+                replacement = stream.str();
+            } else if(placeholder.contains(":d")) {
+                std::stringstream stream;
+                stream << std::dec << std::stoi(value);
+                replacement = stream.str();
+            } else if(placeholder.contains(":")) {
+                throw NotImplementedError(__FILE__, __LINE__);
+            } else {
+                replacement = boost::lexical_cast<std::string>(value);
+            }
+
+            return this->replace(placeholder, replacement);
+        }
+    }
+
+    throw ValueError("format placeholder not found");
 }

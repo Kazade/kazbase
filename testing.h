@@ -1,14 +1,18 @@
 #ifndef TESTING_H
 #define TESTING_H
 
+#define UNW_LOCAL_ONLY
+
+#include <libunwind.h>
 #include <vector>
 #include <tr1/functional>
 #include <stdexcept>
 #include <boost/any.hpp>
 #include <iostream>
 
-#include "kglt/kazbase/unicode.h"
-#include "kglt/kazbase/exceptions.h"
+#include "unicode.h"
+#include "exceptions.h"
+#include "logging.h"
 
 class TestCase {
 public:
@@ -17,24 +21,61 @@ public:
     virtual void set_up() {}
     virtual void tear_down() {}
 
+    std::pair<unicode, int> get_file_and_line() {
+        unw_cursor_t cursor;
+        unw_context_t uc;
+        unw_word_t offp, ip, sp;
+
+        unw_getcontext(&uc);
+        unw_init_local(&cursor, &uc);
+
+        unw_step(&cursor);
+        unw_step(&cursor);
+
+        char name[256];
+        name[0] = '\0';
+        unw_get_proc_name(&cursor, name, 256, &offp);
+        unw_get_reg(&cursor, UNW_REG_IP, &ip);
+        unw_get_reg(&cursor, UNW_REG_SP, &sp);
+
+        unicode command = _u("/usr/bin/addr2line -C -e {0} -f -i {1:x}").format(os::path::exe_path(), (long)ip);
+
+        FILE* f = popen(command.encode().c_str(), "r");
+        if(f) {
+            char buf[256];
+            fgets(buf, 256, f);
+            fgets(buf, 256, f);
+            if(buf[0] != '?') {
+                unicode file = _u(buf).split(":")[0];
+                int line = std::stoi(_u(buf).split(":")[1].encode());
+                return std::make_pair(file, line);
+            }
+        }
+
+        return std::make_pair("", -1);
+    }
+
     template<typename T, typename U>
     void assert_equal(T expected, U actual) {
         if(expected != actual) {
-            throw AssertionError(unicode("{0} does not match {1}").format(actual, expected).encode());
+            auto file_and_line = get_file_and_line();
+            throw AssertionError(file_and_line, unicode("{0} does not match {1}").format(actual, expected).encode());
         }
     }
 
     template<typename T>
     void assert_true(T actual) {
         if(!bool(actual)) {
-            throw AssertionError(unicode("{0} is not true").format(actual).encode());
+            auto file_and_line = get_file_and_line();
+            throw AssertionError(file_and_line, unicode("{0} is not true").format(bool(actual) ? "true" : "false").encode());
         }
     }
 
     template<typename T>
     void assert_false(T actual) {
         if(bool(actual)) {
-            throw AssertionError(unicode("{0} is not false").format(actual).encode());
+            auto file_and_line = get_file_and_line();
+            throw AssertionError(file_and_line, unicode("{0} is not false").format(bool(actual) ? "true" : "false").encode());
         }
     }
 
@@ -42,21 +83,24 @@ public:
     void assert_close(T expected, U actual, V difference) {
         if(actual < expected - difference ||
            actual > expected + difference) {
-            throw AssertionError(unicode("{0} is not close enough to {1}").format(actual, expected).encode());
+            auto file_and_line = get_file_and_line();
+            throw AssertionError(file_and_line, unicode("{0} is not close enough to {1}").format(actual, expected).encode());
         }
     }
 
     template<typename T>
     void assert_is_null(T* thing) {
         if(thing != nullptr) {
-            throw AssertionError("Pointer was not NULL");
+            auto file_and_line = get_file_and_line();
+            throw AssertionError(file_and_line, "Pointer was not NULL");
         }
     }
 
     template<typename T>
     void assert_is_not_null(T* thing) {
         if(thing == nullptr) {
-            throw AssertionError("Pointer was unexpectedly NULL");
+            auto file_and_line = get_file_and_line();
+            throw AssertionError(file_and_line, "Pointer was unexpectedly NULL");
         }
     }
 };
@@ -102,6 +146,9 @@ public:
             } catch(AssertionError& e) {
                 std::cout << "\033[33m" << " FAILED " << std::endl;
                 std::cout << "        " << e.what() << std::endl;
+                if(!e.file.empty()) {
+                    std::cout << "        " << e.file << ":" << e.line << std::endl;
+                }
                 ++failed;
             } catch(std::exception& e) {
                 std::cout << "\033[31m" << " EXCEPT " << std::endl;

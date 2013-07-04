@@ -212,6 +212,28 @@ std::string dumps(const JSON &json) {
     return result;
 }
 
+void set_value(Node& node, const std::string& value, bool buffer_is_string) {
+    if(buffer_is_string) {
+        node.set(value);
+    } else {
+        if(value == "true" || value == "false") {
+            node.set_bool(value == "true");
+            return;
+        }
+
+        if(value == "null") {
+            node.set_null();
+            return;
+        }
+
+        try {
+            node.set_number(std::stoi(value));
+        } catch(std::invalid_argument& e) {
+            throw ParseError("Unknown value type: " + value);
+        }
+    }
+}
+
 JSON loads(const std::string& json_string) {
     JSON result;
 
@@ -234,6 +256,7 @@ JSON loads(const std::string& json_string) {
     int current_char = 0;
 
     bool inside_string = false;
+    bool buffer_is_string = false;
 
     std::string last_key = "";
     std::string buffer = "";
@@ -275,6 +298,7 @@ JSON loads(const std::string& json_string) {
                     }
 
                     buffer = "";
+                    buffer_is_string = false;
                 }
 
                 last_token = '{';
@@ -292,12 +316,13 @@ JSON loads(const std::string& json_string) {
 
                 if(!buffer.empty()) {
                     if(last_token == ':') {
-                        current_node->insert_value(last_key).set(unescape(buffer));
+                        set_value(current_node->insert_value(last_key), unescape(buffer), buffer_is_string);
                     } else {
-                        current_node->set(unescape(buffer));
+                        set_value(*current_node, unescape(buffer), buffer_is_string);
                     }
                 }
                 buffer = "";
+                buffer_is_string = false;
 
                 //Move out of the current node
                 current_node = current_node->parent();
@@ -333,8 +358,9 @@ JSON loads(const std::string& json_string) {
                 }
 
                 if(!buffer.empty()) {
-                    current_node->append_value().set(unescape(buffer));
+                    set_value(current_node->append_value(), unescape(buffer), buffer_is_string);
                     buffer = "";
+                    buffer_is_string = false;
                 }
 
                 current_node = current_node->parent();
@@ -349,14 +375,15 @@ JSON loads(const std::string& json_string) {
 
                 if(!buffer.empty()) {
                     if(current_node->type() == NODE_TYPE_DICT) {
-                        current_node->insert_value(last_key).set(unescape(buffer));
+                        set_value(current_node->insert_value(last_key), unescape(buffer), buffer_is_string);
                     }
                     else if(current_node->type() == NODE_TYPE_ARRAY) {
-                        current_node->append_value().set(unescape(buffer));
+                        set_value(current_node->append_value(), unescape(buffer), buffer_is_string);
                     } else {
-                        current_node->set(unescape(buffer));
+                        set_value(*current_node, unescape(buffer), buffer_is_string);
                     }
                     buffer = "";
+                    buffer_is_string = false;
                 }
                 last_token = ',';
                 continue;
@@ -369,6 +396,7 @@ JSON loads(const std::string& json_string) {
 
                 last_key = unescape(buffer);
                 buffer = "";
+                buffer_is_string = false;
                 last_token = ':';
                 continue;
             break;
@@ -419,6 +447,9 @@ JSON loads(const std::string& json_string) {
             break;
             case '"': {
                 inside_string = !inside_string;
+                if(!inside_string) {
+                    buffer_is_string = true;
+                }
             }
             break;
             default:

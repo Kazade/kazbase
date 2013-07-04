@@ -222,14 +222,18 @@ unicode exe_path() {
 #else
     char buff[1024];
     ssize_t len = ::readlink("/proc/self/exe", buff, sizeof(buff)-1);
-    if (len != -1) {
+    if(len != -1) {
         buff[len] = '\0';
-        return os::path::dir_name(unicode(buff));
-    } else {
-        throw RuntimeError("Unable to work out the program path");
+        return unicode(buff);
     }
-   
-#endif 
+
+    throw RuntimeError("Unable to work out the program filename");
+#endif
+}
+
+unicode exe_dirname() {
+    unicode path = exe_path();
+    return os::path::dir_name(path);
 }
 
 std::pair<unicode, unicode> split_ext(const unicode& path) {

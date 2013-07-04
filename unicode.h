@@ -75,31 +75,25 @@ public:
 
     template<typename T>
     unicode format(T value) {
-        unicode token = unicode("{" + boost::lexical_cast<std::string>(0) + "}");
-        unicode result = this->replace(token, boost::lexical_cast<std::string>(value));
-        return result;
+        return _do_format(0, boost::lexical_cast<std::string>(value));
     }
 
     template<typename T>
     unicode format(Counter count, T value) {
-        unicode token = unicode("{" + boost::lexical_cast<std::string>(count.c) + "}");
-        unicode result = this->replace(token, boost::lexical_cast<std::string>(value));
-        return result;
+        return _do_format(count.c, boost::lexical_cast<std::string>(value));
     }
 
     template<typename T, typename... Args>
-    unicode format(T value, Args&... args) {
-        unicode token = unicode("{" + boost::lexical_cast<std::string>(0) + "}");
-        unicode result = this->replace(token, boost::lexical_cast<std::string>(value));
-        return result.format(Counter(1), args...);
+    unicode format(T value, const Args&... args) {
+        return _do_format(0, boost::lexical_cast<std::string>(value)).format(Counter(1), args...);
     }
 
     template<typename T, typename... Args>
-    unicode format(Counter count, T value, Args&... args) {
-        unicode token = unicode("{" + boost::lexical_cast<std::string>(count.c) + "}");
-        unicode result = this->replace(token, boost::lexical_cast<std::string>(value));
-        return result.format(Counter(count.c + 1), args...);
+    unicode format(Counter count, T value, const Args&... args) {
+        return _do_format(count.c, boost::lexical_cast<std::string>(value)).format(Counter(count.c + 1), args...);
     }
+
+    unicode _do_format(uint32_t counter, const std::string& value);
 
     bool operator==(const unicode& rhs) const {
         return string_ == rhs.string_;

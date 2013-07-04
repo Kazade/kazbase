@@ -34,6 +34,7 @@ std::vector<unicode> list_dir(const unicode& path);
 
 std::string read_file_contents(const unicode& path);
 unicode exe_path();
+unicode exe_dirname();
 unicode get_cwd();
 std::pair<unicode, unicode> split_ext(const unicode& path);
 
