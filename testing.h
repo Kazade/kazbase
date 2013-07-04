@@ -19,6 +19,7 @@
 #define assert_true(actual) _assert_true((actual), __FILE__, __LINE__)
 #define assert_close(expected, actual, difference) _assert_close((expected), (actual), (difference), __FILE__, __LINE__)
 #define assert_is_null(actual) _assert_is_null((actual), __FILE__, __LINE__)
+#define assert_is_not_null(actual) _assert_is_not_null((actual), __FILE__, __LINE__)
 
 class TestCase {
 public:
@@ -69,7 +70,7 @@ public:
     }
 
     template<typename T>
-    void assert_is_not_null(T* thing, unicode file, int line) {
+    void _assert_is_not_null(T* thing, unicode file, int line) {
         if(thing == nullptr) {
             auto file_and_line = std::make_pair(file, line);
             throw AssertionError(file_and_line, "Pointer was unexpectedly NULL");
