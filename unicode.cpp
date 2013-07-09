@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "utf8.h"
 #include "unicode.h"
 #include "string.h"
@@ -88,19 +90,22 @@ unicode unicode::lower() const {
     return unicode(final_s);
 }
 
-std::vector<unicode> unicode::split(const unicode &delimiter, int32_t count) const {
-    bool keep_empty = true;
+std::vector<unicode> unicode::split(const unicode &delimiter, int32_t count, bool keep_empty) const {
     std::vector<unicode> result;
 
+    unicode to_split = *this;
+    unicode final_delim = delimiter;
+
     if (delimiter.empty()) {
-        result.push_back(*this);
-        return result;
+        //Split on whitespace
+        to_split.replace("\t", " ").replace("\n", " ").replace("\r", " ");
+        final_delim = " ";
     }
 
-    ustring::const_iterator substart = begin(), subend;
+    ustring::iterator substart = to_split.begin(), subend;
 
     while (true) {
-        subend = std::search(substart, end(), delimiter.begin(), delimiter.end());
+        subend = std::search(substart, to_split.end(), final_delim.begin(), final_delim.end());
         unicode temp(substart, subend);
         if (keep_empty || !temp.empty()) {
             result.push_back(temp);
@@ -108,10 +113,10 @@ std::vector<unicode> unicode::split(const unicode &delimiter, int32_t count) con
                 return result;
             }
         }
-        if (subend == end()) {
+        if (subend == to_split.end()) {
             break;
         }
-        substart = subend + delimiter.length();
+        substart = subend + final_delim.length();
     }
     return result;
 }

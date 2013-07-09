@@ -63,7 +63,7 @@ public:
     bool starts_with(const unicode& thing) const;
     bool ends_with(const unicode& thing) const;
 
-    std::vector<unicode> split(const unicode& on, int32_t count=-1) const;
+    std::vector<unicode> split(const unicode& on, int32_t count=-1, bool keep_empty=true) const;
 
     unicode join(const std::vector<unicode>& parts) const;
     unicode join(const std::vector<std::string>& parts) const;
