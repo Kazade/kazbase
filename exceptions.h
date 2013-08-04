@@ -53,19 +53,32 @@ public:
 class AssertionError : public LogicError {
 public:
     AssertionError(const std::string& what):
-        LogicError(what) {}
+        LogicError(what),
+        file(""),
+        line(-1) {
+    }
+
+    AssertionError(const std::pair<unicode, int> file_and_line, const std::string& what):
+        LogicError(what),
+        file(file_and_line.first),
+        line(file_and_line.second) {
+
+    }
+
+    unicode file;
+    int line;
 };
 
 class FileNotFoundError : public IOError {
 public:
-    FileNotFoundError(const std::string& path):
-        IOError("Unable to find file: " + path) {}
+    FileNotFoundError(const unicode& path):
+        IOError(_u("Unable to find file: ") + path) {}
 };
 
-class NetworkError : public std::runtime_error {
+class NetworkError : public IOError {
 public:
-    NetworkError(const std::string& what):
-        std::runtime_error(what) {}
+    NetworkError(const unicode& what):
+        IOError(what) {}
 };
 
 template<typename T>

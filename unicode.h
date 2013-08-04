@@ -9,6 +9,8 @@ typedef std::basic_string<char32_t> ustring;
 
 class unicode {
 public:
+    typedef ustring::size_type size_type;
+
     unicode() {}
     unicode(const unicode& rhs):
         string_(rhs.string_){
@@ -44,8 +46,8 @@ public:
     unicode lower() const;
     unicode upper() const;
     unicode strip(const unicode& things=unicode(" \t\r\n")) const;
-    unicode lstrip() const;
-    unicode rstrip() const;
+    unicode lstrip(const unicode& things=unicode(" \t\r\n")) const;
+    unicode rstrip(const unicode& things=unicode(" \t\r\n")) const;
     unicode swap_case() const;
     unicode replace(const unicode& thing, const unicode& replacement);
 
@@ -61,7 +63,7 @@ public:
     bool starts_with(const unicode& thing) const;
     bool ends_with(const unicode& thing) const;
 
-    std::vector<unicode> split(const unicode& on) const;
+    std::vector<unicode> split(const unicode& on, int32_t count=-1, bool keep_empty=true) const;
 
     unicode join(const std::vector<unicode>& parts) const;
     unicode join(const std::vector<std::string>& parts) const;
@@ -73,34 +75,32 @@ public:
 
     template<typename T>
     unicode format(T value) {
-        unicode token = unicode("{" + boost::lexical_cast<std::string>(0) + "}");
-        unicode result = this->replace(token, boost::lexical_cast<std::string>(value));
-        return result;
+        return _do_format(0, boost::lexical_cast<std::string>(value));
     }
 
     template<typename T>
     unicode format(Counter count, T value) {
-        unicode token = unicode("{" + boost::lexical_cast<std::string>(count.c) + "}");
-        unicode result = this->replace(token, boost::lexical_cast<std::string>(value));
-        return result;
+        return _do_format(count.c, boost::lexical_cast<std::string>(value));
     }
 
     template<typename T, typename... Args>
-    unicode format(T value, Args&... args) {
-        unicode token = unicode("{" + boost::lexical_cast<std::string>(0) + "}");
-        unicode result = this->replace(token, boost::lexical_cast<std::string>(value));
-        return result.format(Counter(1), args...);
+    unicode format(T value, const Args&... args) {
+        return _do_format(0, boost::lexical_cast<std::string>(value)).format(Counter(1), args...);
     }
 
     template<typename T, typename... Args>
-    unicode format(Counter count, T value, Args&... args) {
-        unicode token = unicode("{" + boost::lexical_cast<std::string>(count.c) + "}");
-        unicode result = this->replace(token, boost::lexical_cast<std::string>(value));
-        return result.format(Counter(count.c + 1), args...);
+    unicode format(Counter count, T value, const Args&... args) {
+        return _do_format(count.c, boost::lexical_cast<std::string>(value)).format(Counter(count.c + 1), args...);
     }
+
+    unicode _do_format(uint32_t counter, const std::string& value);
 
     bool operator==(const unicode& rhs) const {
         return string_ == rhs.string_;
+    }
+
+    bool operator!=(const unicode& rhs) const {
+        return !(*this == rhs);
     }
 
     unicode& operator=(const std::string& rhs) {
@@ -139,6 +139,14 @@ public:
         return result;
     }
 
+    unicode operator*(const uint32_t rhs) const {
+        unicode result;
+        for(uint32_t i = 0; i < rhs; ++i) {
+            result += *this;
+        }
+        return result;
+    }
+
     bool operator<(const unicode& rhs) const {
         //FIXME: need to do a proper lexigraphical compare - probably
         return encode() < rhs.encode();
@@ -165,6 +173,8 @@ public:
 private:
     ustring string_;
 };
+
+std::ostream& operator<< (std::ostream& os, const unicode& str);
 
 namespace std {
     template<>

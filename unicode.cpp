@@ -1,9 +1,17 @@
+#include <algorithm>
+
 #include "utf8.h"
 #include "unicode.h"
 #include "string.h"
+#include "exceptions.h"
 
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
+
+std::ostream& operator<< (std::ostream& os, const unicode& str) {
+    os << str.encode();
+    return os;
+}
 
 unicode& unicode::operator=(const unicode& rhs) {
     if(this == &rhs) {
@@ -50,12 +58,12 @@ unicode::unicode(char32_t* utf32_string) {
 }
 
 bool unicode::contains(const unicode& thing) const {
-    return contains(encode());
+    return contains(thing.encode());
 }
 
 bool unicode::contains(const std::string& thing) const {
-    std::string enc = encode();
-    return enc.find(thing) != std::string::npos;
+    bool result = string_.find(unicode(thing).string_) != ustring::npos;
+    return result;
 }
 
 bool unicode::contains(const char *thing) const {
@@ -82,13 +90,33 @@ unicode unicode::lower() const {
     return unicode(final_s);
 }
 
-std::vector<unicode> unicode::split(const unicode &on) const {
-    //FIXME: WORK WITH UNICODE
-    std::string final_s(encode());
-
+std::vector<unicode> unicode::split(const unicode &delimiter, int32_t count, bool keep_empty) const {
     std::vector<unicode> result;
-    for(std::string part: str::split(final_s, on.encode())) {
-        result.push_back(unicode(part));
+
+    unicode to_split = *this;
+    unicode final_delim = delimiter;
+
+    if (delimiter.empty()) {
+        //Split on whitespace
+        to_split.replace("\t", " ").replace("\n", " ").replace("\r", " ");
+        final_delim = " ";
+    }
+
+    ustring::iterator substart = to_split.begin(), subend;
+
+    while (true) {
+        subend = std::search(substart, to_split.end(), final_delim.begin(), final_delim.end());
+        unicode temp(substart, subend);
+        if (keep_empty || !temp.empty()) {
+            result.push_back(temp);
+            if(result.size() == count) {
+                return result;
+            }
+        }
+        if (subend == to_split.end()) {
+            break;
+        }
+        substart = subend + final_delim.length();
     }
     return result;
 }
@@ -189,6 +217,22 @@ bool unicode::ends_with(const unicode& thing) const {
     return std::mismatch(thing.rbegin(), thing.rend(), rbegin()).first == thing.rend();
 }
 
+unicode unicode::rstrip(const unicode& things) const {
+    unicode result = *this;
+
+    result.string_.erase(result.string_.find_last_not_of(things.string_) + 1);
+
+    return result;
+}
+
+unicode unicode::lstrip(const unicode& things) const {
+    unicode result = *this;
+
+    result.string_.erase(result.begin(), result.begin() + result.string_.find_first_not_of(things.string_));
+
+    return result;
+}
+
 unicode unicode::strip(const unicode& things) const {
     unicode result = *this;
 
@@ -196,4 +240,43 @@ unicode unicode::strip(const unicode& things) const {
     result.string_.erase(result.begin(), result.begin() + result.string_.find_first_not_of(things.string_));
 
     return result;
+}
+
+unicode unicode::_do_format(uint32_t counter, const std::string& value) {
+    std::string counter_as_string = boost::lexical_cast<std::string>(counter);
+
+    std::vector<unicode> possible = {
+        "{" + counter_as_string + "}",
+        "{" + counter_as_string + ":x}",
+        "{" + counter_as_string + ":d}",
+        "{" + counter_as_string + ":b}",
+        "{" + counter_as_string + ":o}"
+    };
+
+    for(auto placeholder: possible) {
+        if(this->contains(placeholder)) {
+            std::string replacement;
+            if(placeholder.contains(":x")) {
+                std::stringstream stream;
+                stream << "0x" << std::hex << std::stoi(value);
+                replacement = stream.str();
+            } else if(placeholder.contains(":o")) {
+                std::stringstream stream;
+                stream << std::oct << std::stoi(value);
+                replacement = stream.str();
+            } else if(placeholder.contains(":d")) {
+                std::stringstream stream;
+                stream << std::dec << std::stoi(value);
+                replacement = stream.str();
+            } else if(placeholder.contains(":")) {
+                throw NotImplementedError(__FILE__, __LINE__);
+            } else {
+                replacement = boost::lexical_cast<std::string>(value);
+            }
+
+            return this->replace(placeholder, replacement);
+        }
+    }
+
+    throw ValueError("format placeholder not found");
 }

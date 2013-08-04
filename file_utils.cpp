@@ -7,17 +7,23 @@
 
 namespace file_utils {
 
-std::string read(const std::string& filename) {
+std::vector<unicode> read_lines(const unicode& filename) {
+    unicode contents = read(filename);
 
-    std::ifstream t(filename.c_str());
+    return unicode(contents).split("\n");
+}
+
+unicode read(const unicode& filename) {
+
+    std::ifstream t(filename.encode().c_str());
     if(!t) {
-        throw IOError("Unable to load file" + filename);
+        throw IOError(_u("Unable to load file") + filename);
     }
 
     std::string str((std::istreambuf_iterator<char>(t)),
                  std::istreambuf_iterator<char>());
 
-    return str;
+    return unicode(str);
 }
 
 }

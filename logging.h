@@ -8,8 +8,8 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/date_time.hpp>
-#include <boost/filesystem.hpp>
 
+#include "os.h"
 #include "unicode.h"
 
 namespace logging {
@@ -65,11 +65,11 @@ public:
     FileHandler(const std::string& filename, bool move_aside=true):
         filename_(filename) {
 
-        if(move_aside && boost::filesystem::exists(filename_)) {
-            if(boost::filesystem::exists(filename_ + ".old")) {
-                boost::filesystem::remove(filename_ + ".old");
+        if(move_aside && os::path::exists(filename_)) {
+            if(os::path::exists(filename_ + ".old")) {
+                os::remove(filename_ + ".old");
             }
-            boost::filesystem::rename(filename_, filename_ + ".old");
+            os::rename(filename_, filename_ + ".old");
         }
 
         stream_.open(filename_.c_str());
@@ -156,10 +156,9 @@ private:
     void write_message(const std::string& level, const std::string& text,
                        const std::string& file, int32_t line) {
 
-        std::string file_out = file;
+        unicode file_out = file;
         if(file != "None") {
-            boost::filesystem::path p(file);
-            file_out = p.filename().string();
+            file_out = os::path::abs_path(file);
         }
 
         std::stringstream s;

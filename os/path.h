@@ -8,34 +8,34 @@
 namespace os {
 
 #ifdef WIN32
-    #define OS_SEP "\\"
+    #define OS_SEP _u("\\")
 #else
-    #define OS_SEP "/"
+    #define OS_SEP _u("/")
 #endif
 
 namespace path {
 
 unicode join(const unicode& p1, const unicode& p2);
 
-std::string abs_path(const std::string& p);
 unicode abs_path(const unicode& p);
-
-std::pair<std::string, std::string> split(const std::string& path);
+unicode norm_path(const unicode& path);
+std::pair<unicode, unicode> split(const unicode &path);
 bool exists(const unicode& path);
-std::string dir_name(const std::string& path);
-bool is_absolute(const std::string& path);
-bool is_dir(const std::string& path);
-bool is_file(const std::string& path);
-bool is_link(const std::string& path);
-void hide_dir(const std::string& path);
-std::pair<std::string, std::string> split_ext(const std::string& path);
-std::string rel_path(const std::string& path, const std::string& start=std::string());
-std::string expand_user(const std::string& path);
-std::vector<std::string> list_dir(const std::string& path);
+unicode dir_name(const unicode &path);
+bool is_absolute(const unicode& path);
+bool is_dir(const unicode& path);
+bool is_file(const unicode& path);
+bool is_link(const unicode& path);
+void hide_dir(const unicode& path);
+std::pair<unicode, unicode> split_ext(const unicode& path);
+unicode rel_path(const unicode& path, const unicode& start=unicode());
+unicode expand_user(const unicode& path);
+std::vector<unicode> list_dir(const unicode& path);
 
-std::string read_file_contents(const std::string& path);
-std::string exe_path();
-std::string working_directory();
+std::string read_file_contents(const unicode& path);
+unicode exe_path();
+unicode exe_dirname();
+unicode get_cwd();
 std::pair<unicode, unicode> split_ext(const unicode& path);
 
 }

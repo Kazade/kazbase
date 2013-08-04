@@ -1,14 +1,25 @@
 #ifndef TESTING_H
 #define TESTING_H
 
+#define UNW_LOCAL_ONLY
+
 #include <vector>
-#include <tr1/functional>
+#include <functional>
 #include <stdexcept>
 #include <boost/any.hpp>
 #include <iostream>
 
-#include "kglt/kazbase/unicode.h"
-#include "kglt/kazbase/exceptions.h"
+#include "unicode.h"
+#include "exceptions.h"
+#include "logging.h"
+#include "file_utils.h"
+
+#define assert_equal(expected, actual) _assert_equal((expected), (actual), __FILE__, __LINE__)
+#define assert_false(actual) _assert_false((actual), __FILE__, __LINE__)
+#define assert_true(actual) _assert_true((actual), __FILE__, __LINE__)
+#define assert_close(expected, actual, difference) _assert_close((expected), (actual), (difference), __FILE__, __LINE__)
+#define assert_is_null(actual) _assert_is_null((actual), __FILE__, __LINE__)
+#define assert_is_not_null(actual) _assert_is_not_null((actual), __FILE__, __LINE__)
 
 class TestCase {
 public:
@@ -18,45 +29,51 @@ public:
     virtual void tear_down() {}
 
     template<typename T, typename U>
-    void assert_equal(T expected, U actual) {
+    void _assert_equal(T expected, U actual, unicode file, int line) {
         if(expected != actual) {
-            throw AssertionError(unicode("{0} does not match {1}").format(actual, expected).encode());
+            auto file_and_line = std::make_pair(file, line);
+            throw AssertionError(file_and_line, unicode("{0} does not match {1}").format(actual, expected).encode());
         }
     }
 
     template<typename T>
-    void assert_true(T actual) {
+    void _assert_true(T actual, unicode file, int line) {
         if(!bool(actual)) {
-            throw AssertionError(unicode("{0} is not true").format(actual).encode());
+            auto file_and_line = std::make_pair(file, line);
+            throw AssertionError(file_and_line, unicode("{0} is not true").format(bool(actual) ? "true" : "false").encode());
         }
     }
 
     template<typename T>
-    void assert_false(T actual) {
+    void _assert_false(T actual, unicode file, int line) {
         if(bool(actual)) {
-            throw AssertionError(unicode("{0} is not false").format(actual).encode());
+            auto file_and_line = std::make_pair(file, line);
+            throw AssertionError(file_and_line, unicode("{0} is not false").format(bool(actual) ? "true" : "false").encode());
         }
     }
 
     template<typename T, typename U, typename V>
-    void assert_close(T expected, U actual, V difference) {
+    void _assert_close(T expected, U actual, V difference, unicode file, int line) {
         if(actual < expected - difference ||
            actual > expected + difference) {
-            throw AssertionError(unicode("{0} is not close enough to {1}").format(actual, expected).encode());
+            auto file_and_line = std::make_pair(file, line);
+            throw AssertionError(file_and_line, unicode("{0} is not close enough to {1}").format(actual, expected).encode());
         }
     }
 
     template<typename T>
-    void assert_is_null(T* thing) {
+    void _assert_is_null(T* thing, unicode file, int line) {
         if(thing != nullptr) {
-            throw AssertionError("Pointer was not NULL");
+            auto file_and_line = std::make_pair(file, line);
+            throw AssertionError(file_and_line, "Pointer was not NULL");
         }
     }
 
     template<typename T>
-    void assert_is_not_null(T* thing) {
+    void _assert_is_not_null(T* thing, unicode file, int line) {
         if(thing == nullptr) {
-            throw AssertionError("Pointer was unexpectedly NULL");
+            auto file_and_line = std::make_pair(file, line);
+            throw AssertionError(file_and_line, "Pointer was unexpectedly NULL");
         }
     }
 };
@@ -102,6 +119,15 @@ public:
             } catch(AssertionError& e) {
                 std::cout << "\033[33m" << " FAILED " << std::endl;
                 std::cout << "        " << e.what() << std::endl;
+                if(!e.file.empty()) {
+                    std::cout << "        " << e.file << ":" << e.line << std::endl;
+                    if(os::path::exists(e.file)) {
+                        std::vector<unicode> lines = file_utils::read_lines(e.file);
+                        if(e.line <= lines.size()) {
+                            std::cout << lines[e.line - 1].encode() << std::endl << std::endl;
+                        }
+                    }
+                }
                 ++failed;
             } catch(std::exception& e) {
                 std::cout << "\033[31m" << " EXCEPT " << std::endl;
@@ -133,7 +159,7 @@ public:
 
 private:
     std::vector<boost::any> instances_;
-    std::vector<std::tr1::function<void()> > tests_;
+    std::vector<std::function<void()> > tests_;
     std::vector<std::string> names_;
 };
 

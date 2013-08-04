@@ -13,20 +13,20 @@ namespace apps {
 
 class DesktopFile {
 public:
-    DesktopFile(const std::string& path);
+    DesktopFile(const unicode& path);
     void save();
-    void save_as(const std::string& filename);
+    void save_as(const unicode& filename);
 
     config::ConfigReader& get_config() { return *config_; }
-    std::string get_file_path() const { return path_; }
+    unicode get_file_path() const { return path_; }
 private:
-    std::string path_;
+    unicode path_;
     std::shared_ptr<config::ConfigReader> config_;
 };
 
-std::vector<std::string> get_app_names();
+std::vector<unicode> get_app_names();
 std::vector<DesktopFile> get_desktop_files();
-DesktopFile find_desktop_file(const std::string& app);
+DesktopFile find_desktop_file(const unicode& app);
 
 }
 }

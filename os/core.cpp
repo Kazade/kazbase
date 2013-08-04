@@ -1,58 +1,114 @@
-#include <boost/filesystem.hpp>
 #include <fstream>
+#include <ctime>
+#include <utime.h>
+#include <sys/stat.h>
 
 #include "core.h"
 #include "../exceptions.h"
 #include "path.h"
 
+
 namespace os {
 
 void touch(const unicode& path) {
-    touch(path.encode());
-}
-
-void touch(const std::string& path) {
     if(!os::path::exists(path)) {
         make_dirs(os::path::dir_name(path));
 
-        std::ofstream file(path.c_str());
+        std::ofstream file(path.encode().c_str());
         file.close();
     }
 
-    std::time_t n = std::time(0);
-    boost::filesystem::last_write_time(path, n);
+    struct utimbuf new_times;
+    struct stat st = os::lstat(path);
+
+    new_times.actime = st.st_atime;
+    new_times.modtime = time(NULL);
+    utime(path.encode().c_str(), &new_times);
 }
 
-void make_dirs(const unicode &path) {
-    boost::filesystem::create_directories(path.encode());
-}
-
-bool delete_path(const unicode& path, bool recursive, bool fail_silently) {
-    return delete_path(path.encode(), recursive, fail_silently);
-}
-
-bool delete_path(const std::string& path, bool recursive, bool fail_silently) {
-    if(!os::path::exists(path)) {
-        if(!fail_silently) {
-            throw IOError("Tried to remove non-existent path");
+void make_dir(const unicode& path, mode_t mode) {
+    if(os::path::exists(path)) {
+        throw os::Error(EEXIST);
+    } else {
+        if(mkdir(path.encode().c_str(), mode) != 0) {
+            throw os::Error(errno);
         }
-        return false;
+    }
+}
+
+void make_dirs(const unicode &path, mode_t mode) {
+    std::pair<unicode, unicode> res = os::path::split(path);
+
+    unicode head = res.first;
+    unicode tail = res.second;
+
+    if(tail.empty()) {
+        res = os::path::split(head);
+        head = res.first;
+        tail = res.second;
     }
 
-    //If we are not deleting recursively, we need to bail if this is a
-    //directory with existing contents
-    if(!recursive && os::path::is_dir(path)) {
-        if(!os::path::list_dir(path).empty()) {
-            if(!fail_silently) {
-                throw IOError("Cannot remove directory as it is not empty");
+    if(!head.empty() && !tail.empty() && !os::path::exists(head)) {
+        try {
+            make_dirs(head, mode);
+        } catch(os::Error& e) {
+            if(e.err != EEXIST) {
+                //Someone already created the directory
+                return;
             }
-            return false;
+        }
+        if(tail == ".") {
+            return;
         }
     }
 
-    boost::filesystem::remove_all(path);
+    make_dir(path, mode);
+}
 
-    return true;
+void remove(const unicode& path) {
+    if(os::path::exists(path)) {
+        if(os::path::is_dir(path)) {
+            throw IOError("Tried to remove a folder, use remove_dir instead");
+        } else {
+            ::remove(path.encode().c_str());
+        }
+    }
+}
+
+void remove_dir(const unicode& path) {
+    if(!os::path::exists(path)) {
+        throw IOError("Tried to remove a non-existent path");
+    }
+
+    if(os::path::list_dir(path).empty()) {
+        if(rmdir(path.encode().c_str()) != 0) {
+            throw os::Error(errno);
+        }
+    } else {
+        throw IOError("Tried to remove a non-empty directory");
+    }
+}
+
+void remove_dirs(const unicode& path) {
+    if(!os::path::exists(path)) {
+        throw IOError("Tried to remove a non-existent path");
+    }
+
+    for(unicode f: os::path::list_dir(path)) {
+        unicode full = os::path::join(path, f);
+        if(os::path::is_dir(full)) {
+            remove_dirs(full);
+            remove_dir(full);
+        } else {
+            remove(full);
+        }
+    }
+}
+
+void rename(const unicode& old, const unicode& new_path) {
+    if(::rename(old.encode().c_str(), new_path.encode().c_str()) != 0) {
+        throw os::Error(errno);
+    }
 }
 
 std::string temp_dir() {
