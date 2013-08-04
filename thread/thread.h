@@ -3,7 +3,7 @@
 
 #include <boost/bind.hpp>
 #include <boost/thread.hpp>
-#include <tr1/memory>
+#include <memory>
 
 class Thread {
 public:

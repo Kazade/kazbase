@@ -74,7 +74,7 @@ public:
         }
 
         for(U& method: methods) {
-            std::tr1::function<void()> func = std::tr1::bind(method, instance.get());
+            std::function<void()> func = std::bind(method, instance.get());
             tests_.push_back([=]() {
                 instance->set_up();
                 func();
@@ -88,7 +88,7 @@ public:
         int ran = 0;
         int crashed = 0;
         std::cout << std::endl << "Running " << tests_.size() << " tests" << std::endl << std::endl;
-        for(std::tr1::function<void ()> test: tests_) {
+        for(std::function<void ()> test: tests_) {
             try {
                 std::string output = "    " + names_[ran];
 
