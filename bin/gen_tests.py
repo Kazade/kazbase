@@ -17,14 +17,14 @@ REGISTER_TEMPLATE = """
 
 MAIN_TEMPLATE = """
 
-#include <tr1/functional>
-#include <tr1/memory>
+#include <functional>
+#include <memory>
 #include <kglt/kazbase/testing.h>
 
 %(includes)s
 
 int main(int argc, char* argv[]) {
-    std::tr1::shared_ptr<TestRunner> runner(new TestRunner());
+    std::shared_ptr<TestRunner> runner(new TestRunner());
     
     %(registrations)s
     

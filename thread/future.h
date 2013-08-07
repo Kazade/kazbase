@@ -3,7 +3,7 @@
 
 #include <thread>
 #include <future>
-#include <tr1/memory>
+#include <memory>
 #include <type_traits>
 
 namespace thread {

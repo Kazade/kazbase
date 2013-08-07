@@ -1,7 +1,7 @@
 #ifndef MD5_H_INCLUDED
 #define MD5_H_INCLUDED
 
-#include <tr1/memory>
+#include <memory>
 #include <string>
 
 #include "md5_public_domain.h"

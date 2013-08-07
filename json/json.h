@@ -7,7 +7,7 @@
 #include <cassert>
 #include <set>
 #include <map>
-#include <tr1/memory>
+#include <memory>
 
 namespace json {
 

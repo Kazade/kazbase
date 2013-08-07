@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 #include <stdexcept>
-#include <tr1/memory>
+#include <memory>
 
 #include "../config/config_reader.h"
 
