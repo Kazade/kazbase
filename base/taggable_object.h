@@ -1,8 +1,8 @@
 #ifndef TAGGABLE_OBJECT_H_INCLUDED
 #define TAGGABLE_OBJECT_H_INCLUDED
 
-#include "kazbase/list_utils.h"
-#include "kazbase/string.h"
+#include "../list_utils.h"
+#include "../string.h"
 
 namespace base {
 
