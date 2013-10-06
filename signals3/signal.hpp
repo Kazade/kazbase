@@ -634,7 +634,11 @@ namespace boost
 
                 connection
                 connect(slot_type&& callback) {
-                    return push_back(callback);
+                    ::boost::signals3::detail::shared_ptr<node> n = ::boost::signals3::detail::make_shared<node>(boost::move(callback));
+                    assert(n);
+                    ::boost::signals3::connection conn(this, n);
+                    push_back_impl(boost::move(n));
+                    return conn;
                 }
 
                 connection
