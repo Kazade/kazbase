@@ -145,6 +145,13 @@ bool is_link(const unicode& path) {
     return S_ISLNK(st.st_mode);
 }
 
+unicode real_path(const unicode& path) {
+    char *real_path = realpath(path.encode().c_str(), NULL);
+    unicode result(real_path);
+    free(real_path);
+    return result;
+}
+
 unicode rel_path(const unicode& path, const unicode& start) {
     assert(0);
 }

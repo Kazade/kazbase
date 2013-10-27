@@ -26,6 +26,9 @@ bool is_absolute(const unicode& path);
 bool is_dir(const unicode& path);
 bool is_file(const unicode& path);
 bool is_link(const unicode& path);
+
+unicode real_path(const unicode& path);
+
 void hide_dir(const unicode& path);
 std::pair<unicode, unicode> split_ext(const unicode& path);
 unicode rel_path(const unicode& path, const unicode& start=unicode());
