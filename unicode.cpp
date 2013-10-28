@@ -83,6 +83,12 @@ unicode unicode::replace(const unicode& to_find, const unicode& to_replace) {
     return unicode(final_s);
 }
 
+unicode unicode::upper() const {
+    std::string final_s(encode());
+    final_s = str::upper(final_s);
+    return unicode(final_s);
+}
+
 unicode unicode::lower() const {
     //FIXME: WORK WITH UNICODE
     std::string final_s(encode());
