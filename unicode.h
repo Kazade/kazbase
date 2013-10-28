@@ -186,6 +186,6 @@ namespace std {
     };
 }
 
-using _u = unicode;
+typedef unicode _u;
 
 #endif // UNICODE_H

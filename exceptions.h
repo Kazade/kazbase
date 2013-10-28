@@ -65,6 +65,10 @@ public:
 
     }
 
+    ~AssertionError() noexcept (true) {
+
+    }
+
     unicode file;
     int line;
 };

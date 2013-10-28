@@ -37,8 +37,10 @@ unicode::unicode(int32_t n, char c) {
     *this = unicode(s.c_str());
 }
 
-unicode::unicode(const char* utf8_string):
-    unicode(std::string(utf8_string)) {
+unicode::unicode(const char* utf8_string) {
+    std::string tmp(utf8_string);
+
+    utf8::utf8to32(tmp.begin(), tmp.end(), std::back_inserter(string_));
 }
 
 unicode::unicode(const std::string& utf8_string) {
