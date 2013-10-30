@@ -14,6 +14,10 @@ unicode join(const unicode &p1, const unicode &p2) {
     return p1 + OS_SEP + p2;
 }
 
+unicode join(const std::vector<unicode>& parts) {
+    return unicode(OS_SEP).join(parts);
+}
+
 unicode get_cwd(){
     char buf[FILENAME_MAX];
     char* succ = getcwd(buf, FILENAME_MAX);
@@ -153,7 +157,28 @@ unicode real_path(const unicode& path) {
 }
 
 unicode rel_path(const unicode& path, const unicode& start) {
-    assert(0);
+    if(path.empty()) {
+        throw ValueError("No path specified");
+    }
+
+    auto start_list = os::path::abs_path(start).split(OS_SEP, -1, false);
+    auto path_list = os::path::abs_path(path).split(OS_SEP, -1, false);
+
+    int i = common_prefix(start_list, path_list).size();
+
+    unicode pardir = "..";
+
+    std::vector<unicode> result;
+    for(int j = 0; j < (start_list.size() - i); ++j) {
+        result.push_back(pardir);
+    }
+
+    result.insert(result.end(), path_list.begin() + i, path_list.end());
+    if(result.empty()) {
+        return ".";
+    }
+
+    return os::path::join(result);
 }
 
 static unicode get_env_var(const unicode& name) {

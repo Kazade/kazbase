@@ -16,6 +16,7 @@ namespace os {
 namespace path {
 
 unicode join(const unicode& p1, const unicode& p2);
+unicode join(const std::vector<unicode>& parts);
 
 unicode abs_path(const unicode& p);
 unicode norm_path(const unicode& path);
@@ -40,6 +41,24 @@ unicode exe_path();
 unicode exe_dirname();
 unicode get_cwd();
 std::pair<unicode, unicode> split_ext(const unicode& path);
+
+template<typename T>
+std::vector<T> common_prefix(const std::vector<T>& lhs, const std::vector<T>& rhs) {
+    if(lhs.empty() && rhs.empty()) {
+        return std::vector<T>();
+    }
+
+    auto shorter = (lhs.size() < rhs.size()) ? lhs: rhs;
+    auto longer = (lhs.size() > rhs.size()) ? lhs: rhs;
+
+    for(int i = 0; i < shorter.size(); ++i) {
+        if(shorter[i] != longer[i]) {
+            return std::vector<T>(shorter.begin(), shorter.begin() + i);
+        }
+    }
+
+    return shorter;
+}
 
 }
 }
