@@ -94,7 +94,7 @@ bool match_cs(const unicode& name, const unicode& pat) {
     }
 
     auto match = regex::match(_cache[pat], name);
-    return match.size() > 0;
+    return match.begin() != match.end();
 }
 
 }
