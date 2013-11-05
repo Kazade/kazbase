@@ -20,6 +20,8 @@ unicode join(const std::vector<unicode>& parts);
 
 unicode abs_path(const unicode& p);
 unicode norm_path(const unicode& path);
+unicode norm_case(const unicode& path);
+
 std::pair<unicode, unicode> split(const unicode &path);
 bool exists(const unicode& path);
 unicode dir_name(const unicode &path);

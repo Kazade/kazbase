@@ -39,6 +39,13 @@ unicode abs_path(const unicode& p) {
     return norm_path(path);
 }
 
+unicode norm_case(const unicode& path) {
+#ifdef __WIN32__
+    assert(0);
+#endif
+    return path;
+}
+
 unicode norm_path(const unicode& path) {
     unicode slash = "/";
     unicode dot = ".";

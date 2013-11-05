@@ -1,40 +1,49 @@
-#include <boost/regex.hpp>
-#include "logging.h"
+#include <regex>
 #include "regex.h"
+#include "unicode.h"
 
 namespace regex {
 
-Match find(const Regex& regex,
-             const std::string& text,
-             const unsigned int start) {
-
-    boost::regex ex(regex);
-    boost::match_results<std::string::const_iterator> what;
-
-    if(boost::regex_search(text.begin() + start, text.end(), what, ex, boost::match_default)) {
-        Match new_match;
-        new_match.start_pos = what[0].first - text.begin();
-        new_match.end_pos = what[0].second - text.begin();
-        std::string full_match(what[0].first, what[0].second);
-        new_match.groups.push_back(full_match);
-        return new_match;
-    }
-    return Match();
+Regex compile(const unicode& pattern) {
+    return Regex(pattern.encode());
 }
 
-std::vector<Match> find_all(const Regex& regex, const std::string& text) {
-    unsigned int start = 0;
-    std::vector<Match> results;
-    while(start < text.size()) {
-        Match m = find(regex, text, start);
-        if(!m) {
-            break;
-        }
-        results.push_back(m);
-        start = m.end_pos;
+Match match(const Regex& re, const unicode& string) {
+    Match result;
+
+    std::locale old;
+    std::locale::global(std::locale("en_US.UTF-8"));
+
+    boost::regex_match(string.encode(), result, re);
+
+    std::locale::global(old);
+
+    return result;
+}
+
+Match search(const Regex& re, const unicode& string) {
+    Match result;
+
+    std::locale old;
+    std::locale::global(std::locale("en_US.UTF-8"));
+
+    boost::regex_search(string.encode(), result, re);
+
+    std::locale::global(old);
+
+    return result;
+}
+
+unicode escape(const unicode& string) {
+    std::vector<unicode> to_replace = { "^", ".", "$", "|", "(", ")", "[", "]", "*", "+", "?", "\\", "/" };
+
+    //Could be faster!
+    unicode result = string;
+    for(auto u: to_replace) {
+        result = result.replace(u, _u("\\\\") + u);
     }
 
-    return results;
+    return result;
 }
 
 }
