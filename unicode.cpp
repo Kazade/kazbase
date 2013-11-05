@@ -227,8 +227,16 @@ bool unicode::ends_with(const unicode& thing) const {
 
 unicode unicode::rstrip(const unicode& things) const {
     unicode result = *this;
-
     result.string_.erase(result.string_.find_last_not_of(things.string_) + 1);
+    return result;
+}
+
+unicode unicode::rstrip() const {
+    unicode result = *this;
+
+    auto& s = result.string_;
+    auto it = std::find_if(s.rbegin(), s.rend(), [](const char32_t& c) -> bool { return !(iswspace(c) || iswcntrl(c)); }).base();
+    s.erase(it, s.end());
 
     return result;
 }
@@ -241,13 +249,26 @@ unicode unicode::lstrip(const unicode& things) const {
     return result;
 }
 
+unicode unicode::lstrip() const {
+    unicode result = *this;
+
+    auto& s = result.string_;
+    auto it = std::find_if(s.begin(), s.end(), [](const char32_t& c) -> bool { return !(iswspace(c) || iswcntrl(c)); });
+    s.erase(s.begin(), it);
+
+    return result;
+}
+
+
 unicode unicode::strip(const unicode& things) const {
     unicode result = *this;
 
-    result.string_.erase(result.string_.find_last_not_of(things.string_) + 1);
-    result.string_.erase(result.begin(), result.begin() + result.string_.find_first_not_of(things.string_));
+    return result.lstrip(things).rstrip(things);
+}
 
-    return result;
+unicode unicode::strip() const {
+    unicode result = *this;
+    return result.lstrip().rstrip();
 }
 
 unicode unicode::_do_format(uint32_t counter, const std::string& value) {
