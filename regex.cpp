@@ -14,7 +14,9 @@ Match match(const Regex& re, const unicode& string) {
     std::locale old;
     std::locale::global(std::locale("en_US.UTF-8"));
 
-    boost::regex_match(string.encode(), result, re);
+    std::string encoded = string.encode();
+
+    result.matched = boost::regex_match(encoded, result.matches, re);
 
     std::locale::global(old);
 
@@ -27,7 +29,7 @@ Match search(const Regex& re, const unicode& string) {
     std::locale old;
     std::locale::global(std::locale("en_US.UTF-8"));
 
-    boost::regex_search(string.encode(), result, re);
+    result.matched = boost::regex_search(string.encode(), result.matches, re);
 
     std::locale::global(old);
 
@@ -35,12 +37,12 @@ Match search(const Regex& re, const unicode& string) {
 }
 
 unicode escape(const unicode& string) {
-    std::vector<unicode> to_replace = { "^", ".", "$", "|", "(", ")", "[", "]", "*", "+", "?", "\\", "/" };
+    std::vector<unicode> to_replace = { "\\", "{", "}", "^", "$", "|", "(", ")", "[", "]", "*", "+", "?", "." };
 
     //Could be faster!
     unicode result = string;
     for(auto u: to_replace) {
-        result = result.replace(u, _u("\\\\") + u);
+        result = result.replace(u, _u("\\") + u);
     }
 
     return result;

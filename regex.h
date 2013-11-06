@@ -8,7 +8,13 @@
 namespace regex {
 
 typedef boost::regex Regex;
-typedef boost::smatch Match;
+
+class Match {
+public:
+    boost::smatch matches;
+    bool matched;
+};
+
 
 Regex compile(const unicode& pattern);
 Match match(const Regex& re, const unicode& string);

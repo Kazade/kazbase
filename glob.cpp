@@ -56,7 +56,7 @@ unicode _translate(const unicode& pat) {
         }
     }
 
-    return res;// + "/Z(?ms)";
+    return res;
 }
 
 std::vector<unicode> filter(const std::vector<unicode>& names, const unicode& pat) {
@@ -76,7 +76,7 @@ std::vector<unicode> filter(const std::vector<unicode>& names, const unicode& pa
     for(auto name: names) {
         auto match = regex::match(re, name);
 
-        if(match.size()) {
+        if(match.matched) {
             results.push_back(name);
         }
     }
@@ -94,7 +94,8 @@ bool match_cs(const unicode& name, const unicode& pat) {
     }
 
     auto match = regex::match(_cache[pat], name);
-    return match.begin() != match.end();
+
+    return match.matched;
 }
 
 }
