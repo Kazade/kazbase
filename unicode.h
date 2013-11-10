@@ -45,9 +45,13 @@ public:
 
     unicode lower() const;
     unicode upper() const;
-    unicode strip(const unicode& things=unicode(" \t\r\n")) const;
-    unicode lstrip(const unicode& things=unicode(" \t\r\n")) const;
-    unicode rstrip(const unicode& things=unicode(" \t\r\n")) const;
+    unicode strip() const;
+    unicode lstrip() const;
+    unicode rstrip() const;
+
+    unicode strip(const unicode& things) const;
+    unicode lstrip(const unicode& things) const;
+    unicode rstrip(const unicode& things) const;
     unicode swap_case() const;
     unicode replace(const unicode& thing, const unicode& replacement);
 
@@ -186,6 +190,6 @@ namespace std {
     };
 }
 
-using _u = unicode;
+typedef unicode _u;
 
 #endif // UNICODE_H

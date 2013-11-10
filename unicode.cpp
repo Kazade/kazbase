@@ -38,8 +38,10 @@ unicode::unicode(int32_t n, char c) {
     *this = unicode(s.c_str());
 }
 
-unicode::unicode(const char* utf8_string):
-    unicode(std::string(utf8_string)) {
+unicode::unicode(const char* utf8_string) {
+    std::string tmp(utf8_string);
+
+    utf8::utf8to32(tmp.begin(), tmp.end(), std::back_inserter(string_));
 }
 
 unicode::unicode(const std::string& utf8_string) {
@@ -81,6 +83,12 @@ unicode unicode::replace(const unicode& to_find, const unicode& to_replace) {
     //FIXME: THis currently encodes to utf-8 does the replacement, and then decodes it.. that's a bit shit
     std::string final_s(encode());
     boost::replace_all(final_s, std::string(to_find.encode()), std::string(to_replace.encode()));
+    return unicode(final_s);
+}
+
+unicode unicode::upper() const {
+    std::string final_s(encode());
+    final_s = str::upper(final_s);
     return unicode(final_s);
 }
 
@@ -220,8 +228,16 @@ bool unicode::ends_with(const unicode& thing) const {
 
 unicode unicode::rstrip(const unicode& things) const {
     unicode result = *this;
-
     result.string_.erase(result.string_.find_last_not_of(things.string_) + 1);
+    return result;
+}
+
+unicode unicode::rstrip() const {
+    unicode result = *this;
+
+    auto& s = result.string_;
+    auto it = std::find_if(s.rbegin(), s.rend(), [](const char32_t& c) -> bool { return !(iswspace(c) || iswcntrl(c)); }).base();
+    s.erase(it, s.end());
 
     return result;
 }
@@ -234,13 +250,26 @@ unicode unicode::lstrip(const unicode& things) const {
     return result;
 }
 
+unicode unicode::lstrip() const {
+    unicode result = *this;
+
+    auto& s = result.string_;
+    auto it = std::find_if(s.begin(), s.end(), [](const char32_t& c) -> bool { return !(iswspace(c) || iswcntrl(c)); });
+    s.erase(s.begin(), it);
+
+    return result;
+}
+
+
 unicode unicode::strip(const unicode& things) const {
     unicode result = *this;
 
-    result.string_.erase(result.string_.find_last_not_of(things.string_) + 1);
-    result.string_.erase(result.begin(), result.begin() + result.string_.find_first_not_of(things.string_));
+    return result.lstrip(things).rstrip(things);
+}
 
-    return result;
+unicode unicode::strip() const {
+    unicode result = *this;
+    return result.lstrip().rstrip();
 }
 
 unicode unicode::_do_format(uint32_t counter, const std::string& value) {
