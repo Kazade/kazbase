@@ -1,3 +1,5 @@
+#if 0 //DISABLE
+
 #include <iostream>
 #include "tree_parser.h"
 #include "../logging.h"
@@ -183,3 +185,5 @@ Node TreeParser::parse(const std::string& text) {
 
 
 */
+
+#endif //DISABLE
