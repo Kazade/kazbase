@@ -2,6 +2,7 @@
 #include <ctime>
 #include <utime.h>
 #include <sys/stat.h>
+#include <errno.h>
 
 #include "core.h"
 #include "../exceptions.h"

@@ -227,7 +227,7 @@ void set_value(Node& node, const std::string& value, bool buffer_is_string) {
         }
 
         try {
-            node.set_number(std::stoi(value));
+            node.set_number(boost::lexical_cast<int>(value));
         } catch(std::invalid_argument& e) {
             throw ParseError("Unknown value type: " + value);
         }

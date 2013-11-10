@@ -1,5 +1,6 @@
 #include <fstream>
 #include <dirent.h>
+#include <errno.h>
 
 #include "path.h"
 

@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <string>
 
 #include "utf8.h"
 #include "unicode.h"
@@ -258,15 +259,15 @@ unicode unicode::_do_format(uint32_t counter, const std::string& value) {
             std::string replacement;
             if(placeholder.contains(":x")) {
                 std::stringstream stream;
-                stream << "0x" << std::hex << std::stoi(value);
+                stream << "0x" << std::hex << boost::lexical_cast<int>(value);
                 replacement = stream.str();
             } else if(placeholder.contains(":o")) {
                 std::stringstream stream;
-                stream << std::oct << std::stoi(value);
+                stream << std::oct << boost::lexical_cast<int>(value);
                 replacement = stream.str();
             } else if(placeholder.contains(":d")) {
                 std::stringstream stream;
-                stream << std::dec << std::stoi(value);
+                stream << std::dec << boost::lexical_cast<int>(value);
                 replacement = stream.str();
             } else if(placeholder.contains(":")) {
                 throw NotImplementedError(__FILE__, __LINE__);
