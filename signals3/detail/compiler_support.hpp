@@ -10,7 +10,6 @@
 #ifndef BOOST_SIGNALS3_COMPILER_SUPPORT_HPP
 #define BOOST_SIGNALS3_COMPILER_SUPPORT_HPP
 
-#include <boost/move/move.hpp>
 #include <boost/smart_ptr/detail/spinlock_pool.hpp>
 
 // testing defines

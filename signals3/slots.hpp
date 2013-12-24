@@ -40,7 +40,7 @@ namespace boost
                 }
 
                 slot_base(slot_base&& rhs) :
-                        _tracking(boost::move(rhs._tracking))
+                        _tracking(std::move(rhs._tracking))
                 {
                 }
 
@@ -99,7 +99,7 @@ namespace boost
                             {
                                 return false;
                             }
-                            list.push_front(boost::move(item));
+                            list.push_front(std::move(item));
                         }
                         return true;
                     }
@@ -152,7 +152,7 @@ namespace boost
                 slot(slot< ResultType
                 (Args...), SlotFunction > && rhs) :
                         slot_base< ResultType
-                        (Args...) >(boost::move(rhs)), callback(boost::move(rhs.callback))
+                        (Args...) >(std::move(rhs)), callback(std::move(rhs.callback))
                 {
                 }
 
