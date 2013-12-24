@@ -44,7 +44,7 @@ namespace boost
 
             connection(::boost::signals3::detail::signal_base* _sig,
                     ::boost::signals3::detail::weak_ptr< ::boost::signals3::detail::node_base >&& _node) :
-                    _sig(_sig), _node(boost::move(_node))
+                    _sig(_sig), _node(std::move(_node))
             {
             }
         public:
@@ -59,7 +59,7 @@ namespace boost
             }
 
             connection(connection&& conn) :
-                    _sig(conn._sig), _node(boost::move(conn._node))
+                    _sig(conn._sig), _node(std::move(conn._node))
             {
             }
 
@@ -74,8 +74,8 @@ namespace boost
             connection&
             operator=(connection&& conn)
             {
-                _sig = boost::move(conn._sig);
-                _node = boost::move(conn._node);
+                _sig = std::move(conn._sig);
+                _node = std::move(conn._node);
                 return *this;
             }
 
@@ -126,7 +126,7 @@ namespace boost
                         _node.lock();
                 if (temp != nullptr)
                 {
-                    _sig->disconnect(boost::move(temp));
+                    _sig->disconnect(std::move(temp));
                 }
             }
 
@@ -137,7 +137,7 @@ namespace boost
                         _node.lock();
                 if (temp != nullptr)
                 {
-                    _sig->disconnect_unsafe(boost::move(temp));
+                    _sig->disconnect_unsafe(std::move(temp));
                 }
             }
 
@@ -176,7 +176,7 @@ namespace boost
             }
 
             scoped_connection(connection&& conn) :
-                    connection(boost::move(conn))
+                    connection(std::move(conn))
             {
 
             }
@@ -194,8 +194,8 @@ namespace boost
             operator=(connection&& conn)
             {
                 disconnect();
-                _sig = boost::move(conn._sig);
-                _node = boost::move(conn._node);
+                _sig = std::move(conn._sig);
+                _node = std::move(conn._node);
                 return *this;
             }
 

@@ -10,7 +10,7 @@
 #ifndef BOOST_SIGNALS3_COMPILER_SUPPORT_HPP
 #define BOOST_SIGNALS3_COMPILER_SUPPORT_HPP
 
-#include <boost/move/move.hpp>
+#include <boost/smart_ptr/detail/spinlock_pool.hpp>
 
 // testing defines
 //#define BOOST_NO_CXX11_ATOMIC
@@ -44,13 +44,13 @@ namespace boost
              */
             template<class T> std::shared_ptr<T> atomic_load(std::shared_ptr<T> const * p)
             {
-                //boost::detail::spinlock_pool<2>::scoped_lock lock( p );
+                boost::detail::spinlock_pool<2>::scoped_lock lock( p );
                 return *p;
             }
 
             template<class T> void atomic_store(std::shared_ptr<T> * p, std::shared_ptr<T> r)
             {
-                //boost::detail::spinlock_pool<2>::scoped_lock lock( p );
+                boost::detail::spinlock_pool<2>::scoped_lock lock( p );
                 p->swap(r);
             }
 
