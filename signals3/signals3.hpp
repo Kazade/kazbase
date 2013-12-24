@@ -13,8 +13,10 @@
 //#include <optional_last_value.hpp>
 //#include <slots.hpp>
 //#include <connection.hpp>
-#include "signal.hpp"
+//#include "signal.hpp"
 
-namespace sig = boost::signals3;
+#include <boost/signals2.hpp>
+
+namespace sig = boost::signals2;
 
 #endif // BOOST_SIGNALS3_HPP
