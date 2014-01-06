@@ -5,6 +5,7 @@
 #include "unicode.h"
 #include "string.h"
 #include "exceptions.h"
+#include "regex.h"
 
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
@@ -273,38 +274,42 @@ unicode unicode::strip() const {
 }
 
 unicode unicode::_do_format(uint32_t counter, const std::string& value) {
-    std::string counter_as_string = boost::lexical_cast<std::string>(counter);
+    regex::Regex re("\\{(\\d+)(:\\.(\\d+)f)?(:[xod])?\\}");
+    auto matches = regex::search(re, *this);
+    for(auto match: matches) {
+        unicode placeholder = match.group(0);
+        int found_counter = match.group(1).to_int();
+        unicode found_decimal = match.group(3);
+        unicode found_format = match.group(4);
 
-    std::vector<unicode> possible = {
-        "{" + counter_as_string + "}",
-        "{" + counter_as_string + ":x}",
-        "{" + counter_as_string + ":d}",
-        "{" + counter_as_string + ":b}",
-        "{" + counter_as_string + ":o}"
-    };
-
-    for(auto placeholder: possible) {
-        if(this->contains(placeholder)) {
+        if(found_counter == counter) {
             std::string replacement;
-            if(placeholder.contains(":x")) {
+
+            if(found_decimal.length()) {
+                int decimal = boost::lexical_cast<int>(found_decimal);
                 std::stringstream stream;
-                stream << "0x" << std::hex << boost::lexical_cast<int>(value);
+                stream << std::fixed << std::setprecision(decimal) << boost::lexical_cast<float>(value);
                 replacement = stream.str();
-            } else if(placeholder.contains(":o")) {
-                std::stringstream stream;
-                stream << std::oct << boost::lexical_cast<int>(value);
-                replacement = stream.str();
-            } else if(placeholder.contains(":d")) {
-                std::stringstream stream;
-                stream << std::dec << boost::lexical_cast<int>(value);
-                replacement = stream.str();
-            } else if(placeholder.contains(":")) {
-                throw NotImplementedError(__FILE__, __LINE__);
+            } else if(found_format.length()) {
+                unicode format = found_format;
+                if(format == ":x") {
+                    std::stringstream stream;
+                    stream << "0x" << std::hex << boost::lexical_cast<int>(value);
+                    replacement = stream.str();
+                } else if(format == ":o") {
+                    std::stringstream stream;
+                    stream << std::oct << boost::lexical_cast<int>(value);
+                    replacement = stream.str();
+                } else if(format == ":d") {
+                    std::stringstream stream;
+                    stream << std::dec << boost::lexical_cast<int>(value);
+                    replacement = stream.str();
+                }
             } else {
                 replacement = boost::lexical_cast<std::string>(value);
             }
 
-            return this->replace(placeholder, replacement);
+            return replace(placeholder, replacement);
         }
     }
 

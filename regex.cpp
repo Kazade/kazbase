@@ -1,4 +1,3 @@
-#include <regex>
 #include "regex.h"
 #include "unicode.h"
 
@@ -16,24 +15,53 @@ Match match(const Regex& re, const unicode& string) {
 
     std::string encoded = string.encode();
 
-    result.matched = boost::regex_match(encoded, result.matches, re);
+    boost::match_results<std::string::const_iterator> matches;
+
+    result.matched = boost::regex_match(encoded, matches, re._impl);
+
+    for(auto match: matches) {
+        unicode match_string(match.first, match.second);
+        std::cout << "SM: " << match_string << std::endl;
+        result.groups.push_back(match_string);
+        result.matched = true;
+    }
 
     std::locale::global(old);
 
     return result;
 }
 
-Match search(const Regex& re, const unicode& string) {
-    Match result;
+std::vector<Match> search(const Regex& re, const unicode& string) {
+    std::vector<Match> results;
 
     std::locale old;
     std::locale::global(std::locale("en_US.UTF-8"));
 
-    result.matched = boost::regex_search(string.encode(), result.matches, re);
+    auto to_search = string.encode();
+
+    std::string::const_iterator start, end;
+    start = to_search.begin();
+    end = to_search.end();
+
+    boost::match_results<std::string::const_iterator> matches;
+
+    while(boost::regex_search(start, end, matches, re._impl)) {
+        Match new_match;
+        for(auto match: matches) {
+            std::string match_string(match.first, match.second);
+            unicode group(match_string);
+            new_match.groups.push_back(group);
+            new_match.matched = true;
+        }
+
+        start = matches[0].second;
+
+        results.push_back(new_match);
+    }
 
     std::locale::global(old);
 
-    return result;
+    return results;
 }
 
 unicode escape(const unicode& string) {
