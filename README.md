@@ -1,21 +1,20 @@
-# kazbase C++ utility library
+# KazBase
 
-Kazbase exists to make my life easier when I'm coding C++ applications. It's basically a nice API wrapper around boost, the STL and other libraries like Curl. Many of the methods and classes are inspired by Python's standard library but adapted to better fit C++'s syntax and idioms.
+KazBase is my C++ base library where I put all my common code. The library inherits a lot from the Python standard library, but with more consistent naming.
 
-# Examples
+KazBase includes code for the following:
+    
+    - Logging system (to file, or stdout)
+    - Unicode support (see unicode.h, based on Python's unicode type)
+    - File utilities (e.g. reading an entire file into a buffer)
+    - An Exception class heirarchy (base on Python + Django exceptions (e.g. DoesNotExist))
+    - Filesystem operations (based on Python's 'os' module)
+    - Threading utilities
+    - XDG Base Directory spec utility functions (see fdo namespace)
+    - JSON parsing/saving
+    - Globbing functions
+    - Loads of random stuff that might be useful
 
-boost::filesystem provides a cross-platform way of manipulating paths, but the syntax for doing so isn't as nice as Python's equivalent os.path module. kazbase wraps boost::filesystem to produce the following syntax:
+All of my code in this repository is MIT licensed. Knock yourself out! But, bear in mind that the whole API is in permenant, constant flux!
 
-```
-std::string p = os::path::join("/tmp", "my_file");
-if(os::path::exists(p)) {
-    os::delete_path(p);
-}
 
-os::touch(p);
-datetime::DateTime d = os::stat::get_modified_time(p);
-```
-
-In the above example the datetime module is also used, datetime::DateType is just a typedef for boost's ptime.
-
-There are loads of other wrappers for different things that I'll keep adding to for my own benefit, but feel free to use!
