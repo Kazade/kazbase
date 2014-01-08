@@ -15,6 +15,6 @@ KazBase includes code for the following:
     - Globbing functions
     - Loads of random stuff that might be useful
 
-All of my code in this repository is MIT licensed. Knock yourself out! But, bear in mind that the whole API is in permenant, constant flux!
+All of my code in this repository is BSD licensed. Knock yourself out! But, bear in mind that the whole API is in permenant, constant flux!
 
 
