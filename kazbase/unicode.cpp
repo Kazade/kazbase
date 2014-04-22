@@ -145,6 +145,10 @@ unicode unicode::join(const std::vector<unicode>& parts) const {
         return unicode("");
     }
 
+    if(parts.size() == 1) {
+        return parts.front();
+    }
+
     unicode final_string;
     for(unicode p: parts) {
         if(p.empty()) {
@@ -152,6 +156,10 @@ unicode unicode::join(const std::vector<unicode>& parts) const {
         }
         final_string += p;
         final_string += *this;
+    }
+
+    if(final_string.empty()) {
+        return unicode("");
     }
 
     return unicode(final_string.begin(), final_string.begin() + (final_string.length() - string_.length()));

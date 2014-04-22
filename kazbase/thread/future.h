@@ -5,10 +5,6 @@
 #include <memory>
 #include <type_traits>
 
-namespace boost {
-  using std::move;
-}
-
 namespace thread {
 
 template<typename Func>
