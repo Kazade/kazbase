@@ -71,3 +71,6 @@ kazbase/xrange.h
 CMakeLists.txt
 KAZBASEConfig.cmake
 kazbase/utils.h
+tests/test_regex.cpp
+tests/main.cpp
+tests/CMakeLists.txt
