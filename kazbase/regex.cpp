@@ -31,6 +31,10 @@ REMatch Regex::match(const unicode &str, uint32_t start_pos) const {
         std::string::const_iterator beg = match.first;
         std::string::const_iterator end = match.second;
 
+        if(beg == end) {
+            continue;
+        }
+
         result.groups_.push_back(REMatch::Group({
             match_string,
             std::distance(start, beg),
