@@ -28,8 +28,6 @@ REMatch Regex::match(const unicode &str, uint32_t start_pos) const {
     for(auto match: matches) {
         unicode match_string(match.first, match.second);
 
-        std::cout << match_string << std::endl;
-
         std::string::const_iterator beg = match.first;
         std::string::const_iterator end = match.second;
 
