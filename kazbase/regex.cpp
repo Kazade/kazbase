@@ -7,6 +7,67 @@ Regex compile(const unicode& pattern) {
     return Regex(pattern.encode());
 }
 
+REMatch Regex::match(const unicode &str, uint32_t start_pos) const {
+    REMatch result;
+
+    std::locale old;
+    std::locale::global(std::locale("en_US.UTF-8"));
+
+    std::string encoded = str.encode();
+
+    boost::match_results<std::string::const_iterator> matches;
+
+    std::string::const_iterator start = encoded.begin();
+    std::string::const_iterator finish = encoded.end();
+
+    boost::match_flag_type flags = boost::match_default;
+    flags |= boost::match_continuous;
+
+    boost::regex_search(start + start_pos, finish, matches, _impl, flags);
+
+    for(auto match: matches) {
+        unicode match_string(match.first, match.second);
+
+        std::cout << match_string << std::endl;
+
+        std::string::const_iterator beg = match.first;
+        std::string::const_iterator end = match.second;
+
+        result.groups_.push_back(REMatch::Group({
+            match_string,
+            std::distance(start, beg),
+            std::distance(start, end)
+        }));
+    }
+
+    std::locale::global(old);
+    return result;
+}
+
+int REMatch::start(int group) {
+    return groups_.at(group).start;
+}
+
+int REMatch::end(int group) {
+    return groups_.at(group).end;
+}
+
+std::pair<int, int> REMatch::span(int group) {
+    return std::make_pair(start(group), end(group));
+}
+
+std::vector<unicode> REMatch::groups() const {
+    std::vector<unicode> ret;
+    for(auto g: groups_) {
+        ret.push_back(g.str);
+    }
+    return ret;
+}
+
+unicode REMatch::group(uint32_t i) const {
+    return groups_.at(i).str;
+}
+
 Match match(const Regex& re, const unicode& string) {
     Match result;
 

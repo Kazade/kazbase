@@ -72,3 +72,7 @@ CMakeLists.txt
 KAZBASEConfig.cmake
 kazbase/utils.h
 kazbase/network/net.cpp
+tests/test_regex.cpp
+tests/main.cpp
+tests/CMakeLists.txt
+
