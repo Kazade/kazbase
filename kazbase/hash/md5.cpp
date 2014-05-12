@@ -19,8 +19,6 @@ MD5::MD5(const std::string& data):
 
 void MD5::update(const std::string& data) {
     assert(!data.empty());
-
-    std::cout << data << std::endl;
     MD5_Update(ctx_.get(), (void*) data.c_str(), data.length());
 }
 
@@ -36,7 +34,6 @@ std::string MD5::hex_digest() {
         final += std::string(szTemp);
     }
 
-    std::cout << final << std::endl;
     return final;
 }
 
