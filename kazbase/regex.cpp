@@ -35,10 +35,13 @@ REMatch Regex::match(const unicode &str, uint32_t start_pos) const {
             continue;
         }
 
+        long beg_diff = std::distance(start, beg);
+        long end_diff = std::distance(start, end);
+
         result.groups_.push_back(REMatch::Group({
             match_string,
-            std::distance(start, beg),
-            std::distance(start, end)
+            (int)beg_diff,
+            (int)end_diff
         }));
     }
 
