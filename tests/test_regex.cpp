@@ -7,7 +7,7 @@ TEST(test_regex_match) {
     auto match = re.match("Your number is <b>123</b>  fdjsk");
 
     CHECK(match); //Match should evaluate to true
-    CHECK_EQUAL(1, match.groups().size()); //Should be one match
+    CHECK_EQUAL(2, match.groups().size()); //Should be two groups (the full match, and the number)
     CHECK_EQUAL(_u("Your number is <b>123</b>"), match.group());
     CHECK_EQUAL(_u("123"), match.group(1));
     CHECK_EQUAL(0, match.start());

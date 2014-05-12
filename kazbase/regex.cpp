@@ -7,7 +7,7 @@ Regex compile(const unicode& pattern) {
     return Regex(pattern.encode());
 }
 
-REMatch Regex::match(const unicode &str, uint32_t start) const {
+REMatch Regex::match(const unicode &str, uint32_t start_pos) const {
     REMatch result;
 
     std::locale old;
@@ -15,17 +15,28 @@ REMatch Regex::match(const unicode &str, uint32_t start) const {
 
     std::string encoded = str.encode();
 
-    boost::match_results<std::string::iterator> matches;
+    boost::match_results<std::string::const_iterator> matches;
 
-    boost::regex_match(encoded.begin(), encoded.end(), matches, _impl);
+    std::string::const_iterator start = encoded.begin();
+    std::string::const_iterator finish = encoded.end();
+
+    boost::match_flag_type flags = boost::match_default;
+    flags |= boost::match_continuous;
+
+    boost::regex_search(start + start_pos, finish, matches, _impl, flags);
 
     for(auto match: matches) {
         unicode match_string(match.first, match.second);
 
+        std::cout << match_string << std::endl;
+
+        std::string::const_iterator beg = match.first;
+        std::string::const_iterator end = match.second;
+
         result.groups_.push_back(REMatch::Group({
             match_string,
-            std::distance(encoded.begin(), match.first),
-            std::distance(encoded.begin(), match.second)
+            std::distance(start, beg),
+            std::distance(start, end)
         }));
     }
 
