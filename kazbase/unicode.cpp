@@ -15,6 +15,14 @@ std::ostream& operator<< (std::ostream& os, const unicode& str) {
     return os;
 }
 
+bool operator==(const char* c_str, const unicode& uni_str) {
+    return uni_str.encode() == c_str;
+}
+
+bool operator!=(const char* c_str, const unicode& uni_str) {
+    return !(c_str == uni_str);
+}
+
 unicode& unicode::operator=(const unicode& rhs) {
     if(this == &rhs) {
         return *this;

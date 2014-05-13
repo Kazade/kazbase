@@ -179,6 +179,8 @@ private:
 };
 
 std::ostream& operator<< (std::ostream& os, const unicode& str);
+bool operator==(const char* c_str, const unicode& uni_str);
+bool operator!=(const char* c_str, const unicode& uni_str);
 
 namespace std {
     template<>
