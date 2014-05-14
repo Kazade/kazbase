@@ -159,6 +159,9 @@ bool is_link(const unicode& path) {
 
 unicode real_path(const unicode& path) {
     char *real_path = realpath(path.encode().c_str(), NULL);
+    if(!real_path) {
+        return unicode();
+    }
     unicode result(real_path);
     free(real_path);
     return result;
