@@ -23,4 +23,11 @@ TEST(test_regex_match) {
     CHECK_EQUAL(29, match.end());
     CHECK_EQUAL(4, match.span().first);
     CHECK_EQUAL(29, match.span().second);
+
+    re = regex::compile(R"([^"\\]*(?:(?:\\.|"(?!""))[^"\\]*)*""")");
+    match = re.match("this is some text that ends with \"\"\"");
+    CHECK(match);
+    match = re.match("this is some text that doesn't");
+    CHECK(!match);
+
 }

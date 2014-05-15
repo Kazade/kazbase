@@ -22,8 +22,11 @@ REMatch Regex::match(const unicode &str, uint32_t start_pos) const {
 
     boost::match_flag_type flags = boost::match_default;
     flags |= boost::match_continuous;
+    flags |= boost::match_not_dot_newline;
 
-    boost::regex_search(start + start_pos, finish, matches, _impl, flags);
+    if(!boost::regex_search(start + start_pos, finish, matches, _impl, flags)) {
+        return result;
+    }
 
     for(auto match: matches) {
         unicode match_string(match.first, match.second);
