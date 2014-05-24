@@ -76,3 +76,5 @@ tests/test_regex.cpp
 tests/main.cpp
 tests/CMakeLists.txt
 
+kazbase/noise.h
+kazbase/noise.cpp
