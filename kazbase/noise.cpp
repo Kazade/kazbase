@@ -88,7 +88,8 @@ double PerlinOctave::noise(double x, double y, double z) const {
     double result = 0.0;
     double amp = 1.0;
 
-    for(int i = 0; i < octaves_; ++i) {
+    int i = octaves_;
+    while(i--) {
         result += perlin_.noise(x, y, z) * amp;
         x *= 2.0;
         y *= 2.0;
