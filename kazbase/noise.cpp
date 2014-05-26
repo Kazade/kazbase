@@ -85,20 +85,18 @@ PerlinOctave::PerlinOctave(int octaves, uint32_t seed):
 }
 
 double PerlinOctave::noise(double x, double y, double z) const {
-    float freq = 1;
-    float amp = 1;
-    float result = 0;
-    float max_sum = 0;
-
+    double result = 0.0;
+    double amp = 1.0;
 
     for(int i = 0; i < octaves_; ++i) {
-        max_sum += amp;
-        result += perlin_.noise(x * freq, y * freq, z * freq) * amp;
+        result += perlin_.noise(x, y, z) * amp;
+        x *= 2.0;
+        y *= 2.0;
+        z *= 2.0;
         amp *= 0.5;
-        freq *= 2.0;
     }
 
-    return result / max_sum;
+    return result;
 }
 
 }
