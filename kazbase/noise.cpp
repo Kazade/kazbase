@@ -22,8 +22,10 @@ double grad(int hash, double x, double y, double z) {
 Perlin::Perlin(uint32_t seed) {
     auto mid_range = p.begin() + 256;
 
+    std::default_random_engine engine(seed);
+
     std::iota(p.begin(), mid_range, 0); //Generate sequential numbers in the lower half
-    std::shuffle(p.begin(), mid_range, std::mt19937(seed)); //Shuffle the lower half
+    std::shuffle(p.begin(), mid_range, engine); //Shuffle the lower half
     std::copy(p.begin(), mid_range, mid_range); //Copy the lower half to the upper half
     //p now has the numbers 0-255, shuffled, and duplicated
 }
@@ -32,8 +34,8 @@ double Perlin::noise(double x, double y, double z) const {
     //See here for algorithm: http://cs.nyu.edu/~perlin/noise/
 
     const int32_t X = static_cast<int32_t>(std::floor(x)) & 255;
-    const int32_t Y = static_cast<int32_t>(std::floor(x)) & 255;
-    const int32_t Z = static_cast<int32_t>(std::floor(x)) & 255;
+    const int32_t Y = static_cast<int32_t>(std::floor(y)) & 255;
+    const int32_t Z = static_cast<int32_t>(std::floor(z)) & 255;
 
     x -= std::floor(x);
     y -= std::floor(y);
@@ -61,7 +63,7 @@ double Perlin::noise(double x, double y, double z) const {
 
     const auto a = lerp(v,
         lerp(u, grad(PAA, x, y, z), grad(PBA, x-1, y, z)),
-        lerp(u, grad(PAB, x, y-1, z), grad(PBB, x-1, y-1, z-1))
+        lerp(u, grad(PAB, x, y-1, z), grad(PBB, x-1, y-1, z))
     );
 
     const auto b = lerp(v,
@@ -79,18 +81,20 @@ PerlinOctave::PerlinOctave(int octaves, uint32_t seed):
 }
 
 double PerlinOctave::noise(double x, double y, double z) const {
-    double result = 0.0;
-    double amp = 1.0;
+    float freq = 1;
+    float amp = 1;
+    float result = 0;
+    float max_sum = 0;
 
-    int i = octaves_;
-    while(i--) {
-        result += perlin_.noise(x, y, z) * amp;
-        x *= 2.0;
-        y *= 2.0;
+
+    for(int i = 0; i < octaves_; ++i) {
+        max_sum += amp;
+        result += perlin_.noise(x * freq, y * freq, z * freq) * amp;
         amp *= 0.5;
+        freq *= 2.0;
     }
 
-    return result;
+    return result / max_sum;
 }
 
 }
