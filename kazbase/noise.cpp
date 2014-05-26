@@ -20,9 +20,13 @@ double grad(int hash, double x, double y, double z) {
 }
 
 Perlin::Perlin(uint32_t seed) {
+    if(!seed) {
+        seed = time(0);
+    }
+
     auto mid_range = p.begin() + 256;
 
-    std::default_random_engine engine(seed);
+    std::mt19937 engine(seed);
 
     std::iota(p.begin(), mid_range, 0); //Generate sequential numbers in the lower half
     std::shuffle(p.begin(), mid_range, engine); //Shuffle the lower half

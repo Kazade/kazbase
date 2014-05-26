@@ -8,7 +8,7 @@ namespace noise {
 
 class Perlin {
 public:
-    Perlin(uint32_t seed=std::mt19937::default_seed);
+    Perlin(uint32_t seed=0);
 
     double noise(double x) const { return noise(x, 0, 0); }
     double noise(double x, double y) const { return noise(x, y, 0); }
@@ -20,7 +20,7 @@ private:
 
 class PerlinOctave {
 public:
-    PerlinOctave(int octaves, uint32_t seed=std::mt19937::default_seed);
+    PerlinOctave(int octaves, uint32_t seed=0);
 
     double noise(double x) const { return noise(x, 0, 0); }
     double noise(double x, double y) const { return noise(x, y, 0); }
