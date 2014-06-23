@@ -14,14 +14,13 @@ IF(UNITTEST_FOUND)
 
     ADD_EXECUTABLE(kazbase_tests ${TEST_SOURCES})
 
-    find_package(Boost COMPONENTS system date_time regex thread REQUIRED)
+    find_package(Boost COMPONENTS system date_time thread REQUIRED)
 
     TARGET_LINK_LIBRARIES(kazbase_tests
         kazbase
         ${UNITTEST_LIBRARIES}
         ${Boost_SYSTEM_LIBRARY}
         ${Boost_DATE_TIME_LIBRARY}
-        ${Boost_REGEX_LIBRARY}
         ${Boost_THREAD_LIBRARY}
     )
 ENDIF()

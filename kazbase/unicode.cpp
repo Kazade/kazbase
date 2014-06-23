@@ -291,12 +291,19 @@ unicode unicode::strip() const {
 
 unicode unicode::_do_format(uint32_t counter, const std::string& value) {
     regex::Regex re("\\{(\\d+)(:\\.(\\d+)f)?(:[xod])?\\}");
-    auto matches = regex::search(re, *this);
+    auto matches = re.search(*this);
     for(auto match: matches) {
         unicode placeholder = match.group(0);
         int found_counter = match.group(1).to_int();
-        unicode found_decimal = match.group(3);
-        unicode found_format = match.group(4);
+        unicode found_decimal, found_format;
+
+        if(match.groups().size() > 2) {
+            found_decimal = match.group(3);
+        }
+
+        if(match.groups().size() > 3) {
+            found_format = match.group(4);
+        }
 
         if(found_counter == counter) {
             std::string replacement;

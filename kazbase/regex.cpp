@@ -1,55 +1,110 @@
 #include "regex.h"
 #include "unicode.h"
+#include "exceptions.h"
+
+//Temporarily using PCRE until the Android NDK, GCC and Clang support std::regex
+#include "depends/pcre/pcre.h"
+
+const int OVECCOUNT = 30;
 
 namespace regex {
+
+Regex::Regex(const unicode& str):
+    original_(str),
+    _impl(nullptr){
+
+    init();
+}
+
+Regex::Regex(const Regex &rhs):
+    original_(rhs.original_),
+    _impl(nullptr) {
+
+    init();
+}
+
+void Regex::init() {
+    const char* error = nullptr;
+    int error_offset;
+
+    _impl = pcre_compile(
+        original_.encode().c_str(),
+        0,
+        &error,
+        &error_offset,
+        nullptr
+    );
+
+
+    if(!_impl) {
+        throw ValueError(_u("Unable to compile regular expression. {}").format(error));
+    }
+}
+
+Regex::~Regex() {
+    if(_impl) {
+        pcre_free(_impl);
+    }
+    _impl = nullptr;
+}
 
 Regex compile(const unicode& pattern) {
     return Regex(pattern.encode());
 }
 
 REMatch Regex::match(const unicode &str, uint32_t start_pos) const {
+    int ovector[OVECCOUNT];
+    std::string s = str.encode();
+    const char* source = s.c_str();
+    int rc = pcre_exec(_impl, nullptr, source, s.length(), start_pos, 0, ovector, OVECCOUNT);
+
     REMatch result;
 
-    std::locale old;
-    std::locale::global(std::locale("en_US.UTF-8"));
-
-    std::string encoded = str.encode();
-
-    boost::match_results<std::string::const_iterator> matches;
-
-    std::string::const_iterator start = encoded.begin();
-    std::string::const_iterator finish = encoded.end();
-
-    boost::match_flag_type flags = boost::match_default;
-    flags |= boost::match_continuous;
-    flags |= boost::match_not_dot_newline;
-
-    if(!boost::regex_search(start + start_pos, finish, matches, _impl, flags)) {
-        return result;
+    if(rc < 0) {
+        switch(rc) {
+            case PCRE_ERROR_NOMATCH:
+                return result;
+            default:
+                throw ValueError("Error matching pattern");
+        }
     }
 
-    for(auto match: matches) {
-        unicode match_string(match.first, match.second);
+    for(int i = 0; i < rc; ++i) {
+        int start = ovector[2 * i];
+        int end = ovector[2 * i + 1];
 
-        std::string::const_iterator beg = match.first;
-        std::string::const_iterator end = match.second;
+        const char* substr_start = source + start;
+        int substr_length = end - start;
 
-        if(beg == end) {
+        if(!substr_length) {
+            //I'm not sure this is correct. This shouldn't happen should it?
             continue;
         }
 
-        long beg_diff = std::distance(start, beg);
-        long end_diff = std::distance(start, end);
+        unicode match(substr_start, substr_start + substr_length);
 
-        result.groups_.push_back(REMatch::Group({
-            match_string,
-            (int)beg_diff,
-            (int)end_diff
-        }));
+        result.groups_.push_back(
+            REMatch::Group({
+               match,
+               start,
+               end
+            })
+        );
     }
 
-    std::locale::global(old);
     return result;
+}
+
+std::vector<REMatch> Regex::search(const unicode& str) const {
+    std::vector<REMatch> matches;
+
+    uint32_t start = 0;
+    while(REMatch m = match(str, start)) {
+        matches.push_back(m);
+        start = (uint32_t) m.end();
+    }
+
+    return matches;
 }
 
 int REMatch::start(int group) {
@@ -74,63 +129,6 @@ std::vector<unicode> REMatch::groups() const {
 
 unicode REMatch::group(uint32_t i) const {
     return groups_.at(i).str;
-}
-
-Match match(const Regex& re, const unicode& string) {
-    Match result;
-
-    std::locale old;
-    std::locale::global(std::locale("en_US.UTF-8"));
-
-    std::string encoded = string.encode();
-
-    boost::match_results<std::string::const_iterator> matches;
-
-    result.matched = boost::regex_match(encoded, matches, re._impl);
-
-    for(auto match: matches) {
-        unicode match_string(match.first, match.second);
-        std::cout << "SM: " << match_string << std::endl;
-        result.groups.push_back(match_string);
-        result.matched = true;
-    }
-
-    std::locale::global(old);
-
-    return result;
-}
-
-std::vector<Match> search(const Regex& re, const unicode& string) {
-    std::vector<Match> results;
-
-    std::locale old;
-    std::locale::global(std::locale("en_US.UTF-8"));
-
-    auto to_search = string.encode();
-
-    std::string::const_iterator start, end;
-    start = to_search.begin();
-    end = to_search.end();
-
-    boost::match_results<std::string::const_iterator> matches;
-
-    while(boost::regex_search(start, end, matches, re._impl)) {
-        Match new_match;
-        for(auto match: matches) {
-            std::string match_string(match.first, match.second);
-            unicode group(match_string);
-            new_match.groups.push_back(group);
-            new_match.matched = true;
-        }
-
-        start = matches[0].second;
-
-        results.push_back(new_match);
-    }
-
-    std::locale::global(old);
-
-    return results;
 }
 
 unicode escape(const unicode& string) {

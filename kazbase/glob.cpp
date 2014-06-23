@@ -66,7 +66,7 @@ std::vector<unicode> filter(const std::vector<unicode>& names, const unicode& pa
             _cache.clear();
         }
 
-        _cache[pat] = regex::compile(res);
+        _cache[pat] = regex::Regex(res);
     }
 
     auto re = _cache[pat];
@@ -74,9 +74,9 @@ std::vector<unicode> filter(const std::vector<unicode>& names, const unicode& pa
     auto results = std::vector<unicode>();
 
     for(auto name: names) {
-        auto match = regex::match(re, name);
+        auto match = re.match(name);
 
-        if(match.matched) {
+        if(match) {
             results.push_back(name);
         }
     }
@@ -90,12 +90,12 @@ bool match_cs(const unicode& name, const unicode& pat) {
         if(_cache.size() >= _MAX_CACHE) {
             _cache.clear();
         }
-        _cache[pat] = regex::compile(res);
+        _cache[pat] = regex::Regex(res);
     }
 
-    auto match = regex::match(_cache[pat], name);
+    auto match = _cache[pat].match(name);
 
-    return match.matched;
+    return bool(match);
 }
 
 }

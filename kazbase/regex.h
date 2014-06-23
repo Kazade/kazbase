@@ -5,6 +5,8 @@
 
 #include "unicode.h"
 
+#include "depends/pcre/pcre.h"
+
 namespace regex {
 
 class Regex;
@@ -35,36 +37,32 @@ private:
 
 struct Regex {
 public:
-    Regex() = default;
+    Regex() = default;       
+    Regex(const unicode& str);
+    Regex(const Regex& rhs);
 
-    Regex(const unicode& str) {
-        _impl = boost::regex(str.encode());
-    }
-
-    boost::regex _impl;    
-
-    REMatch match(const unicode& str, uint32_t start=0) const;
-};
-
-class Match {
-public:
-    std::vector<unicode> groups;
-    bool matched;
-
-    unicode group(const int i) {
-        if(i >= groups.size()) {
-            return unicode();
+    const Regex& operator=(const Regex& rhs) {
+        if(&rhs == this) {
+            return *this;
         }
 
-        auto match = groups[i];
-        return match;
+        original_ = rhs.original_;
+        init();
+        return *this;
     }
+
+    ~Regex();
+
+    REMatch match(const unicode& str, uint32_t start=0) const;
+    std::vector<REMatch> search(const unicode& str) const;
+
+private:
+    unicode original_;
+    pcre* _impl = nullptr;
+
+    void init();
 };
 
-
-Regex compile(const unicode& pattern);
-Match match(const Regex& re, const unicode& string);
-std::vector<Match> search(const Regex& re, const unicode& string);
 unicode escape(const unicode& string);
 
 }
