@@ -280,8 +280,12 @@ unicode exe_dirname() {
 }
 
 std::pair<unicode, unicode> split_ext(const unicode& path) {
-    auto sep_index = path.rfind(OS_SEP);
-    auto dot_index = path.rfind(".");
+    int64_t sep_index = (int64_t) path.rfind(OS_SEP);
+    int64_t dot_index = (int64_t) path.rfind(".");
+
+    if(sep_index == ustring::npos) {
+        sep_index = -1;
+    }
 
     if(dot_index > sep_index) {
         auto filename_index = sep_index + 1;
