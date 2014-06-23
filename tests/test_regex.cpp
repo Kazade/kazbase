@@ -3,7 +3,7 @@
 #include "../kazbase/regex.h"
 
 TEST(test_regex_match) {
-    auto re = regex::compile(R"(Your number is <b>(\d+)</b>)");
+    auto re = regex::Regex(R"(Your number is <b>(\d+)</b>)");
     auto match = re.match("Your number is <b>123</b>  fdjsk");
 
     CHECK(match); //Match should evaluate to true
@@ -24,7 +24,7 @@ TEST(test_regex_match) {
     CHECK_EQUAL(4, match.span().first);
     CHECK_EQUAL(29, match.span().second);
 
-    re = regex::compile(R"([^"\\]*(?:(?:\\.|"(?!""))[^"\\]*)*""")");
+    re = regex::Regex(R"([^"\\]*(?:(?:\\.|"(?!""))[^"\\]*)*""")");
     match = re.match("this is some text that ends with \"\"\"");
     CHECK(match);
     match = re.match("this is some text that doesn't");

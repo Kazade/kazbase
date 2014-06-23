@@ -34,20 +34,20 @@ public:
 
 class LogicError : public std::logic_error {
 public:
-    LogicError(const std::string& what):
-        std::logic_error(what) {}
+    LogicError(const unicode& what):
+        std::logic_error(what.encode()) {}
 };
 
 class TypeError : public std::runtime_error {
 public:
-    TypeError(const std::string& what):
-        std::runtime_error(what) {}
+    TypeError(const unicode& what):
+        std::runtime_error(what.encode()) {}
 };
 
 class ValueError : public std::runtime_error {
 public:
-    ValueError(const std::string& what):
-        std::runtime_error(what) {}
+    ValueError(const unicode& what):
+        std::runtime_error(what.encode()) {}
 };
 
 class AssertionError : public LogicError {
