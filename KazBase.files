@@ -78,3 +78,4 @@ tests/CMakeLists.txt
 
 kazbase/noise.h
 kazbase/noise.cpp
+tests/test_unicode.cpp

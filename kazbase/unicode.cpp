@@ -7,9 +7,6 @@
 #include "exceptions.h"
 #include "regex.h"
 
-#include <boost/lexical_cast.hpp>
-#include <boost/algorithm/string.hpp>
-
 std::ostream& operator<< (std::ostream& os, const unicode& str) {
     os << str.encode();
     return os;
@@ -89,10 +86,17 @@ std::string unicode::encode() const {
 }
 
 unicode unicode::replace(const unicode& to_find, const unicode& to_replace) {
-    //FIXME: THis currently encodes to utf-8 does the replacement, and then decodes it.. that's a bit shit
-    std::string final_s(encode());
-    boost::replace_all(final_s, std::string(to_find.encode()), std::string(to_replace.encode()));
-    return unicode(final_s);
+    ustring subject = this->string_;
+    ustring search = to_find.string_;
+    ustring replace = to_replace.string_;
+
+    size_t pos = 0;
+    while ((pos = subject.find(search, pos)) != ustring::npos) {
+         subject.replace(pos, search.length(), replace);
+         pos += replace.length();
+    }
+
+    return unicode(subject.begin(), subject.end());
 }
 
 unicode unicode::upper() const {
@@ -206,15 +210,15 @@ unicode unicode::slice(void* null, int32_t end) const {
 }
 
 int32_t unicode::to_int() const {
-    return boost::lexical_cast<int32_t>(encode());
+    return std::stoi(encode());
 }
 
 float unicode::to_float() const {
-    return boost::lexical_cast<float>(encode());
+    return std::stof(encode());
 }
 
 double unicode::to_double() const {
-    return boost::lexical_cast<double>(encode());
+    return std::stod(encode());
 }
 
 bool unicode::to_boolean() const {
@@ -298,38 +302,38 @@ unicode unicode::_do_format(uint32_t counter, const std::string& value) {
         unicode found_decimal, found_format;
 
         if(match.groups().size() > 2) {
-            found_decimal = match.group(3);
-        }
-
-        if(match.groups().size() > 3) {
-            found_format = match.group(4);
+            if (match.group(2).ends_with("f")) {
+                found_decimal = match.group(3);
+            } else {
+                found_format = match.group(2);
+            }
         }
 
         if(found_counter == counter) {
             std::string replacement;
 
             if(found_decimal.length()) {
-                int decimal = boost::lexical_cast<int>(found_decimal);
+                int decimal = found_decimal.to_int();
                 std::stringstream stream;
-                stream << std::fixed << std::setprecision(decimal) << boost::lexical_cast<float>(value);
+                stream << std::fixed << std::setprecision(decimal) << unicode(value).to_float();
                 replacement = stream.str();
             } else if(found_format.length()) {
                 unicode format = found_format;
                 if(format == ":x") {
                     std::stringstream stream;
-                    stream << "0x" << std::hex << boost::lexical_cast<int>(value);
+                    stream << "0x" << std::hex << unicode(value).to_int();
                     replacement = stream.str();
                 } else if(format == ":o") {
                     std::stringstream stream;
-                    stream << std::oct << boost::lexical_cast<int>(value);
+                    stream << std::oct << unicode(value).to_int();
                     replacement = stream.str();
                 } else if(format == ":d") {
                     std::stringstream stream;
-                    stream << std::dec << boost::lexical_cast<int>(value);
+                    stream << std::dec << unicode(value).to_int();
                     replacement = stream.str();
                 }
             } else {
-                replacement = boost::lexical_cast<std::string>(value);
+                replacement = value;
             }
 
             return replace(placeholder, replacement);
