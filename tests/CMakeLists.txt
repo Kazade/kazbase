@@ -8,6 +8,7 @@ IF(UNITTEST_FOUND)
         TEST_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/test_regex.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/test_unicode.cpp
     )
     get_property(inc_dirs DIRECTORY PROPERTY INCLUDE_DIRECTORIES)
     message("inc_dirs = ${inc_dirs}")
