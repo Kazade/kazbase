@@ -3,7 +3,6 @@
 
 #include "utf8.h"
 #include "unicode.h"
-#include "string.h"
 #include "exceptions.h"
 #include "regex.h"
 
@@ -70,6 +69,10 @@ bool unicode::contains(const unicode& thing) const {
     return contains(thing.encode());
 }
 
+bool unicode::contains(const wchar_t ch) const {
+    return string_.find(ch) != ustring::npos;
+}
+
 bool unicode::contains(const std::string& thing) const {
     bool result = string_.find(unicode(thing).string_) != ustring::npos;
     return result;
@@ -85,7 +88,11 @@ std::string unicode::encode() const {
     return result;
 }
 
-unicode unicode::replace(const unicode& to_find, const unicode& to_replace) {
+void unicode::push_back(const wchar_t c) {
+    string_.push_back(c);
+}
+
+unicode unicode::replace(const unicode& to_find, const unicode& to_replace) const {
     ustring subject = this->string_;
     ustring search = to_find.string_;
     ustring replace = to_replace.string_;
@@ -100,17 +107,37 @@ unicode unicode::replace(const unicode& to_find, const unicode& to_replace) {
 }
 
 unicode unicode::upper() const {
-    std::string final_s(encode());
-    final_s = str::upper(final_s);
-    return unicode(final_s);
+    std::vector<char32_t> result;
+
+    for(char32_t c: *this) {
+        result.push_back(std::towupper(c));
+    }
+
+    return unicode(result.begin(), result.end());
 }
 
 unicode unicode::lower() const {
-    //FIXME: WORK WITH UNICODE
-    std::string final_s(encode());
-    final_s = str::lower(final_s);
-    return unicode(final_s);
+    std::vector<char32_t> result;
+
+    for(char32_t c: *this) {
+        result.push_back(std::towlower(c));
+    }
+
+    return unicode(result.begin(), result.end());
 }
+
+unicode unicode::lpad(int32_t indent) {
+    std::string prefix(indent, ' ');
+
+    return _u("{0}{1}").format(prefix, *this);
+}
+
+unicode unicode::rpad(int32_t count) {
+    std::string suffix(count, ' ');
+
+    return _u("{0}{1}").format(*this, suffix);
+}
+
 
 std::vector<unicode> unicode::split(const unicode &delimiter, int32_t count, bool keep_empty) const {
     std::vector<unicode> result;

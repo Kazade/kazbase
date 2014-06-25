@@ -9,6 +9,8 @@
 #include <map>
 #include <memory>
 
+#include "../unicode.h"
+
 namespace json {
 
 /*
@@ -59,9 +61,9 @@ public:
     typedef std::shared_ptr<Node> ptr;
 
 private:
-    std::map<std::string, Node::ptr> dict_;
+    std::map<unicode, Node::ptr> dict_;
     std::vector<Node::ptr> array_;
-    std::string value_;
+    unicode value_;
     bool value_bool_;
     int value_number_;
 
@@ -87,9 +89,9 @@ public:
         parent_(nullptr) {}
 
 
-    std::string value() const; //Deprecated
+    unicode value() const; //Deprecated
 
-    std::string get() const {
+    unicode get() const {
         assert(type_ == NODE_TYPE_VALUE && value_type_ == VALUE_TYPE_STRING);
         return value_;
     }
@@ -109,10 +111,10 @@ public:
     }
 
     Node& array_value(uint64_t index) const;
-    Node& dict_value(const std::string& key) const;
+    Node& dict_value(const unicode& key) const;
     NodeType type() const;
 
-    void set(const std::string& value);
+    void set(const unicode& value);
     void set_null() {
         value_type_ = VALUE_TYPE_NULL;
     }
@@ -131,12 +133,12 @@ public:
     Node& append_array();
     Node& append_value();
 
-    Node& insert_dict(const std::string& key);
-    Node& insert_array(const std::string& key);
-    Node& insert_value(const std::string& key);
+    Node& insert_dict(const unicode& key);
+    Node& insert_array(const unicode& key);
+    Node& insert_value(const unicode& key);
 
-    bool has_key(const std::string& key) const;
-    std::set<std::string> keys() const;
+    bool has_key(const unicode& key) const;
+    std::set<unicode> keys() const;
 
     Node& operator[](const int64_t index) {
         return array_value(index);
@@ -146,7 +148,7 @@ public:
         return dict_value(key);
     }
 
-    operator std::string() const {
+    operator unicode() const {
         return value();
     }
 
@@ -167,13 +169,13 @@ public:
         return *(array_.at(i));
     }
 
-    void dump_to(std::string& s) const;
+    void dump_to(unicode &s) const;
 };
 
 typedef Node JSON;
 
-JSON loads(const std::string& json_string);
-std::string dumps(const JSON& json);
+JSON loads(const unicode& json_string);
+unicode dumps(const JSON& json);
 
 }
 

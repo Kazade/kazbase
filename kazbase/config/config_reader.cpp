@@ -1,10 +1,5 @@
 #include <fstream>
 #include <cassert>
-
-#include <boost/lexical_cast.hpp>
-
-#include "../string.h"
-
 #include "config_reader.h"
 
 using namespace config;

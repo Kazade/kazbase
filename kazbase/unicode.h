@@ -53,11 +53,17 @@ public:
     unicode lstrip(const unicode& things) const;
     unicode rstrip(const unicode& things) const;
     unicode swap_case() const;
-    unicode replace(const unicode& thing, const unicode& replacement);
+    unicode replace(const unicode& thing, const unicode& replacement) const;
+
+    unicode lpad(int32_t indent);
+    unicode rpad(int32_t count);
 
     bool contains(const unicode& thing) const;
     bool contains(const std::string& thing) const;
     bool contains(const char* thing) const;
+    bool contains(const wchar_t ch) const;
+
+    void push_back(const wchar_t c);
 
     unicode slice(int32_t beg, int32_t end) const;
     unicode slice(int32_t beg, void* null) const;
