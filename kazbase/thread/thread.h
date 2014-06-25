@@ -1,9 +1,9 @@
 #ifndef KAZBASE_THREAD_H
 #define KAZBASE_THREAD_H
 
-#include <boost/bind.hpp>
-#include <boost/thread.hpp>
 #include <memory>
+#include <chrono>
+#include <thread>
 
 class Thread {
 public:
@@ -14,7 +14,7 @@ public:
 	
 	void start() {
 		assert(!worker_);
-		worker_.reset(new boost::thread(boost::bind(&Thread::run, this)));
+        worker_ = std::make_shared<std::thread>(std::bind(&Thread::run, this));
 	}
 	
 	void stop() {
@@ -29,13 +29,13 @@ protected:
 	bool stop_requested() const { return stop_requested_; } 
 
 	void sleep(int seconds) {
-		boost::posix_time::seconds to_sleep(seconds);
-		boost::this_thread::sleep(to_sleep);
+        std::chrono::seconds delay(seconds);
+        std::this_thread::sleep_for(delay);
 	}
 			
 private:
 	volatile bool stop_requested_;
-	std::shared_ptr<boost::thread> worker_;
+    std::shared_ptr<std::thread> worker_;
 };
 
 #endif
