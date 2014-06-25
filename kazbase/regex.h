@@ -1,8 +1,6 @@
 #ifndef REGEX_H_INCLUDED
 #define REGEX_H_INCLUDED
 
-#include <boost/regex.hpp>
-
 #include "unicode.h"
 
 #include "depends/pcre/pcre.h"
