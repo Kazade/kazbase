@@ -4,14 +4,13 @@
 #include <typeinfo>
 #include <stdexcept>
 #include <string>
-#include <boost/lexical_cast.hpp>
 
 #include "logging.h"
 
 class NotImplementedError : public std::runtime_error {
 public:
-    NotImplementedError(const std::string& file, const int line):
-        std::runtime_error("Not implemented error at: " + file + ":" + boost::lexical_cast<std::string>(line)) {}
+    NotImplementedError(const unicode& file, const int line):
+        std::runtime_error(_u("Not implemented error at: {0}:{1}").format(file, line).encode()) {}
 };
 
 class RuntimeError : public std::runtime_error {
@@ -76,7 +75,7 @@ public:
 class FileNotFoundError : public IOError {
 public:
     FileNotFoundError(const unicode& path):
-        IOError(_u("Unable to find file: ") + path) {}
+        IOError(_u("Unable to find file: {0}").format(path).encode()) {}
 };
 
 class NetworkError : public IOError {
@@ -95,8 +94,8 @@ public:
 
     template<typename U>
     DoesNotExist(const U& what):
-        std::runtime_error(std::string(typeid(T).name()) + " instance does not exist: " + boost::lexical_cast<std::string>(what)) {
-        L_ERROR(std::string(typeid(T).name()) + " instance does not exist: " + boost::lexical_cast<std::string>(what));
+        std::runtime_error(_u("{0} instance does not exist: {1}").format(typeid(T).name(), what).encode()) {
+        L_ERROR(_u("{0} instance does not exist: {1}").format(typeid(T).name(), what));
     }
 };
 
