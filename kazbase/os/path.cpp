@@ -5,7 +5,6 @@
 #include "path.h"
 
 #include "../exceptions.h"
-#include "../string.h"
 #include "stat.h"
 
 namespace os {

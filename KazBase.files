@@ -60,8 +60,6 @@ kazbase/random.cpp
 kazbase/random.h
 kazbase/regex.cpp
 kazbase/regex.h
-kazbase/string.cpp
-kazbase/string.h
 kazbase/testing.h
 kazbase/types.h
 kazbase/unicode.cpp

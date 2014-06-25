@@ -3,7 +3,6 @@
 #include "../os/core.h"
 #include "../os/path.h"
 #include "../exceptions.h"
-#include "../string.h"
 
 namespace fdo {
 namespace xdg {

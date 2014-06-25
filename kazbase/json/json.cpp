@@ -1,13 +1,12 @@
 #include <cassert>
 
 #include "../list_utils.h"
-#include "../string.h"
 #include "../logging.h"
 #include "json.h"
 
 namespace json {
 
-std::string Node::value() const {
+unicode Node::value() const {
     assert(type_ == NODE_TYPE_VALUE);
     return value_;
 }
@@ -17,13 +16,11 @@ Node& Node::array_value(uint64_t index) const {
     return *array_.at(index);
 }
 
-Node& Node::dict_value(const std::string& key) const {
+Node& Node::dict_value(const unicode& key) const {
     assert(type_ == NODE_TYPE_DICT);
-    std::map<std::string, Node::ptr>::const_iterator it = dict_.find(key);
+    std::map<unicode, Node::ptr>::const_iterator it = dict_.find(key);
     if(it == dict_.end()) {
-        std::string keys = str::join(container::keys(dict_), ", ");
-        L_DEBUG(keys);
-        throw KeyError("Invalid key: '" + key + "'");
+        throw KeyError(_u("Invalid key: '{0}'").format(key).encode());
     }
 
     return *(*it).second;
@@ -33,7 +30,7 @@ NodeType Node::type() const {
     return type_;
 }
 
-void Node::set(const std::string& value) {
+void Node::set(const unicode& value) {
     assert(type_ == NODE_TYPE_VALUE);
     value_ = value;
     value_type_ = VALUE_TYPE_STRING;
@@ -60,42 +57,43 @@ Node& Node::append_value() {
     return *new_node;
 }
 
-Node& Node::insert_dict(const std::string& key) {
+Node& Node::insert_dict(const unicode& key) {
     assert(type_ == NODE_TYPE_DICT);
     Node::ptr new_node(new Node(NODE_TYPE_DICT, this));
     dict_[key] = new_node;
     return *new_node;
 }
 
-Node& Node::insert_array(const std::string& key) {
+Node& Node::insert_array(const unicode& key) {
     assert(type_ == NODE_TYPE_DICT);
     Node::ptr new_node(new Node(NODE_TYPE_ARRAY, this));
     dict_[key] = new_node;
     return *new_node;
 }
 
-Node& Node::insert_value(const std::string& key) {
+Node& Node::insert_value(const unicode& key) {
     assert(type_ == NODE_TYPE_DICT);
     Node::ptr new_node(new Node(NODE_TYPE_VALUE, this));
     dict_[key] = new_node;
     return *new_node;
 }
 
-bool Node::has_key(const std::string& key) const {
+bool Node::has_key(const unicode& key) const {
     assert(type_ == NODE_TYPE_DICT);
     return dict_.find(key) != dict_.end();
 }
 
-std::set<std::string> Node::keys() const {
+std::set<unicode> Node::keys() const {
     assert(type_ == NODE_TYPE_DICT);
     return container::keys(dict_);
 }
 
-char find_first_token(const std::string& json_string) {
+wchar_t find_first_token(const unicode& json_string) {
 
-    std::vector<char> tokens = { '{','}',',',':','[',']'};
-    for(char c: json_string) {
-        if(container::contains(tokens, c)) {
+    std::vector<wchar_t> tokens = { '{','}',',',':','[',']'};
+
+    for(wchar_t c: tokens) {
+        if(json_string.contains(c)) {
             return c;
         }
     }
@@ -103,8 +101,8 @@ char find_first_token(const std::string& json_string) {
     return '\0';
 }
 
-std::string unescape(const std::string& buffer) {
-    return str::replace(buffer, "\\/", "/");
+unicode unescape(const unicode& buffer) {
+    return buffer.replace("\\/", "/");
 }
 
 uint32_t decode_unicode_value(const std::string& chars) {
@@ -124,7 +122,7 @@ uint32_t decode_unicode_value(const std::string& chars) {
    return unicode;
 }
 
-std::string codepoint_to_utf8(unsigned int cp) {
+unicode codepoint_to_utf8(unsigned int cp) {
    std::string result;
 
    // based on description from http://en.wikipedia.org/wiki/UTF-8
@@ -156,17 +154,17 @@ std::string codepoint_to_utf8(unsigned int cp) {
       result[0] = static_cast<char>(0xF0 | (0x7 & (cp >> 18)));
    }
 
-   return result;
+   return unicode(result);
 }
 
-void Node::dump_to(std::string& s) const {
+void Node::dump_to(unicode& s) const {
     std::stringstream stream;
     if(type_ == NODE_TYPE_DICT) {
         stream << "{";
 
         uint32_t i = 0, size = dict_.size();
-        for(std::pair<std::string, Node::ptr> p: dict_) {
-            std::string new_string;
+        for(auto p: dict_) {
+            unicode new_string;
             p.second->dump_to(new_string);
             stream << p.first + " : " + new_string;
 
@@ -179,13 +177,13 @@ void Node::dump_to(std::string& s) const {
     } else if (type_ == NODE_TYPE_ARRAY) {
         stream << "[";
 
-        std::vector<std::string> outputs;
+        std::vector<unicode> outputs;
         for(Node::ptr p: array_) {
-            std::string new_string;
+            unicode new_string;
             p->dump_to(new_string);
             outputs.push_back(new_string);
         }
-        stream << str::join(outputs, ", ");
+        stream << _u(", ").join(outputs);
         stream << "]";
     } else {
         if(value_type_ == VALUE_TYPE_NULL) {
@@ -203,16 +201,16 @@ void Node::dump_to(std::string& s) const {
         }
     }
 
-    s.append(stream.str());
+    s += stream.str();
 }
 
-std::string dumps(const JSON &json) {
-    std::string result;
+unicode dumps(const JSON &json) {
+    unicode result;
     json.dump_to(result);
     return result;
 }
 
-void set_value(Node& node, const std::string& value, bool buffer_is_string) {
+void set_value(Node& node, const unicode& value, bool buffer_is_string) {
     if(buffer_is_string) {
         node.set(value);
     } else {
@@ -229,12 +227,12 @@ void set_value(Node& node, const std::string& value, bool buffer_is_string) {
         try {
             node.set_number(boost::lexical_cast<int>(value));
         } catch(std::invalid_argument& e) {
-            throw ParseError("Unknown value type: " + value);
+            throw ParseError(_u("Unknown value type: {0}").format(value).encode());
         }
     }
 }
 
-JSON loads(const std::string& json_string) {
+JSON loads(const unicode& json_string) {
     JSON result;
 
     char tok = find_first_token(json_string);
@@ -258,10 +256,10 @@ JSON loads(const std::string& json_string) {
     bool inside_string = false;
     bool buffer_is_string = false;
 
-    std::string last_key = "";
-    std::string buffer = "";
+    unicode last_key = "";
+    unicode buffer = "";
 
-    for(uint64_t i = 0; i < json_string.size(); ++i) {
+    for(uint64_t i = 0; i < json_string.length(); ++i) {
         char c = json_string[i];
 
         current_char++;
