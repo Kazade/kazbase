@@ -65,7 +65,6 @@ kazbase/types.h
 kazbase/unicode.cpp
 kazbase/unicode.h
 kazbase/utf8.h
-kazbase/xrange.h
 CMakeLists.txt
 KAZBASEConfig.cmake
 kazbase/utils.h
