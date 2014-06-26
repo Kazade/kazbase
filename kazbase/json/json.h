@@ -46,14 +46,14 @@ enum ValueType {
 
 class KeyError : public std::logic_error {
 public:
-    KeyError(const std::string& what):
-        std::logic_error(what){}
+    KeyError(const unicode& what):
+        std::logic_error(what.encode()){}
 };
 
 class ParseError : public std::runtime_error {
 public:
-    ParseError(const std::string& what):
-        std::runtime_error(what) {}
+    ParseError(const unicode& what):
+        std::runtime_error(what.encode()) {}
 };
 
 class Node {

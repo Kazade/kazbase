@@ -76,3 +76,7 @@ tests/CMakeLists.txt
 kazbase/noise.h
 kazbase/noise.cpp
 tests/test_unicode.cpp
+kazbase/any/any.h
+kazbase/any/type_traits.h
+kazbase/any/utility.h
+kazbase/any/README.txt

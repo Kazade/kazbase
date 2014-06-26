@@ -280,7 +280,8 @@ JSON loads(const unicode& json_string) {
                    last_token != '[' &&
                    last_token != ',' &&
                    last_token != '\0') {
-                    throw ParseError("Hit invalid '{' token on line " + boost::lexical_cast<std::string>(current_line) + " char: " + boost::lexical_cast<std::string>(current_char));
+
+                    throw ParseError(_u("Hit invalid '{' token on line {0} char: {1}").format(current_line, current_char));
                 }
 
                 if(last_token != '\0') {
@@ -292,7 +293,7 @@ JSON loads(const unicode& json_string) {
                     } else if(current_node->type() == NODE_TYPE_DICT) {
                         current_node = &current_node->insert_dict(last_key);
                     } else {
-                        throw ParseError("Hit invalid '{' token on line " + boost::lexical_cast<std::string>(current_line));
+                        throw ParseError(_u("Hit invalid '{' token on line {0}").format(current_line));
                     }
 
                     buffer = "";
@@ -309,7 +310,7 @@ JSON loads(const unicode& json_string) {
                 }
 
                 if(last_token != ':' && last_token != ']' && last_token != '}' && last_token != '{') {
-                    throw ParseError("Hit invalid '}' token on line " + boost::lexical_cast<std::string>(current_line));
+                    throw ParseError(_u("Hit invalid '}' token on line {0}").format(current_line));
                 }
 
                 if(!buffer.empty()) {
