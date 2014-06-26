@@ -1,9 +1,9 @@
 #ifndef UNICODE_H
 #define UNICODE_H
 
-#include <boost/lexical_cast.hpp>
 #include <string>
 #include <vector>
+#include <sstream>
 
 typedef std::basic_string<char32_t> ustring;
 
@@ -85,22 +85,30 @@ public:
 
     template<typename T>
     unicode format(T value) {
-        return _do_format(0, boost::lexical_cast<std::string>(value));
+        std::stringstream ss;
+        ss << value;
+        return _do_format(0, ss.str());
     }
 
     template<typename T>
     unicode format(Counter count, T value) {
-        return _do_format(count.c, boost::lexical_cast<std::string>(value));
+        std::stringstream ss;
+        ss << value;
+        return _do_format(count.c, ss.str());
     }
 
     template<typename T, typename... Args>
     unicode format(T value, const Args&... args) {
-        return _do_format(0, boost::lexical_cast<std::string>(value)).format(Counter(1), args...);
+        std::stringstream ss;
+        ss << value;
+        return _do_format(0, ss.str()).format(Counter(1), args...);
     }
 
     template<typename T, typename... Args>
     unicode format(Counter count, T value, const Args&... args) {
-        return _do_format(count.c, boost::lexical_cast<std::string>(value)).format(Counter(count.c + 1), args...);
+        std::stringstream ss;
+        ss << value;
+        return _do_format(count.c, ss.str()).format(Counter(count.c + 1), args...);
     }
 
     unicode _do_format(uint32_t counter, const std::string& value);

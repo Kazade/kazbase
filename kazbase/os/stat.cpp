@@ -16,7 +16,7 @@ namespace stat {
 
 datetime::DateTime modified_time(const std::string& file_path) {
     struct ::stat st = lstat(file_path);
-    return boost::posix_time::from_time_t(st.st_mtime);
+    return std::chrono::system_clock::from_time_t(st.st_mtime);
 }
 
 }

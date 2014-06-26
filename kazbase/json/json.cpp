@@ -225,7 +225,7 @@ void set_value(Node& node, const unicode& value, bool buffer_is_string) {
         }
 
         try {
-            node.set_number(boost::lexical_cast<int>(value));
+            node.set_number(value.to_int());
         } catch(std::invalid_argument& e) {
             throw ParseError(_u("Unknown value type: {0}").format(value).encode());
         }
@@ -335,7 +335,7 @@ JSON loads(const unicode& json_string) {
                 }
 
                 if(last_token != ':' && last_token != '\0' && last_token != '[' && last_token != ',') {
-                    throw ParseError("Hit invalid '[' token on line " + boost::lexical_cast<std::string>(current_line));
+                    throw ParseError(_u("Hit invalid '[' token on line {0}").format(current_line));
                 }
 
                 if(last_token != '\0') {

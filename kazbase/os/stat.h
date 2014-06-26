@@ -2,6 +2,7 @@
 #define KAZBASE_STAT_H
 
 #include <sys/stat.h>
+#include <stdexcept>
 
 #include "../unicode.h"
 #include "../datetime.h"
