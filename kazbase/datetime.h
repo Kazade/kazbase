@@ -1,15 +1,16 @@
 #ifndef DATETIME_H_INCLUDED
 #define DATETIME_H_INCLUDED
 
-#include <boost/date_time.hpp>
+#include <chrono>
+#include "unicode.h"
 
 namespace datetime {
 
-typedef boost::posix_time::ptime DateTime;
-typedef boost::posix_time::time_duration TimeDelta;
+typedef std::chrono::system_clock::time_point DateTime;
+typedef std::chrono::duration<float> TimeDelta;
 
-DateTime strptime(const std::string& date_string, const std::string& format);
-std::string strftime(const DateTime& t, const std::string& format);
+DateTime strptime(const unicode& date_string, const unicode& format);
+unicode strftime(const DateTime& t, const unicode& format);
 DateTime now(void);
 float timedelta_in_seconds(TimeDelta d);
 float timedelta_in_mins(TimeDelta d);

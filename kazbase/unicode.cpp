@@ -1,5 +1,7 @@
 #include <algorithm>
 #include <string>
+#include <iomanip>
+#include <cassert>
 
 #include "utf8.h"
 #include "unicode.h"

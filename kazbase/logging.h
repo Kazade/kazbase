@@ -3,14 +3,12 @@
 
 #include <string>
 #include <thread>
-
-#include <boost/cstdint.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/date_time.hpp>
+#include <fstream>
+#include <iostream>
 
 #include "os.h"
 #include "unicode.h"
+#include "datetime.h"
 
 namespace logging {
 
@@ -26,21 +24,17 @@ class Logger;
 
 class Handler {
 public:
-    typedef boost::shared_ptr<Handler> ptr;
+    typedef std::shared_ptr<Handler> ptr;
 
     virtual ~Handler() {}
     void write_message(Logger* logger,
-                       const boost::posix_time::ptime& time,
+                       const datetime::DateTime& time,
                        const std::string& level,
-                       const std::string& message) {
-
-        assert(logger);
-        do_write_message(logger, time, level, message);
-    }
+                       const std::string& message);
 
 private:
     virtual void do_write_message(Logger* logger,
-                       const boost::posix_time::ptime& time,
+                       const datetime::DateTime& time,
                        const std::string& level,
                        const std::string& message) = 0;
 };
@@ -48,52 +42,34 @@ private:
 class StdIOHandler : public Handler {
 private:
     void do_write_message(Logger* logger,
-                       const boost::posix_time::ptime& time,
+                       const datetime::DateTime& time,
                        const std::string& level,
                        const std::string& message) {
 
         if(level == "ERROR") {
-            std::cerr << boost::posix_time::to_simple_string(time) << " ERROR " << message << std::endl;
+            std::cerr << datetime::strftime(time, "%Y-%m-%d %H:%M:%S") << " ERROR " << message << std::endl;
         } else {
-            std::cout << boost::posix_time::to_simple_string(time) << " " << level << " " << message << std::endl;
+            std::cout << datetime::strftime(time, "%Y-%m-%d %H:%M:%S") << " " << level << " " << message << std::endl;
         }
     }
 };
 
 class FileHandler : public Handler {
 public:
-    FileHandler(const std::string& filename, bool move_aside=true):
-        filename_(filename) {
-
-        if(move_aside && os::path::exists(filename_)) {
-            if(os::path::exists(filename_ + ".old")) {
-                os::remove(filename_ + ".old");
-            }
-            os::rename(filename_, filename_ + ".old");
-        }
-
-        stream_.open(filename_.c_str());
-        assert(stream_.good());
-    }
+    FileHandler(const std::string& filename, bool move_aside=true);
 
 private:
     void do_write_message(Logger* logger,
-                       const boost::posix_time::ptime& time,
+                       const datetime::DateTime& time,
                        const std::string& level,
-                       const std::string& message) {
-
-        assert(stream_.good());
-        stream_ << boost::posix_time::to_simple_string(time) << " " << level << " " << message << std::endl;
-        stream_.flush();
-    }
-
+                       const std::string& message);
     std::string filename_;
     std::ofstream stream_;
 };
 
 class Logger {
 public:
-    typedef boost::shared_ptr<Logger> ptr;
+    typedef std::shared_ptr<Logger> ptr;
 
     Logger(const std::string& name):
         name_(name),
@@ -163,9 +139,9 @@ private:
 
         std::stringstream s;
         s << std::this_thread::get_id() << ": ";
-        s << text << " (" << file_out << ":" << boost::lexical_cast<std::string>(line) << ")";
+        s << text << " (" << file_out << ":" << _u("{0}").format(line) << ")";
         for(uint32_t i = 0; i < handlers_.size(); ++i) {
-            handlers_[i]->write_message(this, boost::posix_time::ptime(boost::posix_time::second_clock::local_time()), level, s.str());
+            handlers_[i]->write_message(this, datetime::now(), level, s.str());
         }
     }
 

@@ -1,7 +1,48 @@
-
+#include <unordered_map>
 #include "logging.h"
+#include "exceptions.h"
 
 namespace logging {
+
+void Handler::write_message(Logger* logger,
+                   const datetime::DateTime& time,
+                   const std::string& level,
+                   const std::string& message) {
+
+    if(!logger) {
+        throw ValueError("Tried to write to a NULL logger instance");
+    }
+    do_write_message(logger, time, level, message);
+}
+
+FileHandler::FileHandler(const std::string& filename, bool move_aside):
+    filename_(filename) {
+
+    if(move_aside && os::path::exists(filename_)) {
+        if(os::path::exists(filename_ + ".old")) {
+            os::remove(filename_ + ".old");
+        }
+        os::rename(filename_, filename_ + ".old");
+    }
+
+    stream_.open(filename_.c_str());
+
+    if(!stream_.good()) {
+        throw IOError(_u("Unable to open log file at {0}").format(filename_));
+    }
+}
+
+void FileHandler::do_write_message(Logger* logger,
+                   const datetime::DateTime& time,
+                   const std::string& level,
+                   const std::string& message) {
+
+    if(!stream_.good()) {
+        throw IOError("Error writing to log file");
+    }
+    stream_ << datetime::strftime(time, "%Y-%m-%d %H:%M:%S") << " " << level << " " << message << std::endl;
+    stream_.flush();
+}
 
 void debug(const unicode& text, const std::string& file, int32_t line) {
     get_logger("/")->debug(text, file, line);
@@ -19,10 +60,10 @@ void error(const unicode& text, const std::string& file, int32_t line) {
     get_logger("/")->error(text, file, line);
 }
 
-static Logger root("/");
-static std::map<std::string, Logger::ptr> loggers_;
-
 Logger* get_logger(const std::string& name) {
+    static Logger root("/");
+    static std::unordered_map<std::string, Logger::ptr> loggers_;
+
     if(name.empty() || name == "/") {
         return &root;
     } else {
