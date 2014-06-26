@@ -5,8 +5,8 @@
 #include <string>
 #include <unordered_map>
 #include <stdexcept>
-#include <boost/any.hpp>
 
+#include "../any/any.h"
 #include "../unicode.h"
 #include "../exceptions.h"
 
@@ -55,8 +55,8 @@ public:
         }
 
         try {
-            return boost::any_cast<T>((*s).second);
-        } catch(boost::bad_any_cast& e) {
+            return core::any_cast<T>((*s).second);
+        } catch(core::bad_any_cast& e) {
             throw TypeError(e.what());
         }
     }
@@ -64,7 +64,7 @@ public:
     void save(const unicode& filename);
     void load(const unicode& filename);
 private:
-    typedef std::unordered_map<unicode, boost::any> Option;
+    typedef std::unordered_map<unicode, core::any> Option;
     std::unordered_map<unicode, Option> groups_;
     unicode filename_;
 

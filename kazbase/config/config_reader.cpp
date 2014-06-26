@@ -22,28 +22,28 @@ void ConfigReader::save(const unicode& filename) {
 
         for(Option::iterator set = (*it).second.begin(); set != (*it).second.end(); ++set) {
             try {
-                bool v = boost::any_cast<bool>((*set).second);
+                bool v = core::any_cast<bool>((*set).second);
                 s << (*set).first << "=" << ((v)?"true":"false") << std::endl;
                 continue;
-            } catch(boost::bad_any_cast& e) {}
+            } catch(core::bad_any_cast& e) {}
 
             try {
-                double v = boost::any_cast<double>((*set).second);
+                double v = core::any_cast<double>((*set).second);
                 s << (*set).first << "=" << v << std::endl;
                 continue;
-            } catch(boost::bad_any_cast& e) {}
+            } catch(core::bad_any_cast& e) {}
 
             try {
-                int v = boost::any_cast<int>((*set).second);
+                int v = core::any_cast<int>((*set).second);
                 s << (*set).first << "=" << v << std::endl;
                 continue;
-            } catch(boost::bad_any_cast& e) {}
+            } catch(core::bad_any_cast& e) {}
 
             try {
-                unicode v = boost::any_cast<unicode>((*set).second);
+                unicode v = core::any_cast<unicode>((*set).second);
                 s << (*set).first << "=" << v << std::endl;
                 continue;
-            } catch(boost::bad_any_cast& e) {}
+            } catch(core::bad_any_cast& e) {}
 
             assert(0 && "Unsupported type");
         }
@@ -89,13 +89,13 @@ void ConfigReader::load(const unicode& filename) {
                     set_setting<bool>(current_group, key, false);
                 } else {
                     try {
-                        double v = boost::lexical_cast<double>(value);
+                        double v = value.to_double();
                         set_setting<double>(current_group, key, v);
-                    } catch(boost::bad_lexical_cast& e) {
+                    } catch(std::exception& e) { //FIXME: This should be whatever is thrown from to_double!
                         try {
-                            int v = boost::lexical_cast<int>(value);
+                            int v = value.to_int();
                             set_setting<int>(current_group, key, v);
-                        } catch(boost::bad_lexical_cast& e) {
+                        } catch(std::exception& e) { //FIXME: This should be whatever is thrown from to_int!
                             set_setting<unicode>(current_group, key, value);
                         }
                     }

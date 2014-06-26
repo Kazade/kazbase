@@ -2,12 +2,11 @@
 #define COMPOSITE_ID_H_INCLUDED
 
 #include <cassert>
-#include <boost/lexical_cast.hpp>
 
-#include "kazbase/logging/logging.h"
-#include "kazbase/parse/tree_parser.h"
-#include "kazbase/string.h"
-#include "kazbase/exceptions.h"
+#include "../logging/logging.h"
+#include "../parse/tree_parser.h"
+#include "../exceptions.h"
+#include "../unicode.h"
 
 namespace base {
 
@@ -73,8 +72,9 @@ public:
         if(c.is_null_) {
             throw ValueError("Attempted to convert a NULL composite ID to a string");
         }
+
         //FIXME: Check that pipe doesn't exist in first() or second()
-        return "[[" + boost::lexical_cast<std::string>(c.first()) + "][" + boost::lexical_cast<std::string>(c.second()) + "]]";
+        return _u("[[{0}][{1}]]").format(c.first(), c.second()).encode();
     }
 
     static CompositeID from_string(const std::string& c) {
@@ -88,9 +88,7 @@ public:
         assert(!n.child_nodes.empty());
 
 
-        L_DEBUG("Child count: " + boost::lexical_cast<std::string>(n.child_nodes.size()));
-       // L_DEBUG("Grandchild count: " + boost::lexical_cast<std::string>(n.child_nodes[0].child_nodes.size()));
-       // L_DEBUG("Great-Grandchild count: " + boost::lexical_cast<std::string>(n.child_nodes[0].child_nodes[0].child_nodes.size()));
+        L_DEBUG("Child count: " + _u("{0}").format(n.child_nodes.size()));
         std::vector<std::string> parts;
 
         L_DEBUG(n.full_contents);
