@@ -69,6 +69,17 @@ U const_get(const std::map<T, U>& container, const T& key, const U& default_valu
     return (*it).second;
 }
 
+template<typename T, typename U>
+U const_get(const std::unordered_map<T, U>& container, const T& key, const U& default_value=U()) {
+    typename std::unordered_map<T, U>::const_iterator it = container.find(key);
+    if(it == container.end()) {
+        return default_value;
+    }
+
+    return (*it).second;
+}
+
+
 }
 
 #endif
