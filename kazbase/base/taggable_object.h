@@ -2,11 +2,11 @@
 #define TAGGABLE_OBJECT_H_INCLUDED
 
 #include "../list_utils.h"
-#include "../string.h"
+#include "../unicode.h"
 
 namespace base {
 
-typedef std::string Tag;
+typedef unicode Tag;
 typedef std::set<Tag> TagList;
 
 class TaggableObject {
@@ -14,7 +14,7 @@ public:
     virtual ~TaggableObject() {}
 
     bool has_tag(const Tag& tag) const {
-        return container::contains(tags_, str::lower(str::strip(tag)));
+        return container::contains(tags_, tag.strip().lower());
     }
 
     bool has_any_tags(const TagList& tags) const {
@@ -36,7 +36,7 @@ public:
     }
 
     void tag(const Tag& tag) {
-        tags_.insert(str::lower(str::strip(tag)));
+        tags_.insert(tag.strip().lower());
     }
 
     void tag(const TagList& tags) {
