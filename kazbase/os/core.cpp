@@ -64,7 +64,9 @@ void make_dirs(const unicode &path, mode_t mode) {
         }
     }
 
-    make_dir(path, mode);
+    if(!os::path::exists(path)) {
+        make_dir(path, mode);
+    }
 }
 
 void remove(const unicode& path) {
