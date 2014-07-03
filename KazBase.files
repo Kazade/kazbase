@@ -80,3 +80,4 @@ kazbase/any/any.h
 kazbase/any/type_traits.h
 kazbase/any/utility.h
 kazbase/any/README.txt
+tests/test_json.cpp
