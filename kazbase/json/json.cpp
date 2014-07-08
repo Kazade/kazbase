@@ -17,7 +17,7 @@ Node& Node::array_value(uint64_t index) const {
 }
 
 Node& Node::dict_value(const unicode& key) const {
-    assert(type_ == NODE_TYPE_DICT);
+    assert(type_ == NODE_TYPE_DICT);        
     std::map<unicode, Node::ptr>::const_iterator it = dict_.find(key);
     if(it == dict_.end()) {
         throw KeyError(_u("Invalid key: '{0}'").format(key).encode());
@@ -37,21 +37,42 @@ void Node::set(const unicode& value) {
 }
 
 Node& Node::append_dict() {
-    assert(type_ == NODE_TYPE_ARRAY);
+    if(type_ == NODE_TYPE_DICT && !dict_.empty()) {
+        throw ValueError("Attempted to append to a dictionary value");
+    } else if(type_ == NODE_TYPE_VALUE) {
+        throw ValueError("Attempted to append to a value node");
+    } else {
+        type_ = NODE_TYPE_ARRAY;
+    }
+
     Node::ptr new_node(new Node(NODE_TYPE_DICT, this));
     array_.push_back(new_node);
     return *new_node;
 }
 
 Node& Node::append_array() {
-    assert(type_ == NODE_TYPE_ARRAY);
+    if(type_ == NODE_TYPE_DICT && !dict_.empty()) {
+        throw ValueError("Attempted to append to a dictionary value");
+    } else if(type_ == NODE_TYPE_VALUE) {
+        throw ValueError("Attempted to append to a value node");
+    } else {
+        type_ = NODE_TYPE_ARRAY;
+    }
+
     Node::ptr new_node(new Node(NODE_TYPE_ARRAY, this));
     array_.push_back(new_node);
     return *new_node;
 }
 
 Node& Node::append_value() {
-    assert(type_ == NODE_TYPE_ARRAY);
+    if(type_ == NODE_TYPE_DICT && !dict_.empty()) {
+        throw ValueError("Attempted to append to a dictionary value");
+    } else if(type_ == NODE_TYPE_VALUE) {
+        throw ValueError("Attempted to append to a value node");
+    } else {
+        type_ = NODE_TYPE_ARRAY;
+    }
+
     Node::ptr new_node(new Node(NODE_TYPE_VALUE, this));
     array_.push_back(new_node);
     return *new_node;
@@ -215,7 +236,7 @@ void set_value(Node& node, const unicode& value, bool buffer_is_string) {
         node.set(value);
     } else {
         if(value == "true" || value == "false") {
-            node.set_bool(value == "true");
+            node.set(value == "true");
             return;
         }
 
@@ -225,7 +246,7 @@ void set_value(Node& node, const unicode& value, bool buffer_is_string) {
         }
 
         try {
-            node.set_number(value.to_int());
+            node.set(value.to_int());
         } catch(std::invalid_argument& e) {
             throw ParseError(_u("Unknown value type: {0}").format(value).encode());
         }
@@ -457,6 +478,43 @@ JSON loads(const unicode& json_string) {
     }
 
     return result;
+}
+
+void Node::update(const Node& other) {
+    if(other.type() == NODE_TYPE_ARRAY) {
+        for(int i = 0; i < other.length(); ++i) {
+            const Node& n = other[i];
+            if(n.type() == NODE_TYPE_ARRAY) {
+                this->append_array().update(n);
+            } else if(n.type() == NODE_TYPE_DICT) {
+                this->append_dict().update(n);
+            } else if(n.type() == NODE_TYPE_VALUE) {
+                this->append_value().update(n);
+            }
+        }
+    } else if(other.type() == NODE_TYPE_DICT) {
+        for(auto key: other.keys()) {
+            const Node& n = other[key];
+            if(n.type() == NODE_TYPE_ARRAY) {
+                this->insert_array(key).update(n);
+            } else if(n.type() == NODE_TYPE_DICT) {
+                this->insert_dict(key).update(n);
+            } else {
+                this->insert_value(key).update(n);
+            }
+        }
+    } else {
+        if(other.value_type_ == VALUE_TYPE_STRING) {
+            this->set(other.get());
+        } else if(other.value_type_ == VALUE_TYPE_NUMBER) {
+            this->set(other.get_number());
+        } else if(other.value_type_ == VALUE_TYPE_BOOL) {
+            this->set(other.get_bool());
+        } else {
+            this->set_null();
+        }
+
+    }
 }
 
 }

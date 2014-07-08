@@ -114,19 +114,63 @@ public:
     Node& dict_value(const unicode& key) const;
     NodeType type() const;
 
+    void set(const char* value) {
+        set(unicode(value));
+    }
+
     void set(const unicode& value);
     void set_null() {
         value_type_ = VALUE_TYPE_NULL;
     }
 
-    void set_bool(bool value) {
+    void set(bool value) {
         value_type_ = VALUE_TYPE_BOOL;
         value_bool_ = value;
     }
 
-    void set_number(int number) {
+    void set(int number) {
         value_type_ = VALUE_TYPE_NUMBER;
         value_number_ = number;
+    }
+
+    Node& set(const unicode& key, const char* value) {
+        return set(key, unicode(value));
+    }
+
+    Node& set(const unicode& key, const unicode& value) {
+       assert(type_ == NODE_TYPE_DICT);
+       Node& node = insert_value(key);
+       node.set(value);
+       return node;
+    }
+
+    Node& set(const unicode& key, const int& value) {
+        assert(type_ == NODE_TYPE_DICT);
+        Node& node = insert_value(key);
+        node.set(value);
+        return node;
+    }
+
+    Node& set(const unicode& key, const bool& value) {
+        assert(type_ == NODE_TYPE_DICT);
+        Node& node = insert_value(key);
+        node.set(value);
+        return node;
+    }
+
+    Node& set_null(const unicode& key) {
+        assert(type_ == NODE_TYPE_DICT);
+        Node& node = insert_value(key);
+        node.set_null();
+        return node;
+    }
+
+    void operator=(const int& rhs) {
+        set(rhs);
+    }
+
+    void operator=(const unicode& rhs) {
+        set(rhs);
     }
 
     Node& append_dict();
@@ -140,11 +184,11 @@ public:
     bool has_key(const unicode& key) const;
     std::set<unicode> keys() const;
 
-    Node& operator[](const int64_t index) {
+    Node& operator[](const int64_t index) const {
         return array_value(index);
     }
 
-    Node& operator[](const std::string& key) {
+    Node& operator[](const unicode& key) const {
         return dict_value(key);
     }
 
@@ -170,6 +214,8 @@ public:
     }
 
     void dump_to(unicode &s) const;
+
+    void update(const Node& other);
 };
 
 typedef Node JSON;
