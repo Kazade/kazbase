@@ -217,6 +217,11 @@ public:
     }
 
 private:
+    /*
+     *  Root stays constant through the lifetime of the ring_buffer. It acts as a dummy node that
+     *  represents the "end" iterator. Iterators start at root->next or root->prev and end when they hit
+     *  root.
+     */
     impl::Node<T> root_;
 };
 
