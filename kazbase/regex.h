@@ -3,7 +3,7 @@
 
 #include "unicode.h"
 
-#include "depends/pcre/pcre.h"
+typedef struct real_pcre pcre;
 
 namespace regex {
 

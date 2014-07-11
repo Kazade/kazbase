@@ -3,7 +3,7 @@
 #include "exceptions.h"
 
 //Temporarily using PCRE until the Android NDK, GCC and Clang support std::regex
-#include "depends/pcre/pcre.h"
+#include <pcre.h>
 
 const int OVECCOUNT = 30;
 

@@ -81,7 +81,6 @@ kazbase/any/type_traits.h
 kazbase/any/utility.h
 kazbase/any/README.txt
 tests/test_json.cpp
-kazbase/signals_back.h
 kazbase/signals.h
 tests/test_signals.cpp
 kazbase/threadsafe/ring_buffer.h
