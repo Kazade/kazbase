@@ -246,7 +246,7 @@ void set_value(Node& node, const unicode& value, bool buffer_is_string) {
         }
 
         try {
-            node.set(value.to_int());
+            node.set(value.to_float());
         } catch(std::invalid_argument& e) {
             throw ParseError(_u("Unknown value type: {0}").format(value).encode());
         }
