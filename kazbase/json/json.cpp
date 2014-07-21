@@ -256,7 +256,7 @@ void set_value(Node& node, const unicode& value, bool buffer_is_string) {
 JSON loads(const unicode& json_string) {
     JSON result;
 
-    char tok = find_first_token(json_string);
+    char tok = find_first_token(json_string);    
     if(tok == '{') {
         result = JSON(NODE_TYPE_DICT);
     } else if(tok =='[') {

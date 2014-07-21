@@ -196,12 +196,25 @@ public:
     bool has_key(const unicode& key) const;
     std::set<unicode> keys() const;
 
+
+    Node& operator[](const int index) const {
+        return array_value(index);
+    }
+
     Node& operator[](const int64_t index) const {
         return array_value(index);
     }
 
+    Node& operator[](const char* str) const {
+        return dict_value(unicode(str));
+    }
+
     Node& operator[](const unicode& key) const {
         return dict_value(key);
+    }
+
+    operator float() const {
+        return get_number();
     }
 
     operator unicode() const {
