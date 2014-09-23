@@ -133,6 +133,10 @@ public:
         return *this;
     }
 
+    std::size_t find(const unicode& what) const {
+        return string_.find(what.string_);
+    }
+
     std::size_t rfind(const unicode& what) const {
         return string_.rfind(what.string_);
     }
