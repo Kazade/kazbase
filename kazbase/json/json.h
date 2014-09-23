@@ -65,7 +65,7 @@ private:
     std::vector<Node::ptr> array_;
     unicode value_;
     bool value_bool_;
-    int value_number_;
+    float value_number_;
 
     NodeType type_;
     ValueType value_type_;
@@ -101,7 +101,7 @@ public:
         return value_bool_;
     }
 
-    int get_number() const {
+    float get_number() const {
         assert(type_ == NODE_TYPE_VALUE && value_type_ == VALUE_TYPE_NUMBER);
         return value_number_;
     }
@@ -129,6 +129,10 @@ public:
     }
 
     void set(int number) {
+        set(float(number));
+    }
+
+    void set(float number) {
         value_type_ = VALUE_TYPE_NUMBER;
         value_number_ = number;
     }
@@ -144,7 +148,15 @@ public:
        return node;
     }
 
+    Node& set(const unicode& key, const double& value) {
+        set(key, float(value));
+    }
+
     Node& set(const unicode& key, const int& value) {
+        set(key, float(value));
+    }
+
+    Node& set(const unicode& key, const float& value) {
         assert(type_ == NODE_TYPE_DICT);
         Node& node = insert_value(key);
         node.set(value);
@@ -165,7 +177,7 @@ public:
         return node;
     }
 
-    void operator=(const int& rhs) {
+    void operator=(const float& rhs) {
         set(rhs);
     }
 
@@ -184,12 +196,25 @@ public:
     bool has_key(const unicode& key) const;
     std::set<unicode> keys() const;
 
+
+    Node& operator[](const int index) const {
+        return array_value(index);
+    }
+
     Node& operator[](const int64_t index) const {
         return array_value(index);
     }
 
+    Node& operator[](const char* str) const {
+        return dict_value(unicode(str));
+    }
+
     Node& operator[](const unicode& key) const {
         return dict_value(key);
+    }
+
+    operator float() const {
+        return get_number();
     }
 
     operator unicode() const {
