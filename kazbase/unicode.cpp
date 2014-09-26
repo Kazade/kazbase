@@ -238,16 +238,59 @@ unicode unicode::slice(void* null, int32_t end) const {
     return slice(0, end);
 }
 
+
+/*
+ ANDROID SUCKS... can't use std::stoi and friends
+*/
+int32_t _stoi(const std::string& str) {
+    const char* inp = str.c_str();
+    char* p = nullptr;
+
+    auto test = strtol(inp, &p, 10);
+
+    if(p == inp || test == LONG_MIN || test == LONG_MAX) {
+        throw std::invalid_argument("Couldn't convert from a string to an integer");
+    }
+
+    return (int32_t) test;
+}
+
+float _stof(const std::string& str) {
+    const char* inp = str.c_str();
+    char* p = nullptr;
+
+    auto test = strtof(inp, &p);
+
+    if(p == inp) {
+        throw std::invalid_argument("Couldn't convert from a string to a float");
+    }
+
+    return (float) test;
+}
+
+double _stod(const std::string& str) {
+    const char* inp = str.c_str();
+    char* p = nullptr;
+
+    auto test = strtod(inp, &p);
+
+    if(p == inp) {
+        throw std::invalid_argument("Couldn't convert from a string to a double");
+    }
+
+    return (double) test;
+}
+
 int32_t unicode::to_int() const {
-    return std::stoi(encode());
+    return _stoi(encode());
 }
 
 float unicode::to_float() const {
-    return std::stof(encode());
+    return _stof(encode());
 }
 
 double unicode::to_double() const {
-    return std::stod(encode());
+    return _stod(encode());
 }
 
 bool unicode::to_boolean() const {
