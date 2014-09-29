@@ -149,17 +149,23 @@ public:
     }
 
     Node& set(const unicode& key, const double& value) {
-        set(key, float(value));
+        assert(type_ == NODE_TYPE_DICT);
+        Node& node = insert_value(key);
+        node.set((float)value);
+        return node;
     }
 
     Node& set(const unicode& key, const int& value) {
-        set(key, float(value));
+        assert(type_ == NODE_TYPE_DICT);
+        Node& node = insert_value(key);
+        node.set((int)value);
+        return node;
     }
 
     Node& set(const unicode& key, const float& value) {
         assert(type_ == NODE_TYPE_DICT);
         Node& node = insert_value(key);
-        node.set(value);
+        node.set((float)value);
         return node;
     }
 

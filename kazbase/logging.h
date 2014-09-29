@@ -44,14 +44,7 @@ private:
     void do_write_message(Logger* logger,
                        const datetime::DateTime& time,
                        const std::string& level,
-                       const std::string& message) {
-
-        if(level == "ERROR") {
-            std::cerr << datetime::strftime(time, "%Y-%m-%d %H:%M:%S") << " ERROR " << message << std::endl;
-        } else {
-            std::cout << datetime::strftime(time, "%Y-%m-%d %H:%M:%S") << " " << level << " " << message << std::endl;
-        }
-    }
+                       const std::string& message);
 };
 
 class FileHandler : public Handler {

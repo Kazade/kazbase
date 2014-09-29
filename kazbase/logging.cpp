@@ -2,6 +2,10 @@
 #include "logging.h"
 #include "exceptions.h"
 
+#ifdef __ANDROID__
+#include <android/log.h>
+#endif
+
 namespace logging {
 
 void Handler::write_message(Logger* logger,
@@ -43,6 +47,26 @@ void FileHandler::do_write_message(Logger* logger,
     stream_ << datetime::strftime(time, "%Y-%m-%d %H:%M:%S") << " " << level << " " << message << std::endl;
     stream_.flush();
 }
+
+void StdIOHandler::do_write_message(Logger* logger,
+                       const datetime::DateTime& time,
+                       const std::string& level,
+                       const std::string& message) {
+
+        if(level == "ERROR") {
+#ifndef __ANDROID__
+            std::cerr << datetime::strftime(time, "%Y-%m-%d %H:%M:%S") << " ERROR " << message << std::endl;
+#else
+            __android_log_print(ANDROID_LOG_WARN, "kglt", "ERROR %s", message.c_str());
+#endif
+        } else {
+#ifndef __ANDROID__
+            std::cout << datetime::strftime(time, "%Y-%m-%d %H:%M:%S") << " " << level << " " << message << std::endl;
+#else
+            __android_log_print(ANDROID_LOG_INFO, "kglt", "ERROR %s", message.c_str());
+#endif
+        }
+    }
 
 void debug(const unicode& text, const std::string& file, int32_t line) {
     get_logger("/")->debug(text, file, line);
