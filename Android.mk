@@ -10,5 +10,6 @@ LOCAL_CPPFLAGS 	+= -fexceptions
 LOCAL_CPPFLAGS 	+= -frtti
 LOCAL_CPPFLAGS  += -std=c++11 -g
 LOCAL_LDLIBS += -latomic -llog
+LOCAL_EXPORT_LDLIBS += -latomic -llog
 LOCAL_SHARED_LIBRARIES := libpcre
 include $(BUILD_SHARED_LIBRARY)

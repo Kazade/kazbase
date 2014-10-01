@@ -57,13 +57,13 @@ void StdIOHandler::do_write_message(Logger* logger,
 #ifndef __ANDROID__
             std::cerr << datetime::strftime(time, "%Y-%m-%d %H:%M:%S") << " ERROR " << message << std::endl;
 #else
-            __android_log_print(ANDROID_LOG_WARN, "kglt", "ERROR %s", message.c_str());
+            __android_log_print(ANDROID_LOG_ERROR, "kglt", "ERROR %s", message.c_str());
 #endif
         } else {
 #ifndef __ANDROID__
             std::cout << datetime::strftime(time, "%Y-%m-%d %H:%M:%S") << " " << level << " " << message << std::endl;
 #else
-            __android_log_print(ANDROID_LOG_INFO, "kglt", "ERROR %s", message.c_str());
+            __android_log_print(ANDROID_LOG_ERROR, "kglt", "ERROR %s", message.c_str());
 #endif
         }
     }
