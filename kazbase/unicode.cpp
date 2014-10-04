@@ -2,6 +2,7 @@
 #include <string>
 #include <iomanip>
 #include <cassert>
+#include <climits>
 
 #include "utf8.h"
 #include "unicode.h"

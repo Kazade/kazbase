@@ -1,6 +1,10 @@
 #include <algorithm>
-
+#include <cassert>
+#include <chrono>
 #include "noise.h"
+
+#define PI 3.14159265358979323846f
+#define PIOver180  (PI / 180.0f)
 
 namespace noise {
 
@@ -19,9 +23,33 @@ double grad(int hash, double x, double y, double z) {
     return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
 }
 
+Perlin::Quaternion Perlin::from_eular(float pitch, float yaw, float roll) {
+    assert(pitch <= 2*PI);
+    assert(yaw <= 2*PI);
+    assert(roll <= 2*PI);
+
+    // Finds the Sin and Cosin for each half angles.
+    float sY = sinf(yaw * 0.5);
+    float cY = cosf(yaw * 0.5);
+    float sZ = sinf(roll * 0.5);
+    float cZ = cosf(roll * 0.5);
+    float sX = sinf(pitch * 0.5);
+    float cX = cosf(pitch * 0.5);
+
+    Quaternion ret;
+
+    // Formula to construct a new Quaternion based on Euler Angles.
+    ret.w = cY * cZ * cX - sY * sZ * sX;
+    ret.x = sY * sZ * cX + cY * cZ * sX;
+    ret.y = sY * cZ * cX + cY * sZ * sX;
+    ret.z = cY * sZ * cX - sY * cZ * sX;
+
+    return ret;
+}
+
 Perlin::Perlin(uint32_t seed) {
     if(!seed) {
-        seed = time(0);
+        seed = std::chrono::system_clock::now().time_since_epoch().count();
     }
 
     auto mid_range = p.begin() + 256;
@@ -32,9 +60,14 @@ Perlin::Perlin(uint32_t seed) {
     std::shuffle(p.begin(), mid_range, engine); //Shuffle the lower half
     std::copy(p.begin(), mid_range, mid_range); //Copy the lower half to the upper half
     //p now has the numbers 0-255, shuffled, and duplicated
+
+    float r = 3.1 * PIOver180; //Arbitrary 3.1 degrees in radians
+    rotation_ = from_eular(r, r, r); //Create a quaternion rotated 3.1 degrees around each axis
 }
 
 double Perlin::noise(double x, double y, double z) const {
+    //FIXME: Use rotation_ to rotate the coordinates
+
     //See here for algorithm: http://cs.nyu.edu/~perlin/noise/
 
     const int32_t X = static_cast<int32_t>(std::floor(x)) & 255;
