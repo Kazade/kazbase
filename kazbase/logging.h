@@ -44,7 +44,7 @@ private:
     void do_write_message(Logger* logger,
                        const datetime::DateTime& time,
                        const std::string& level,
-                       const std::string& message);
+                       const std::string& message) override;
 };
 
 class FileHandler : public Handler {
