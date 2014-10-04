@@ -1,4 +1,5 @@
 #include <unordered_map>
+#include <cassert>
 #include "logging.h"
 #include "exceptions.h"
 
@@ -57,16 +58,16 @@ void StdIOHandler::do_write_message(Logger* logger,
 #ifndef __ANDROID__
             std::cerr << datetime::strftime(time, "%Y-%m-%d %H:%M:%S") << " ERROR " << message << std::endl;
 #else
-            __android_log_print(ANDROID_LOG_WARN, "kglt", "ERROR %s", message.c_str());
+            __android_log_write(ANDROID_LOG_ERROR, "KGLT", message.c_str());
 #endif
         } else {
 #ifndef __ANDROID__
             std::cout << datetime::strftime(time, "%Y-%m-%d %H:%M:%S") << " " << level << " " << message << std::endl;
 #else
-            __android_log_print(ANDROID_LOG_INFO, "kglt", "ERROR %s", message.c_str());
+            __android_log_write(ANDROID_LOG_INFO, "KGLT", message.c_str());
 #endif
         }
-    }
+}
 
 void debug(const unicode& text, const std::string& file, int32_t line) {
     get_logger("/")->debug(text, file, line);
