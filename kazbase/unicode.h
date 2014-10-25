@@ -212,4 +212,6 @@ namespace std {
 
 typedef unicode _u;
 
+unicode humanize(int i);
+
 #endif // UNICODE_H

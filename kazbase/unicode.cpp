@@ -415,3 +415,21 @@ unicode unicode::_do_format(uint32_t counter, const std::string& value) {
 
     throw ValueError("format placeholder not found");
 }
+
+
+unicode humanize(int i) {
+    switch(i) {
+        case 0: return "zero";
+        case 1: return "one";
+        case 2: return "two";
+        case 3: return "three";
+        case 4: return "four";
+        case 5: return "five";
+        case 6: return "six";
+        case 7: return "seven";
+        case 8: return "eight";
+        case 9: return "nine";
+    default:
+        return unicode("{0}").format(i);
+    }
+}
