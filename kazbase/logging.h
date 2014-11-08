@@ -115,7 +115,7 @@ public:
 
         static std::set<unicode> warned;
 
-        unicode key = _u("{0}:{1}").format(file, line);
+        unicode key = _u("{0}:{1}:{2}").format(file, line, text);
 
         if(warned.find(key) != warned.end()) {
             return;
@@ -166,6 +166,7 @@ Logger* get_logger(const std::string& name);
 void debug(const unicode& text, const std::string& file="None", int32_t line=-1);
 void info(const unicode& text, const std::string& file="None", int32_t line=-1);
 void warn(const unicode& text, const std::string& file="None", int32_t line=-1);
+void warn_once(const unicode& text, const std::string& file="None", int32_t line=-1);
 void error(const unicode& text, const std::string& file="None", int32_t line=-1);
 
 }
