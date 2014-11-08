@@ -5,6 +5,7 @@
 #include <thread>
 #include <fstream>
 #include <iostream>
+#include <set>
 
 #include "os.h"
 #include "unicode.h"
@@ -107,6 +108,22 @@ public:
         warn(text.encode(), file, line);
     }
 
+    void warn_once(const unicode& text, const std::string& file="None", int32_t line=-1) {
+        if(line == -1) {
+            warn(text, file, line); //Can't warn once if no line is specified
+        }
+
+        static std::set<unicode> warned;
+
+        unicode key = _u("{0}:{1}").format(file, line);
+
+        if(warned.find(key) != warned.end()) {
+            return;
+        }
+
+        warn(text, file, line);
+    }
+
     void error(const std::string& text, const std::string& file="None", int32_t line=-1) {
         if(level_ == LOG_LEVEL_NONE) return;
 
@@ -161,6 +178,9 @@ void error(const unicode& text, const std::string& file="None", int32_t line=-1)
 
 #define L_WARN(txt) \
     logging::warn((txt), __FILE__, __LINE__)
+
+#define L_WARN_ONCE(txt) \
+    logging::warn_once((txt), __FILE__, __LINE__)
 
 #define L_ERROR(txt) \
     logging::error((txt), __FILE__, __LINE__)
