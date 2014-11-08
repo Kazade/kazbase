@@ -120,6 +120,7 @@ public:
         if(warned.find(key) != warned.end()) {
             return;
         }
+        warned.insert(key);
 
         warn(text, file, line);
     }

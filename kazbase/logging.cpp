@@ -82,7 +82,7 @@ void warn(const unicode& text, const std::string& file, int32_t line) {
 }
 
 void warn_once(const unicode& text, const std::string& file, int32_t line) {
-    get_logger("/")->warn(text, file, line);
+    get_logger("/")->warn_once(text, file, line);
 }
 
 void error(const unicode& text, const std::string& file, int32_t line) {
