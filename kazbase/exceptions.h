@@ -15,8 +15,8 @@ public:
 
 class RuntimeError : public std::runtime_error {
 public:
-    RuntimeError(const std::string& what):
-        std::runtime_error(what) {}
+    RuntimeError(const unicode& what):
+        std::runtime_error(what.encode()) {}
 };
 
 class IOError : public std::runtime_error {
