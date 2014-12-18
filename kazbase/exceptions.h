@@ -51,13 +51,13 @@ public:
 
 class AssertionError : public LogicError {
 public:
-    AssertionError(const std::string& what):
+    AssertionError(const unicode& what):
         LogicError(what),
         file(""),
         line(-1) {
     }
 
-    AssertionError(const std::pair<unicode, int> file_and_line, const std::string& what):
+    AssertionError(const std::pair<unicode, int> file_and_line, const unicode& what):
         LogicError(what),
         file(file_and_line.first),
         line(file_and_line.second) {
