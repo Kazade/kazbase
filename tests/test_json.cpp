@@ -30,6 +30,12 @@ TEST(test_json_update) {
     dict1.update(dict2);
 
     CHECK_EQUAL("{A : 1, B : 2, C : 3, D : [4]}", json::dumps(dict1));
+}
 
+TEST(test_json_load) {
+    json::JSON data = json::loads("[{ \"score\": 1, \"name\": \"kazade\"}])");
+    CHECK_EQUAL(data.type(), json::NODE_TYPE_ARRAY);
+    CHECK(1 == data[0]["score"]);
+    CHECK("kazade" == data[0]["name"]);
 }
 

@@ -113,8 +113,8 @@ wchar_t find_first_token(const unicode& json_string) {
 
     std::vector<wchar_t> tokens = { '{','}',',',':','[',']'};
 
-    for(wchar_t c: tokens) {
-        if(json_string.contains(c)) {
+    for(wchar_t c: json_string) {
+        if(std::find(tokens.begin(), tokens.end(), c) != tokens.end()) {
             return c;
         }
     }
