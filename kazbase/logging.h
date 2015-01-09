@@ -88,7 +88,7 @@ public:
 
     void info(const std::string& text, const std::string& file="None", int32_t line=-1) {
         if(level_ == LOG_LEVEL_NONE) return;
-        if(level_ == LOG_LEVEL_WARN || level_ == LOG_LEVEL_ERROR) return;
+        if(level_ > LOG_LEVEL_INFO) return;
 
         write_message("INFO", text, file, line);
     }
@@ -99,7 +99,7 @@ public:
 
     void warn(const std::string& text, const std::string& file="None", int32_t line=-1) {
         if(level_ == LOG_LEVEL_NONE) return;
-        if(level_ == LOG_LEVEL_ERROR) return;
+        if(level_ > LOG_LEVEL_WARN) return;
 
         write_message("WARN", text, file, line);
     }
@@ -127,6 +127,7 @@ public:
 
     void error(const std::string& text, const std::string& file="None", int32_t line=-1) {
         if(level_ == LOG_LEVEL_NONE) return;
+        if(level_ > LOG_LEVEL_ERROR) return;
 
         write_message("ERROR", text, file, line);
     }
