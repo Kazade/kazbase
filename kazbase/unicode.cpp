@@ -1,3 +1,4 @@
+#include <cstring>
 #include <algorithm>
 #include <string>
 #include <iomanip>
@@ -38,34 +39,27 @@ unicode::unicode(int32_t n, char32_t c) {
     string_ = std::basic_string<char32_t>(n, c);
 }
 
-unicode::unicode(int32_t n, char16_t c) {
-    std::basic_string<char16_t> s(n, c);
-
-    *this = unicode(s.c_str());
-}
-
 unicode::unicode(int32_t n, char c) {
     std::string s(n, c);
 
     *this = unicode(s.c_str());
 }
 
-unicode::unicode(const char* utf8_string) {
-    std::string tmp(utf8_string);
-
-    utf8::utf8to32(tmp.begin(), tmp.end(), std::back_inserter(string_));
+unicode::unicode(const char* encoded_string, const std::string &encoding) {
+    if(encoding == "ascii") {
+        size_t len = strlen(encoded_string);
+        string_.resize(len);
+        for(size_t i = 0; i < len; ++i) {
+            string_[i] = char32_t(encoded_string[i]);
+        }
+    } else if(encoding == "utf8" || encoding == "utf-8") {
+        std::string tmp(encoded_string);
+        utf8::utf8to32(tmp.begin(), tmp.end(), std::back_inserter(string_));
+    }
 }
 
-unicode::unicode(const std::string& utf8_string) {
-    utf8::utf8to32(utf8_string.begin(), utf8_string.end(), std::back_inserter(string_));
-}
-
-unicode::unicode(const char16_t* utf16_string) {
-    std::string tmp;
-
-    std::basic_string<char16_t> s16(utf16_string);
-    utf8::utf16to8(s16.begin(), s16.end(), std::back_inserter(tmp));
-    utf8::utf8to32(tmp.begin(), tmp.end(), std::back_inserter(string_));
+unicode::unicode(const std::string& encoded_string, const std::string& encoding):
+    unicode(encoded_string.c_str()) {
 }
 
 unicode::unicode(char32_t* utf32_string) {
