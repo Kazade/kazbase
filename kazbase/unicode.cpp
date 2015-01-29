@@ -1,7 +1,9 @@
+#include <cstring>
 #include <algorithm>
 #include <string>
 #include <iomanip>
 #include <cassert>
+#include <climits>
 
 #include "utf8.h"
 #include "unicode.h"
@@ -21,6 +23,10 @@ bool operator!=(const char* c_str, const unicode& uni_str) {
     return !(c_str == uni_str);
 }
 
+unicode operator+(const char* c_str, const unicode& uni_str) {
+    return _u(c_str) + uni_str;
+}
+
 unicode& unicode::operator=(const unicode& rhs) {
     if(this == &rhs) {
         return *this;
@@ -33,34 +39,27 @@ unicode::unicode(int32_t n, char32_t c) {
     string_ = std::basic_string<char32_t>(n, c);
 }
 
-unicode::unicode(int32_t n, char16_t c) {
-    std::basic_string<char16_t> s(n, c);
-
-    *this = unicode(s.c_str());
-}
-
 unicode::unicode(int32_t n, char c) {
     std::string s(n, c);
 
     *this = unicode(s.c_str());
 }
 
-unicode::unicode(const char* utf8_string) {
-    std::string tmp(utf8_string);
-
-    utf8::utf8to32(tmp.begin(), tmp.end(), std::back_inserter(string_));
+unicode::unicode(const char* encoded_string, const std::string &encoding) {
+    if(encoding == "ascii") {
+        size_t len = strlen(encoded_string);
+        string_.resize(len);
+        for(size_t i = 0; i < len; ++i) {
+            string_[i] = char32_t(encoded_string[i]);
+        }
+    } else if(encoding == "utf8" || encoding == "utf-8") {
+        std::string tmp(encoded_string);
+        utf8::utf8to32(tmp.begin(), tmp.end(), std::back_inserter(string_));
+    }
 }
 
-unicode::unicode(const std::string& utf8_string) {
-    utf8::utf8to32(utf8_string.begin(), utf8_string.end(), std::back_inserter(string_));
-}
-
-unicode::unicode(const char16_t* utf16_string) {
-    std::string tmp;
-
-    std::basic_string<char16_t> s16(utf16_string);
-    utf8::utf16to8(s16.begin(), s16.end(), std::back_inserter(tmp));
-    utf8::utf8to32(tmp.begin(), tmp.end(), std::back_inserter(string_));
+unicode::unicode(const std::string& encoded_string, const std::string& encoding):
+    unicode(encoded_string.c_str()) {
 }
 
 unicode::unicode(char32_t* utf32_string) {
@@ -238,16 +237,59 @@ unicode unicode::slice(void* null, int32_t end) const {
     return slice(0, end);
 }
 
+
+/*
+ ANDROID SUCKS... can't use std::stoi and friends
+*/
+int32_t _stoi(const std::string& str) {
+    const char* inp = str.c_str();
+    char* p = nullptr;
+
+    auto test = strtol(inp, &p, 10);
+
+    if(p == inp || test == LONG_MIN || test == LONG_MAX) {
+        throw std::invalid_argument("Couldn't convert from a string to an integer");
+    }
+
+    return (int32_t) test;
+}
+
+float _stof(const std::string& str) {
+    const char* inp = str.c_str();
+    char* p = nullptr;
+
+    auto test = strtof(inp, &p);
+
+    if(p == inp) {
+        throw std::invalid_argument("Couldn't convert from a string to a float");
+    }
+
+    return (float) test;
+}
+
+double _stod(const std::string& str) {
+    const char* inp = str.c_str();
+    char* p = nullptr;
+
+    auto test = strtod(inp, &p);
+
+    if(p == inp) {
+        throw std::invalid_argument("Couldn't convert from a string to a double");
+    }
+
+    return (double) test;
+}
+
 int32_t unicode::to_int() const {
-    return std::stoi(encode());
+    return _stoi(encode());
 }
 
 float unicode::to_float() const {
-    return std::stof(encode());
+    return _stof(encode());
 }
 
 double unicode::to_double() const {
-    return std::stod(encode());
+    return _stod(encode());
 }
 
 bool unicode::to_boolean() const {
@@ -370,4 +412,22 @@ unicode unicode::_do_format(uint32_t counter, const std::string& value) {
     }
 
     throw ValueError("format placeholder not found");
+}
+
+
+unicode humanize(int i) {
+    switch(i) {
+        case 0: return "zero";
+        case 1: return "one";
+        case 2: return "two";
+        case 3: return "three";
+        case 4: return "four";
+        case 5: return "five";
+        case 6: return "six";
+        case 7: return "seven";
+        case 8: return "eight";
+        case 9: return "nine";
+    default:
+        return unicode("{0}").format(i);
+    }
 }

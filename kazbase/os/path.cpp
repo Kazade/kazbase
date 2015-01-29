@@ -2,6 +2,8 @@
 #include <dirent.h>
 #include <errno.h>
 #include <unistd.h>
+#include <limits.h>
+#include <stdlib.h>
 
 #include "path.h"
 
@@ -307,4 +309,3 @@ std::pair<unicode, unicode> split_ext(const unicode& path) {
 
 }
 }
-

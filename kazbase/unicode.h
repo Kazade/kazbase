@@ -18,14 +18,12 @@ public:
     }
 
     unicode& operator=(const unicode& rhs);
-    unicode(const char* utf8_string);
-    unicode(const char16_t* utf16_string);
+    unicode(const char* encoded_string, const std::string& encoding="ascii");
 
     unicode(int32_t n, char32_t c);
-    unicode(int32_t n, char16_t c);
     unicode(int32_t n, char c);
 
-    unicode(const std::string& utf8_string);
+    unicode(const std::string& utf8_string, const std::string &encoding="ascii");
     unicode(char32_t* unicode_string);
 
     template<class InputIterator>
@@ -199,6 +197,7 @@ private:
 std::ostream& operator<< (std::ostream& os, const unicode& str);
 bool operator==(const char* c_str, const unicode& uni_str);
 bool operator!=(const char* c_str, const unicode& uni_str);
+unicode operator+(const char* c_str, const unicode& uni_str);
 
 namespace std {
     template<>
@@ -211,5 +210,7 @@ namespace std {
 }
 
 typedef unicode _u;
+
+unicode humanize(int i);
 
 #endif // UNICODE_H

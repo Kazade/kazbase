@@ -16,6 +16,14 @@ public:
 
 private:
     std::array<int, 512> p;
+
+    struct Quaternion {
+        float x, y, z, w;
+    };
+
+    Quaternion rotation_; //Used to reduce the risk of passing in round integers into the noise function
+
+    Quaternion from_eular(float pitch, float yaw, float roll);
 };
 
 class PerlinOctave {

@@ -5,6 +5,7 @@
 #include <thread>
 #include <fstream>
 #include <iostream>
+#include <set>
 
 #include "os.h"
 #include "unicode.h"
@@ -44,14 +45,7 @@ private:
     void do_write_message(Logger* logger,
                        const datetime::DateTime& time,
                        const std::string& level,
-                       const std::string& message) {
-
-        if(level == "ERROR") {
-            std::cerr << datetime::strftime(time, "%Y-%m-%d %H:%M:%S") << " ERROR " << message << std::endl;
-        } else {
-            std::cout << datetime::strftime(time, "%Y-%m-%d %H:%M:%S") << " " << level << " " << message << std::endl;
-        }
-    }
+                       const std::string& message) override;
 };
 
 class FileHandler : public Handler {
@@ -83,7 +77,7 @@ public:
     }
 
     void debug(const std::string& text, const std::string& file="None", int32_t line=-1) {
-        if(level_ == LOG_LEVEL_NONE) return;
+        if(level_ < LOG_LEVEL_DEBUG) return;
 
         write_message("DEBUG", text, file, line);
     }
@@ -93,8 +87,7 @@ public:
     }
 
     void info(const std::string& text, const std::string& file="None", int32_t line=-1) {
-        if(level_ == LOG_LEVEL_NONE) return;
-        if(level_ == LOG_LEVEL_WARN || level_ == LOG_LEVEL_ERROR) return;
+        if(level_ < LOG_LEVEL_INFO) return;
 
         write_message("INFO", text, file, line);
     }
@@ -104,8 +97,7 @@ public:
     }
 
     void warn(const std::string& text, const std::string& file="None", int32_t line=-1) {
-        if(level_ == LOG_LEVEL_NONE) return;
-        if(level_ == LOG_LEVEL_ERROR) return;
+        if(level_ < LOG_LEVEL_WARN) return;
 
         write_message("WARN", text, file, line);
     }
@@ -114,8 +106,25 @@ public:
         warn(text.encode(), file, line);
     }
 
+    void warn_once(const unicode& text, const std::string& file="None", int32_t line=-1) {
+        if(line == -1) {
+            warn(text, file, line); //Can't warn once if no line is specified
+        }
+
+        static std::set<unicode> warned;
+
+        unicode key = _u("{0}:{1}:{2}").format(file, line, text);
+
+        if(warned.find(key) != warned.end()) {
+            return;
+        }
+        warned.insert(key);
+
+        warn(text, file, line);
+    }
+
     void error(const std::string& text, const std::string& file="None", int32_t line=-1) {
-        if(level_ == LOG_LEVEL_NONE) return;
+        if(level_ < LOG_LEVEL_ERROR) return;
 
         write_message("ERROR", text, file, line);
     }
@@ -156,6 +165,7 @@ Logger* get_logger(const std::string& name);
 void debug(const unicode& text, const std::string& file="None", int32_t line=-1);
 void info(const unicode& text, const std::string& file="None", int32_t line=-1);
 void warn(const unicode& text, const std::string& file="None", int32_t line=-1);
+void warn_once(const unicode& text, const std::string& file="None", int32_t line=-1);
 void error(const unicode& text, const std::string& file="None", int32_t line=-1);
 
 }
@@ -168,6 +178,9 @@ void error(const unicode& text, const std::string& file="None", int32_t line=-1)
 
 #define L_WARN(txt) \
     logging::warn((txt), __FILE__, __LINE__)
+
+#define L_WARN_ONCE(txt) \
+    logging::warn_once((txt), __FILE__, __LINE__)
 
 #define L_ERROR(txt) \
     logging::error((txt), __FILE__, __LINE__)

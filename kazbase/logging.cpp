@@ -1,6 +1,11 @@
 #include <unordered_map>
+#include <cassert>
 #include "logging.h"
 #include "exceptions.h"
+
+#ifdef __ANDROID__
+#include <android/log.h>
+#endif
 
 namespace logging {
 
@@ -44,6 +49,26 @@ void FileHandler::do_write_message(Logger* logger,
     stream_.flush();
 }
 
+void StdIOHandler::do_write_message(Logger* logger,
+                       const datetime::DateTime& time,
+                       const std::string& level,
+                       const std::string& message) {
+
+        if(level == "ERROR") {
+#ifndef __ANDROID__
+            std::cerr << datetime::strftime(time, "%Y-%m-%d %H:%M:%S") << " ERROR " << message << std::endl;
+#else
+            __android_log_write(ANDROID_LOG_ERROR, "KGLT", message.c_str());
+#endif
+        } else {
+#ifndef __ANDROID__
+            std::cout << datetime::strftime(time, "%Y-%m-%d %H:%M:%S") << " " << level << " " << message << std::endl;
+#else
+            __android_log_write(ANDROID_LOG_INFO, "KGLT", message.c_str());
+#endif
+        }
+}
+
 void debug(const unicode& text, const std::string& file, int32_t line) {
     get_logger("/")->debug(text, file, line);
 }
@@ -54,6 +79,10 @@ void info(const unicode& text, const std::string& file, int32_t line) {
 
 void warn(const unicode& text, const std::string& file, int32_t line) {
     get_logger("/")->warn(text, file, line);
+}
+
+void warn_once(const unicode& text, const std::string& file, int32_t line) {
+    get_logger("/")->warn_once(text, file, line);
 }
 
 void error(const unicode& text, const std::string& file, int32_t line) {
