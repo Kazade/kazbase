@@ -38,6 +38,13 @@ void make_dir(const unicode& path, mode_t mode) {
     }
 }
 
+void make_link(const unicode& source, const unicode& dest) {
+    int ret = ::symlink(dest.encode().c_str(), source.encode().c_str());
+    if(ret != 0) {
+        throw os::Error(errno);
+    }
+}
+
 void make_dirs(const unicode &path, mode_t mode) {
     std::pair<unicode, unicode> res = os::path::split(path);
 
