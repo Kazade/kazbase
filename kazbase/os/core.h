@@ -18,6 +18,7 @@ void remove_dirs(const unicode& path);
 
 void make_dir(const unicode& path, mode_t mode=0777);
 void make_dirs(const unicode& path, mode_t mode=0777);
+void make_link(const unicode& source, const unicode& dest);
 
 std::string temp_dir();
 
