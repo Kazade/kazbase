@@ -247,6 +247,9 @@ std::vector<unicode> list_dir(const unicode& path) {
 
     while((dp = readdir(dirp)) != nullptr) {
         result.push_back(dp->d_name);
+        if(result.back() == "." || result.back() == "..") {
+            result.pop_back();
+        }
     }
     closedir(dirp);
 #endif

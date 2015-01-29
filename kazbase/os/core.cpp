@@ -39,7 +39,7 @@ void make_dir(const unicode& path, mode_t mode) {
 }
 
 void make_link(const unicode& source, const unicode& dest) {
-    int ret = ::symlink(dest.encode().c_str(), source.encode().c_str());
+    int ret = ::symlink(source.encode().c_str(), dest.encode().c_str());
     if(ret != 0) {
         throw os::Error(errno);
     }
