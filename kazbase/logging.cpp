@@ -12,7 +12,7 @@ namespace logging {
 void Handler::write_message(Logger* logger,
                    const datetime::DateTime& time,
                    const std::string& level,
-                   const std::string& message) {
+                   const unicode& message) {
 
     if(!logger) {
         throw ValueError("Tried to write to a NULL logger instance");
@@ -40,7 +40,7 @@ FileHandler::FileHandler(const std::string& filename, bool move_aside):
 void FileHandler::do_write_message(Logger* logger,
                    const datetime::DateTime& time,
                    const std::string& level,
-                   const std::string& message) {
+                   const unicode &message) {
 
     if(!stream_.good()) {
         throw IOError("Error writing to log file");
@@ -52,7 +52,7 @@ void FileHandler::do_write_message(Logger* logger,
 void StdIOHandler::do_write_message(Logger* logger,
                        const datetime::DateTime& time,
                        const std::string& level,
-                       const std::string& message) {
+                       const unicode& message) {
 
         if(level == "ERROR") {
 #ifndef __ANDROID__

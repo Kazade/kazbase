@@ -5,7 +5,8 @@
 #include <thread>
 #include <fstream>
 #include <iostream>
-#include <set>
+#include <unordered_set>
+#include <unordered_map>
 
 #include "os.h"
 #include "unicode.h"
@@ -31,13 +32,13 @@ public:
     void write_message(Logger* logger,
                        const datetime::DateTime& time,
                        const std::string& level,
-                       const std::string& message);
+                       const unicode &message);
 
 private:
     virtual void do_write_message(Logger* logger,
                        const datetime::DateTime& time,
                        const std::string& level,
-                       const std::string& message) = 0;
+                       const unicode& message) = 0;
 };
 
 class StdIOHandler : public Handler {
@@ -45,7 +46,7 @@ private:
     void do_write_message(Logger* logger,
                        const datetime::DateTime& time,
                        const std::string& level,
-                       const std::string& message) override;
+                       const unicode& message) override;
 };
 
 class FileHandler : public Handler {
@@ -56,7 +57,7 @@ private:
     void do_write_message(Logger* logger,
                        const datetime::DateTime& time,
                        const std::string& level,
-                       const std::string& message);
+                       const unicode& message);
     std::string filename_;
     std::ofstream stream_;
 };
@@ -76,61 +77,50 @@ public:
         handlers_.push_back(handler);
     }
 
-    void debug(const std::string& text, const std::string& file="None", int32_t line=-1) {
+    void debug(const unicode& text, const std::string& file="None", int32_t line=-1) {
         if(level_ < LOG_LEVEL_DEBUG) return;
 
         write_message("DEBUG", text, file, line);
     }
 
-    void debug(const unicode& text, const std::string& file="None", int32_t line=-1) {
-        debug(text.encode(), file, line);
-    }
-
-    void info(const std::string& text, const std::string& file="None", int32_t line=-1) {
+    void info(const unicode& text, const std::string& file="None", int32_t line=-1) {
         if(level_ < LOG_LEVEL_INFO) return;
 
         write_message("INFO", text, file, line);
     }
 
-    void info(const unicode& text, const std::string& file="None", int32_t line=-1) {
-        info(text.encode(), file, line);
-    }
-
-    void warn(const std::string& text, const std::string& file="None", int32_t line=-1) {
+    void warn(const unicode& text, const std::string& file="None", int32_t line=-1) {
         if(level_ < LOG_LEVEL_WARN) return;
 
         write_message("WARN", text, file, line);
     }
 
-    void warn(const unicode& text, const std::string& file="None", int32_t line=-1) {
-        warn(text.encode(), file, line);
-    }
-
     void warn_once(const unicode& text, const std::string& file="None", int32_t line=-1) {
+        /*
+         *  This is *slow*, be aware of that, don't call in performance critical code!
+         */
+
         if(line == -1) {
             warn(text, file, line); //Can't warn once if no line is specified
-        }
-
-        static std::set<unicode> warned;
-
-        unicode key = _u("{0}:{1}:{2}").format(file, line, text);
-
-        if(warned.find(key) != warned.end()) {
             return;
         }
-        warned.insert(key);
 
-        warn(text, file, line);
-    }
+        static std::unordered_map<std::string, std::unordered_set<int32_t>> warned;
 
-    void error(const std::string& text, const std::string& file="None", int32_t line=-1) {
-        if(level_ < LOG_LEVEL_ERROR) return;
+        bool already_logged = warned.find(file) != warned.end() && warned[file].count(line);
 
-        write_message("ERROR", text, file, line);
+        if(already_logged) {
+            return;
+        } else {
+            warned[file].insert(line);
+            warn(text, file, line);
+        }
     }
 
     void error(const unicode& text, const std::string& file="None", int32_t line=-1) {
-        error(text.encode(), file, line);
+        if(level_ < LOG_LEVEL_ERROR) return;
+
+        write_message("ERROR", text, file, line);
     }
 
     void set_level(LOG_LEVEL level) {
@@ -138,17 +128,12 @@ public:
     }
 
 private:
-    void write_message(const std::string& level, const std::string& text,
+    void write_message(const std::string& level, const unicode& text,
                        const std::string& file, int32_t line) {
-
-        unicode file_out = file;
-        if(file != "None") {
-            file_out = os::path::abs_path(file);
-        }
 
         std::stringstream s;
         s << std::this_thread::get_id() << ": ";
-        s << text << " (" << file_out << ":" << _u("{0}").format(line) << ")";
+        s << text << " (" << file << ":" << _u("{0}").format(line) << ")";
         for(uint32_t i = 0; i < handlers_.size(); ++i) {
             handlers_[i]->write_message(this, datetime::now(), level, s.str());
         }
