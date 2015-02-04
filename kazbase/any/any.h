@@ -8,7 +8,7 @@
 #include "type_traits.h"
 #include "utility.h"
 
-namespace core {
+namespace kazbase {
 inline namespace v1 {
 namespace impl {
 

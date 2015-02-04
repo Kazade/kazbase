@@ -4,7 +4,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace core {
+namespace kazbase {
 inline namespace v1 {
 
 /* custom type traits */

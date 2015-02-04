@@ -55,8 +55,8 @@ public:
         }
 
         try {
-            return core::any_cast<T>((*s).second);
-        } catch(core::bad_any_cast& e) {
+            return kazbase::any_cast<T>((*s).second);
+        } catch(kazbase::bad_any_cast& e) {
             throw TypeError(e.what());
         }
     }
@@ -64,7 +64,7 @@ public:
     void save(const unicode& filename);
     void load(const unicode& filename);
 private:
-    typedef std::unordered_map<unicode, core::any> Option;
+    typedef std::unordered_map<unicode, kazbase::any> Option;
     std::unordered_map<unicode, Option> groups_;
     unicode filename_;
 

@@ -7,7 +7,7 @@
 
 #include "type_traits.h"
 
-namespace core {
+namespace kazbase {
 inline namespace v1 {
 namespace impl {
 
@@ -93,14 +93,14 @@ using type_at_t = typename type_at<N, Ts...>::type;
 template < ::std::size_t N, class T, class... Ts>
 constexpr auto value_at (T&& value, Ts&&...) -> enable_if_t<
   N == 0 and N < (sizeof...(Ts) + 1),
-  decltype(::core::forward<T>(value))
-> { return ::core::forward<T>(value); }
+  decltype(::kazbase::forward<T>(value))
+> { return ::kazbase::forward<T>(value); }
 
 template < ::std::size_t N, class T, class... Ts>
 constexpr auto value_at (T&&, Ts&&... values) -> enable_if_t<
   N != 0 and N < (sizeof...(Ts) + 1),
   type_at_t<N, T, Ts...>
-> { return value_at<N - 1, Ts...>(::core::forward<Ts>(values)...); }
+> { return value_at<N - 1, Ts...>(::kazbase::forward<Ts>(values)...); }
 
 template <class Callable>
 struct scope_guard final {
@@ -111,7 +111,7 @@ struct scope_guard final {
   );
 
   explicit scope_guard (Callable callable) noexcept :
-    callable { ::core::move(callable) },
+    callable { ::kazbase::move(callable) },
     dismissed { false }
   { }
 
@@ -133,7 +133,7 @@ private:
 template <class Callable>
 auto make_scope_guard(Callable&& callable) -> scope_guard<decay_t<Callable>> {
   return scope_guard<decay_t<Callable>> {
-    ::core::forward<Callable>(callable)
+    ::kazbase::forward<Callable>(callable)
   };
 }
 

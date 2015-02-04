@@ -22,28 +22,28 @@ void ConfigReader::save(const unicode& filename) {
 
         for(Option::iterator set = (*it).second.begin(); set != (*it).second.end(); ++set) {
             try {
-                bool v = core::any_cast<bool>((*set).second);
+                bool v = kazbase::any_cast<bool>((*set).second);
                 s << (*set).first << "=" << ((v)?"true":"false") << std::endl;
                 continue;
-            } catch(core::bad_any_cast& e) {}
+            } catch(kazbase::bad_any_cast& e) {}
 
             try {
-                double v = core::any_cast<double>((*set).second);
+                double v = kazbase::any_cast<double>((*set).second);
                 s << (*set).first << "=" << v << std::endl;
                 continue;
-            } catch(core::bad_any_cast& e) {}
+            } catch(kazbase::bad_any_cast& e) {}
 
             try {
-                int v = core::any_cast<int>((*set).second);
+                int v = kazbase::any_cast<int>((*set).second);
                 s << (*set).first << "=" << v << std::endl;
                 continue;
-            } catch(core::bad_any_cast& e) {}
+            } catch(kazbase::bad_any_cast& e) {}
 
             try {
-                unicode v = core::any_cast<unicode>((*set).second);
+                unicode v = kazbase::any_cast<unicode>((*set).second);
                 s << (*set).first << "=" << v << std::endl;
                 continue;
-            } catch(core::bad_any_cast& e) {}
+            } catch(kazbase::bad_any_cast& e) {}
 
             assert(0 && "Unsupported type");
         }
