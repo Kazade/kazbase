@@ -15,13 +15,16 @@ std::vector<unicode> read_lines(const unicode& filename) {
 
 unicode read(const unicode& filename) {
 
-    std::ifstream t(filename.encode().c_str());
-    if(!t) {
+    std::ifstream in(filename.encode().c_str());
+    if(!in) {
         throw IOError(_u("Unable to load file") + filename);
     }
 
-    std::string str((std::istreambuf_iterator<char>(t)),
-                 std::istreambuf_iterator<char>());
+    auto str = [&in]{
+      std::ostringstream ss{};
+      ss << in.rdbuf();
+      return ss.str();
+    }();
 
     return unicode(str);
 }
