@@ -2,6 +2,7 @@
 #include <fstream>
 #include <streambuf>
 
+#include "utf8/checked.h"
 #include "exceptions.h"
 #include "file_utils.h"
 
@@ -54,7 +55,23 @@ unicode read(const unicode& filename, std::string* encoding_out) {
         *encoding_out = enc;
     }
 
-    return unicode(str, enc);
+    try {
+        unicode ret(str, enc);
+        ret.encode(); //Force encoding to confirm it works
+        return ret;
+    } catch(utf8::invalid_utf8& e) {
+        if(enc == "utf-8") {
+            /*
+             *  If we tried utf8 and it failed, fallback to trying iso-8859-1
+             */
+            unicode ret(str, "iso-8859-1");
+            ret.encode();
+            *encoding_out = "iso-8859-1";
+            return ret;
+        } else {
+            throw;
+        }
+    }
 }
 
 }

@@ -55,6 +55,21 @@ unicode::unicode(const char* encoded_string, const std::string &encoding) {
     } else if(encoding == "utf8" || encoding == "utf-8") {
         std::string tmp(encoded_string);
         utf8::utf8to32(tmp.begin(), tmp.end(), std::back_inserter(string_));
+    } else if(encoding == "iso-8859-1" || encoding == "latin1" || encoding == "latin-1") {
+        std::string tmp(encoded_string);
+        std::string final;
+
+        for(unsigned char ch: tmp) {
+            if(ch < 0x80) {
+                final.push_back(ch);
+            } else {
+                final.push_back((char) (0xc0 | (unsigned) (ch >> 6)));
+                final.push_back((char) (0x80 | (ch & 0x3f)));
+            }
+        }
+
+        utf8::utf8to32(final.begin(), final.end(), std::back_inserter(string_));
+
     } else {
         throw ValueError(_u("Unsupported encoding {0}").format(encoding));
     }
