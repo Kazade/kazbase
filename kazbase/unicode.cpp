@@ -55,6 +55,10 @@ unicode::unicode(const char* encoded_string, const std::string &encoding) {
     } else if(encoding == "utf8" || encoding == "utf-8") {
         std::string tmp(encoded_string);
         utf8::utf8to32(tmp.begin(), tmp.end(), std::back_inserter(string_));
+    } else if(encoding == "utf16" || encoding == "utf-16") {
+        std::string tmp(encoded_string);
+    } else {
+        throw ValueError(_u("Unsupported encoding {0}").format(encoding));
     }
 }
 
