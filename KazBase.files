@@ -85,3 +85,4 @@ kazbase/signals.h
 tests/test_signals.cpp
 kazbase/threadsafe/ring_buffer.h
 tests/test_ring_buffer.cpp
+tests/test_file_utils.cpp

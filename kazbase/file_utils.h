@@ -5,8 +5,8 @@
 
 namespace file_utils {
 
-unicode read(const unicode& filename);
-std::vector<unicode> read_lines(const unicode& filename);
+unicode read(const unicode& filename, std::string* encoding_out=nullptr);
+std::vector<unicode> read_lines(const unicode& filename, std::string* encoding_out=nullptr);
 
 }
 

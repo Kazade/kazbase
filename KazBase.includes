@@ -11,3 +11,4 @@ kazbase/os
 kazbase/parse
 kazbase/thread
 kazbase/utf8
+tests
