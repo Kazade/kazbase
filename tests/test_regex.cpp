@@ -1,6 +1,8 @@
 #include <UnitTest++.h>
 
 #include "../kazbase/regex.h"
+#include "../kazbase/os.h"
+#include "../kazbase/file_utils.h"
 
 TEST(test_regex_match) {
     auto re = regex::Regex(R"(Your number is <b>(\d+)</b>)");
@@ -29,5 +31,17 @@ TEST(test_regex_match) {
     CHECK(match);
     match = re.match("this is some text that doesn't");
     CHECK(!match);
+}
 
+TEST(test_regex_unicode) {
+    auto utf8 = os::path::join({os::path::dir_name(__FILE__), "utf8-file.txt"});
+
+    std::string enc;
+
+    auto data = file_utils::read(utf8, &enc);
+    CHECK_EQUAL("utf-8", enc);
+
+    regex::Regex re("test");
+
+    auto matches = re.search(data);
 }

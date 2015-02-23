@@ -59,7 +59,7 @@ unicode::unicode(const char* encoded_string, const std::string &encoding) {
 }
 
 unicode::unicode(const std::string& encoded_string, const std::string& encoding):
-    unicode(encoded_string.c_str()) {
+    unicode(encoded_string.c_str(), encoding) {
 }
 
 unicode::unicode(char32_t* utf32_string) {

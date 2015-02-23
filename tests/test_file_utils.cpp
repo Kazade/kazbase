@@ -12,8 +12,9 @@ TEST(test_reading_unicode_file) {
 
     std::string enc;
 
-    file_utils::read(utf8, &enc);
+    auto data = file_utils::read(utf8, &enc);
     CHECK_EQUAL("utf-8", enc);
+    data.encode();
 
     file_utils::read(utf16, &enc);
     CHECK_EQUAL("utf-16", enc);
