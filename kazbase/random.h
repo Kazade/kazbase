@@ -3,8 +3,12 @@
 
 #include <cstdint>
 
-void seed();
+namespace random_gen {
+
+void seed(uint64_t sd=0);
 float random_float(float min, float max);
 int32_t random_int(int32_t min, int32_t max);
+
+}
 
 #endif // RANDOM_H
