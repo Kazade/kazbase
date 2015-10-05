@@ -102,6 +102,9 @@ bool unicode::contains(const char *thing) const {
 
 std::string unicode::encode() const {
     std::string result;
+    if(string_.empty()) {
+        return result;
+    }
     utf8::utf32to8(string_.begin(), string_.end(), std::back_inserter(result));
     return result;
 }

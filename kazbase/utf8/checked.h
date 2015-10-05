@@ -248,8 +248,11 @@ namespace utf8
     template <typename octet_iterator, typename u32bit_iterator>
     octet_iterator utf32to8 (u32bit_iterator start, u32bit_iterator end, octet_iterator result)
     {
-        while (start != end)
-            result = utf8::append(*(start++), result);
+        while (start != end) {
+            auto c = *start;
+            result = utf8::append(c, result);
+            ++start;
+        }
 
         return result;
     }
