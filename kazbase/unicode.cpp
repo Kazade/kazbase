@@ -254,7 +254,7 @@ unicode unicode::slice(int32_t beg, void* null) const {
 
 unicode unicode::slice(void* null, int32_t end) const {
     assert(!null);
-    return slice(0, end);
+    return slice((int32_t)0, end);
 }
 
 
