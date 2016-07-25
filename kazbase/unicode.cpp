@@ -179,7 +179,11 @@ std::vector<unicode> unicode::split(const unicode &delimiter, int32_t count, boo
         unicode temp(substart, subend);
         if (keep_empty || !temp.empty()) {
             result.push_back(temp);
-            if(result.size() == count) {
+            if(result.size() == count) {                
+                // Add the remainder to the array before returning
+                substart = subend + final_delim.length();
+                temp = unicode(substart, to_split.end());
+                result.push_back(temp);
                 return result;
             }
         }
