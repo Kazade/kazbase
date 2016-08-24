@@ -6,6 +6,7 @@
 #include <unistd.h>
 
 #include "core.h"
+#include "stat.h"
 #include "../exceptions.h"
 #include "path.h"
 

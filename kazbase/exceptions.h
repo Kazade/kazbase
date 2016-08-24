@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include <string>
 
-#include "logging.h"
+#include "unicode.h"
 
 class NotImplementedError : public std::runtime_error {
 public:
@@ -89,13 +89,11 @@ class DoesNotExist : public std::runtime_error {
 public:
     DoesNotExist():
         std::runtime_error(std::string(typeid(T).name()) + " instance does not exist") {
-        L_ERROR(std::string(typeid(T).name()) + " instance does not exist");
     }
 
     template<typename U>
     DoesNotExist(const U& what):
         std::runtime_error(_u("{0} instance does not exist: {1}").format(typeid(T).name(), what).encode()) {
-        L_ERROR(_u("{0} instance does not exist: {1}").format(typeid(T).name(), what));
     }
 };
 
