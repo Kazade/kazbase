@@ -9,7 +9,6 @@ IF(UNITTEST_FOUND)
         ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/test_regex.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/test_unicode.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/test_json.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/test_signals.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/test_ring_buffer.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/test_file_utils.cpp
